@@ -1,0 +1,294 @@
+---
+title: "Humanitarian Region Report"
+subtitle: "`r paste(params$region, '-', params$year)`"
+format:
+  html:
+    toc: true
+    code-fold: true
+    self-contained: true
+    theme: cosmo
+params:
+  region: "The Americas"
+  year: 2022
+  gp_provider: "openai"
+  gp_model: "gpt-4o-mini"
+  package_path: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(ggplot2)
+library(dplyr)
+library(ellmer)
+# library(unhcrreports) # Uncomment when package is built
+
+# Fix font issue on Windows
+update_geom_defaults("text", list(family = "sans"))
+update_geom_defaults("label", list(family = "sans"))
+theme_set(theme_gray(base_family = "sans"))
+
+if (!is.null(params$package_path)) {
+  pkgload::load_all(params$package_path)
+} else if (file.exists("../../DESCRIPTION")) {
+  pkgload::load_all("../../")
+}
+```
+
+```{r setup_data, include=FALSE}
+# --- Pre-calculate Plots and Stories ---
+
+# 1. Population Overview
+p_tree <- plot_reg_treemap(year = params$year, region = params$region)
+story_tree <- generate_plot_story(p_tree, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+
+p_trend <- plot_reg_population_type_per_year(year = params$year, region = params$region)
+story_trend <- generate_plot_story(p_trend, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+
+p_abs <- plot_reg_population_type_abs(year = params$year, region = params$region, pop_type = "REF")
+story_abs <- generate_plot_story(p_abs, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+
+p_share <- plot_reg_share(year = params$year, region = params$region, pop_type = "REF")
+story_share <- generate_plot_story(p_share, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+
+p_increase <- plot_reg_increase(year = params$year, region = params$region, pop_type = c("REF", "ASY", "OIP"))
+story_increase <- generate_plot_story(p_increase, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+
+p_decrease <- plot_reg_decrease(year = params$year, region = params$region, pop_type = c("REF", "ASY", "OIP"))
+story_decrease <- generate_plot_story(p_decrease, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+
+# Section Summary: Population
+summary_pop <- generate_section_summary(
+  stories = c(story_tree, story_trend, story_abs, story_share, story_increase, story_decrease),
+  section_name = "Population Overview",
+  provider = params$gp_provider,
+  model = params$gp_model
+)
+
+# 2. Geography & Movements
+p_map <- plot_reg_map(year = params$year, region = params$region)
+# Map plots might be tricky for AI to interpret from data if it's complex sf data, but we try
+story_map <- generate_plot_story(p_map, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+
+p_od <- plot_reg_origin_dest(year = params$year, region = params$region)
+# Chord diagrams return NULL usually as they plot directly, so we might skip story or handle differently
+# plot_reg_origin_dest returns invisible(NULL), so we can't generate a story from it easily.
+story_od <- "" 
+
+p_prop <- plot_reg_prop_origin(year = params$year, region = params$region)
+story_prop <- generate_plot_story(p_prop, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+
+# Section Summary: Geography
+summary_geo <- generate_section_summary(
+  stories = c(story_map, story_prop),
+  section_name = "Geography & Movements",
+  provider = params$gp_provider,
+  model = params$gp_model
+)
+
+# 3. Asylum System
+p_rsd <- plot_reg_rsd(year = params$year, region = params$region, measure = "Recognized")
+story_rsd <- generate_plot_story(p_rsd, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+
+# Section Summary: Asylum
+summary_asylum <- generate_section_summary(
+  stories = c(story_rsd),
+  section_name = "Asylum System",
+  provider = params$gp_provider,
+  model = params$gp_model
+)
+
+# 4. Solutions
+p_sol <- plot_reg_solution(year = params$year, region = params$region)
+story_sol <- generate_plot_story(p_sol, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+
+# Section Summary: Solutions
+summary_sol <- generate_section_summary(
+  stories = c(story_sol),
+  section_name = "Solutions",
+  provider = params$gp_provider,
+  model = params$gp_model
+)
+
+# 5. Report Summary
+summary_report <- generate_report_summary(
+  section_summaries = list(
+    "Population Overview" = summary_pop,
+    "Geography & Movements" = summary_geo,
+    "Asylum System" = summary_asylum,
+    "Solutions" = summary_sol
+  ),
+  country_name = params$region, # Reusing param for region name
+  year = params$year,
+  provider = params$gp_provider,
+  model = params$gp_model
+)
+```
+
+
+
+# Executive Summary
+
+This report provides an automated overview of the humanitarian situation in `r params$region` for the year `r params$year`.
+
+`r summary_report`
+
+# Population Overview
+
+`r summary_pop`
+
+## Demographics
+
+
+
+```{r treemap}
+#| fig.width: 10
+#| fig.height: 6
+p_tree
+```
+
+
+
+> **AI Insight**: `r story_tree`
+
+## Trends Over Time
+
+
+
+```{r trends}
+#| fig.width: 10
+#| fig.height: 6
+p_trend
+```
+
+
+
+> **AI Insight**: `r story_trend`
+
+## Key Figures
+
+
+
+```{r abs}
+#| fig.width: 10
+#| fig.height: 8
+p_abs
+```
+
+
+
+> **AI Insight**: `r story_abs`
+
+
+
+```{r share}
+#| fig.width: 10
+#| fig.height: 6
+p_share
+```
+
+
+
+> **AI Insight**: `r story_share`
+
+## Changes
+
+
+
+```{r increase}
+#| fig.width: 10
+#| fig.height: 8
+p_increase
+```
+
+
+
+> **AI Insight**: `r story_increase`
+
+
+
+```{r decrease}
+#| fig.width: 10
+#| fig.height: 8
+p_decrease
+```
+
+
+
+> **AI Insight**: `r story_decrease`
+
+# Geography & Movements
+
+`r summary_geo`
+
+
+
+```{r map}
+#| fig.width: 10
+#| fig.height: 8
+#| warning: false
+p_map
+```
+
+
+
+> **AI Insight**: `r story_map`
+
+## Origin-Destination
+
+
+
+```{r od}
+#| fig.width: 10
+#| fig.height: 10
+# This plot draws directly to the device
+plot_reg_origin_dest(year = params$year, region = params$region)
+```
+
+
+
+## Proportion of Origin
+
+
+
+```{r prop}
+#| fig.width: 10
+#| fig.height: 8
+p_prop
+```
+
+
+
+> **AI Insight**: `r story_prop`
+
+# Asylum System
+
+`r summary_asylum`
+
+
+
+```{r rsd}
+#| fig.width: 12
+#| fig.height: 8
+p_rsd
+```
+
+
+
+> **AI Insight**: `r story_rsd`
+
+# Solutions
+
+`r summary_sol`
+
+
+
+```{r solutions}
+#| fig.width: 10
+#| fig.height: 6
+p_sol
+```
+
+
+
+> **AI Insight**: `r story_sol`
+

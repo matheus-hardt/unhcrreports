@@ -1,0 +1,35 @@
+url: https://matheus-hardt.github.io/unhcrreports/
+template:
+  bootstrap: 5
+  bootswatch: cosmo
+  params:
+    logo: man/figures/logo.png
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    intro:
+      text: "Get Started"
+      href: index.html
+    reference:
+      text: "Reference"
+      href: reference/index.html
+    articles:
+      text: "Articles"
+      menu:
+        - text: "AI Reporting"
+          href: articles/ai-reporting.html
+        - text: "Country Plots"
+      - generate_report_summary
+
+  - title: "Country Plots"
+    desc: "Plots for country-level analysis."
+    contents:
+      - starts_with("plot_ctr_")
+
+  - title: "Region Plots"
+    desc: "Plots for regional analysis."
+    contents:
+      - starts_with("plot_reg_")

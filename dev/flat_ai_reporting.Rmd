@@ -1,0 +1,230 @@
+---
+title: "AI Reporting and Rendering Functions"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+```
+
+# AI Narrative Generation
+
+```{r function-generate_plot_story}
+#' Generate Humanitarian Data Story from ggplot (using ellmer)
+#'
+#' This function takes a ggplot2 object and generates a storytelling narrative
+#' focused on humanitarian insights. It uses the {ellmer} package to call
+#' a large language model from a supported provider.
+#'
+#' @param plot A `ggplot` object from ggplot2.
+#' @param max_tokens Maximum number of tokens (approximate) for the narrative (default = 300).
+#' @param provider Optional character string specifying the provider. Options include:
+#'   `"openai"`, `"gemini"`, `"anthropic"`, `"ollama"`. If `NULL`, auto-detect from environment keys.
+#' @param model Optional character string specifying the model name. If `NULL`, a default model
+#'   for the chosen provider will be used.
+#'
+#' @return A character string containing a storytelling narrative focused on humanitarian data.
+#'
+#' @importFrom ggplot2 ggplot_build
+#' @importFrom dplyr mutate mutate_if select
+#' @importFrom stringr str_c str_to_lower
+#' @importFrom ellmer chat_openai chat_google_gemini chat_anthropic chat_ollama
+#' @export
+generate_plot_story <- function(plot, max_tokens = 300, provider = NULL, model = NULL) {
+    # Extract plot data (first layer) and truncate
+    plot_data <- tryCatch(
+        {
+            ggplot2::ggplot_build(plot)$data[[1]] |>
+                dplyr::mutate_if(is.numeric, round, 2) |>
+                head(30)
+        },
+        error = function(e) {
+            warning("Could not extract data from plot: ", e$message)
+            return(NULL)
+        }
+    )
+
+    if (is.null(plot_data)) {
+        return("Could not analyze plot data.")
+    }
+
+    plot_data_text <- capture.output(print(plot_data))
+
+    # Extract title, subtitle, caption
+    labels <- plot$labels
+    title <- if (!is.null(labels$title)) labels$title else ""
+    subtitle <- if (!is.null(labels$subtitle)) labels$subtitle else ""
+    caption <- if (!is.null(labels$caption)) labels$caption else ""
+
+    # Detect geoms used
+    geoms <- tryCatch(
+        {
+            unique(sapply(plot$layers, function(layer) class(layer$geom)[1]))
+        },
+        error = function(e) ""
+    )
+    geoms_text <- paste(geoms, collapse = ", ")
+
+    # Build prompt
+    system_prompt <- paste0(
+        "You are an expert Information Management Officer and Protection Officer. ",
+        "Your role is to interpret humanitarian data visualizations and provide clear, insightful narratives. ",
+        "Consider the context of all possible plots in the country and region flat files to provide a holistic view."
+    )
+    prompt <- paste0(
+        "Title: ", title, "\n",
+        "Subtitle: ", subtitle, "\n",
+        "Caption: ", caption, "\n\n",
+        "Data (first 30 rows):\n", paste(plot_data_text, collapse = "\n"),
+        "Consider the type of plot geoms used: ", geoms_text, ".",
+        "\n\nWrite a story in plain English, up to about ", max_tokens, " tokens."
+    )
+
+    # Auto-detect provider if not specified
+    if (is.null(provider)) {
+        if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
+            provider <- "openai"
+        } else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
+            provider <- "gemini"
+        } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
+            provider <- "anthropic"
+        } else {
+            warning("No supported API key found (OPENAI, GEMINI, ANTHROPIC). Returning placeholder text.")
+            return("AI narrative generation skipped (no API key found).")
+        }
+    }
+
+    provider <- tolower(provider)
+
+    # Set default models if not provided
+    if (is.null(model)) {
+        model <- switch(provider,
+            openai = "gpt-4o-mini",
+            gemini = "gemini-2.0-flash",
+            anthropic = "claude-3-5-sonnet-latest",
+            ollama = "phi3:latest",
+            {
+                warning("Invalid provider specified. Returning placeholder text.")
+                return("AI narrative generation skipped (invalid provider).")
+            }
+        )
+    }
+
+    # Initialize chat object
+    chat <- tryCatch(
+        {
+            switch(provider,
+                openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
+                gemini = ellmer::chat_google_gemini(
+                    system_prompt = system_prompt,
+                    model = model
+                ),
+                anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
+                ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
+                stop("Invalid provider")
+            )
+        },
+        error = function(e) {
+            warning("Failed to initialize chat provider: ", e$message)
+            return(NULL)
+        }
+    )
+
+    if (is.null(chat)) {
+        return("AI narrative generation failed (chat init error).")
+    }
+
+    # Send prompt and get response
+    response <- tryCatch(
+        {
+            chat$chat(prompt)
+        },
+        error = function(e) {
+            warning("LLM chat failed: ", e$message)
+            return("AI narrative generation failed (API error).")
+        }
+    )
+
+    return(response)
+}
+```
+
+```{r examples-generate_plot_story}
+library(ggplot2)
+p <- ggplot(mtcars, aes(wt, mpg)) +
+    geom_point() +
+    labs(title = "Car Weight vs MPG")
+# Only run if API key is present
+if (Sys.getenv("OPENAI_API_KEY") != "") {
+    story <- generate_plot_story(p, provider = "openai")
+    message(story)
+}
+```
+
+```{r tests-generate_plot_story}
+test_that("generate_plot_story handles missing keys gracefully", {
+    # Mock Sys.getenv to return empty
+    withr::with_envvar(c("OPENAI_API_KEY" = ""), {
+        p <- ggplot2::ggplot(mtcars, ggplot2::aes(wt, mpg)) +
+            ggplot2::geom_point()
+        res <- generate_plot_story(p)
+        expect_match(res, "skipped")
+    })
+})
+```
+
+# Report Rendering
+
+```{r function-render_country_report}
+#' Render Country Report
+#'
+#' Renders a Quarto report for a specific country and year.
+#'
+#' @param country_iso3 ISO3 code of the country (e.g., "COL").
+#' @param year Numeric year.
+#' @param output_dir Directory to save the report.
+#' @param output_file Filename for the report.
+#'
+#' @importFrom quarto quarto_render
+#' @importFrom tools file_path_sans_ext
+#' @export
+render_country_report <- function(country_iso3, year, output_dir = ".", output_file = NULL) {
+    template_path <- system.file("templates", "country_report.qmd", package = "auto.report") # Adjust package name if needed
+
+    # Fallback for dev mode if package not installed
+    if (template_path == "") {
+        template_path <- file.path("inst", "templates", "country_report.qmd")
+    }
+
+    if (!file.exists(template_path)) {
+        stop("Template file not found at: ", template_path)
+    }
+
+    if (is.null(output_file)) {
+        output_file <- paste0("report_", country_iso3, "_", year, ".html")
+    }
+
+    # Ensure output directory exists
+    if (!dir.exists(output_dir)) {
+        dir.create(output_dir, recursive = TRUE)
+    }
+
+    # Copy template to output directory to avoid writing to package dir
+    temp_template <- file.path(output_dir, "country_report.qmd")
+    file.copy(template_path, temp_template, overwrite = TRUE)
+
+    # Render the copy
+    quarto::quarto_render(
+        input = temp_template,
+        output_file = output_file,
+        execute_params = list(
+            country_iso3 = country_iso3,
+            year = year,
+            package_path = getwd() # Pass current working directory as package root
+        )
+    )
+
+    # Clean up template copy
+    file.remove(temp_template)
+
+    return(file.path(output_dir, output_file))
+}
+```
