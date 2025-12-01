@@ -494,7 +494,7 @@ plot_reg_origin_dest <- function(year = 2022, region = "The Americas"){
 ```
   
 ```{r example-plot_reg_origin_dest}
-plot_reg_origin_dest(year = 2022, region = "Asia")
+plot_reg_origin_dest(year = 2022, region = "Asia and the Pacific")
 ```
   
 ```{r tests-plot_reg_origin_dest}
@@ -880,7 +880,7 @@ plot_reg_increase(
   year = 2021,
   lag = 5,
   topn = 5,
-  region = "Asia",
+  region = "Asia and the Pacific",
   pop_type = c("REF", "ASY", "OIP")
 )
 ```
@@ -1536,7 +1536,7 @@ plot_reg_map <- function(year = 2022,
 
   regionname <- dplyr::case_when(
     region == "The Americas" ~ "The Americas",
-    region == "Asia" ~ "Asia & the Pacific",
+    region == "Asia and the Pacific" ~ "Asia & the Pacific",
     region == "EastAfrica" ~ "Eastern Africa",
     region == "Europe" ~ "Europe",
     region == "MENA" ~ "Middle East & North Africa",
@@ -1646,7 +1646,7 @@ plot_reg_map <- function(year = 2022,
 ```{r example-plot_reg_map}
 plot_reg_map(
   year = 2022,
-  region = "Asia",
+  region = "Asia and the Pacific",
   topn = 5,
   pop_type = c("REF", "ASY", "OIP"),
   projection = "Mercator",
