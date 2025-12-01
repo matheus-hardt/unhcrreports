@@ -1,56 +1,14 @@
-﻿Package: unhcrreports
+Package: unhcrreports
 Title: Automated Humanitarian Reports
 Version: 0.0.0.9000
-Authors@R: 
-    person("Matheus", "User", , "matheus@example.com", role = c("aut", "cre"))
-Description: Generates automated humanitarian reports using UNHCR data,
-    ggplot2, and AI narratives.
+Authors@R: person("Matheus", "Hardt", email = "mathardt@gmail.com", role = c("aut", "cre"))
+Description: Generates automated humanitarian reports using UNHCR data, ggplot2, and AI narratives.
 License: MIT + file LICENSE
 URL: https://matheus-hardt.github.io/unhcrreports, https://github.com/matheus-hardt/unhcrreports
 BugReports: https://github.com/matheus-hardt/unhcrreports/issues
-Imports: 
-    circlize,
-    countrycode,
-    dplyr,
-    ellmer,
-    extrafont,
-    forcats,
-    ggalluvial,
-    ggforce,
-    ggplot2,
-    ggrepel,
-    ggtext,
-    graphics,
-    grDevices,
-    Hmisc,
-    lubridate,
-    mapsf,
-    patchwork,
-    purrr,
-    quarto,
-    refugees,
-    rnaturalearth,
-    scales,
-    sf,
-    stats,
-    stringr,
-    sysfonts,
-    tidyr,
-    tidyselect,
-    tools,
-    treemapify,
-    unhcrthemes,
-    utils,
-    viridis,
-    WDI
-Suggests: 
-    knitr,
-    rmarkdown,
-    testthat (>= 3.0.0),
-    withr,
-    pkgdown
-VignetteBuilder: 
-    knitr
+Imports: circlize, countrycode, dplyr, ellmer, extrafont, forcats, ggalluvial, ggforce, ggplot2, ggrepel, ggtext, graphics, grDevices, Hmisc, lubridate, mapsf, patchwork, purrr, quarto, refugees, rnaturalearth, scales, sf, stats, stringr, sysfonts, tidyr, tidyselect, tools, treemapify, unhcrthemes, utils, viridis, WDI
+Suggests: knitr, rmarkdown, testthat (>= 3.0.0), withr, pkgdown
+VignetteBuilder: knitr
 Config/fusen/version: 0.7.2
 Config/testthat/edition: 3
 Encoding: UTF-8

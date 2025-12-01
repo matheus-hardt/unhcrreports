@@ -111,7 +111,8 @@ plot_reg_population_type_per_year(
 #> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 #> ℹ Please use `linewidth` instead.
 #> ℹ The deprecated feature was likely used in the unhcrreports package.
-#>   Please report the issue to the authors.
+#>   Please report the issue at
+#>   <https://github.com/matheus-hardt/unhcrreports/issues>.
 #> This warning is displayed once every 8 hours.
 #> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
 #> generated.

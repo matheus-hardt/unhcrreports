@@ -60,5 +60,6 @@ plot_reg_decrease(
 #> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
 #> ℹ Please use `linewidth` instead.
 #> ℹ The deprecated feature was likely used in the unhcrreports package.
-#>   Please report the issue to the authors.
+#>   Please report the issue at
+#>   <https://github.com/matheus-hardt/unhcrreports/issues>.
 ```
