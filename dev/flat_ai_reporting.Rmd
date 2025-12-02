@@ -1,230 +1,707 @@
 ---
 title: "AI Reporting and Rendering Functions"
 output: html_document
-editor_options: 
+editor_options:
   chunk_output_type: console
+---
+
+
+```{r development, include=FALSE}
+knitr::opts_chunk$set(
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE,
+  # fig.retina = 2,
+  fig.width = 8,
+  fig.asp = 0.718,
+  # fig.align = "center",
+  # dev = "ragg_png",
+  out.width = "90%"
+)
+unlink(".RData")
+library(testthat)
+library(ggplot2)
+library(tidyverse)
+library(scales)
+library(unhcrthemes)
+#library(unhcrdatapackage)
+# library(extrafont)
+# font_import()
+# loadfonts()
+# font_install('fontcm')
+
 ```
 
-# AI Narrative Generation
+```{r development-load}
+# Load already included functions if relevant
+pkgload::load_all(export_all = FALSE)
+```
+
+
+# Using Language Models to build data stories
+
+## clean_llm_response
+
+```{r function-clean_llm_response}
+#' Clean LLM Response
+#'
+#' Remove thinking tags, markdown, and other artifacts from LLM responses
+#' Useful for Local Open Source Reasoning Small Language Model
+#'
+#' @param response Character string from LLM response
+#' @param keep_punctuation boolean
+#' @return Cleaned character string
+#' @export
+clean_llm_response <- function(response, keep_punctuation = TRUE) {
+  if (!is.character(response)) return(response)
+  
+  # Split into lines
+  lines <- strsplit(response, "\n")[[1]]
+  
+  # Find thinking tag boundaries
+  think_start <- which(grepl("<think>", lines, ignore.case = TRUE))
+  think_end <- which(grepl("</think>", lines, ignore.case = TRUE))
+  
+  # Remove ALL lines between thinking tags (inclusive)
+  if (length(think_start) > 0 && length(think_end) > 0) {
+    remove_indices <- integer(0)
+    for (i in seq_along(think_start)) {
+      if (think_start[i] <= think_end[i]) {
+        remove_indices <- c(remove_indices, think_start[i]:think_end[i])
+      }
+    }
+    if (length(remove_indices) > 0) {
+      lines <- lines[-remove_indices]
+    }
+  }
+  
+  # Combine back
+  response <- paste(lines, collapse = " ")
+  
+  # Remove all non-ASCII characters
+  response <- gsub("[^\x20-\x7E]", "", response)
+  
+  # Remove common LLM artifacts and introductory phrases
+  response <- gsub("^(Sure|Certainly|Okay|Here|First).*?(:|\\.)\\s*", "", response, ignore.case = TRUE)
+  response <- gsub("^(As an AI|I am an AI|I'm a).*?\\.\\s*", "", response, ignore.case = TRUE)
+  response <- gsub("^(My role includes|This includes).*?\\.\\s*", "", response, ignore.case = TRUE)
+  response <- gsub("^(Aligning with constraints).*?\\.\\s*", "", response, ignore.case = TRUE)
+  
+  # Remove markdown formatting
+  response <- gsub("\\*\\*|\\*|__|_", "", response)
+  response <- gsub("\\[.*?\\]\\(.*?\\)", "", response)
+  response <- gsub("#+\\s*", "", response)
+  response <- gsub("`{1,3}", "", response)
+  
+  # Remove excessive whitespace
+  response <- gsub("\\s+", " ", response)
+  response <- trimws(response)
+  
+  # If empty after cleaning, provide fallback
+  if (nchar(response) == 0) {
+    return("Unable to generate story from this visualization.")
+  }
+  
+  return(response)
+}
+```
+  
+```{r example-clean_llm_response}
+response <- "<think>
+First, I'm a humanitarian data visualization expert. My role includes extracting insights 
+from visualizations, creating accessible narratives, highlighting patterns relevant to aid
+efforts, using clear language with emotional resonance.
+Aligning with constraints: Use plain language, be concise and impactful. Don't rehash 
+every detail; build narrative depth around 2 key insights maximum in under 30 tokens.
+</think>
+This visualization tracks a relationship potentially critical for humanitarian logistics: 
+higher fuel consumption versus increased weight. 车辆设计"
+clean_llm_response(response)
+```
+  
+```{r tests-clean_llm_response}
+test_that("clean_llm_response works", {
+  expect_true(inherits(clean_llm_response, "function")) 
+})
+```
+  
+
+## generate_plot_story
 
 ```{r function-generate_plot_story}
-#' Generate Humanitarian Data Story from ggplot (using ellmer)
+#' Generate Humanitarian Data Story from ggplot
 #'
 #' This function takes a ggplot2 object and generates a storytelling narrative
-#' focused on humanitarian insights. It uses the {ellmer} package to call
-#' a large language model from a supported provider.
+#' focused on humanitarian insights. It uses the \{ellmer\} package to call
+#' a large or small language model from a supported provider.
+#' 
+#' If you do not have API keys or need to work offline, simply get ollama and 
+#' look at top reasoning models - https://ollama.com/search?c=thinking 
+#'
+#' Setup:
+#' 1. Install \{ellmer\}: `install.packages("ellmer")`
+#' 2. Set your API key in your environment. For Azure OpenAI, use the standard
+#'    OpenAI key variable:
+#'    `Sys.setenv(OPENAI_API_KEY = "<YOUR_AZURE_OPENAI_KEY>")`
+#' 3. When using Azure, set `provider = "azure"` and provide the env variables
+#'   `Sys.setenv(AZURE_OPENAI_ENDPOINT = "<YOUR_AZURE_ENDPOINT>")`
+#'   `Sys.setenv(AZURE_OPENAI_API_VERSION = "<YOUR_AZURE_OPENAI_API_VERSION>")`
+#'   The best place to set this is in .Renviron, which you can easily edit by
+#'    calling `usethis::edit_r_environ()`
 #'
 #' @param plot A `ggplot` object from ggplot2.
-#' @param max_tokens Maximum number of tokens (approximate) for the narrative (default = 300).
-#' @param provider Optional character string specifying the provider. Options include:
-#'   `"openai"`, `"gemini"`, `"anthropic"`, `"ollama"`. If `NULL`, auto-detect from environment keys.
-#' @param model Optional character string specifying the model name. If `NULL`, a default model
-#'   for the chosen provider will be used.
+#' @param max_tokens Maximum number of tokens (approximate) 
+#' for the narrative (default = 30).
+#' @param provider Optional character string specifying the provider. Options 
+#' include:
+#'   `"openai"`, `"gemini"`, `"anthropic"`, `"ollama"`, `"azure"`. If `NULL`, 
+#'   auto-detect from environment keys.
+#' @param model Optional character string specifying the model name. For Azure,
+#'    this is typically the deployment name. If `NULL`, a default model for the
+#'    chosen provider will be used.
+#' @param clean_response Logical. Whether to clean the response by removing
+#'   thinking tags and other artifacts (default = TRUE).
 #'
-#' @return A character string containing a storytelling narrative focused on humanitarian data.
+#' @return A character string containing a storytelling narrative focused on
+#'  humanitarian data.
 #'
 #' @importFrom ggplot2 ggplot_build
-#' @importFrom dplyr mutate mutate_if select
-#' @importFrom stringr str_c str_to_lower
-#' @importFrom ellmer chat_openai chat_google_gemini chat_anthropic chat_ollama
+#' @importFrom dplyr mutate_if
+#' @importFrom utils capture.output head
+#' @importFrom ellmer chat_openai chat_google_gemini chat_anthropic chat_ollama chat_azure_openai
 #' @export
-generate_plot_story <- function(plot, max_tokens = 300, provider = NULL, model = NULL) {
-    # Extract plot data (first layer) and truncate
-    plot_data <- tryCatch(
-        {
-            ggplot2::ggplot_build(plot)$data[[1]] |>
-                dplyr::mutate_if(is.numeric, round, 2) |>
-                head(30)
-        },
-        error = function(e) {
-            warning("Could not extract data from plot: ", e$message)
-            return(NULL)
-        }
-    )
+generate_plot_story <- function(plot, 
+                                max_tokens = 30,
+                                provider = NULL,
+                                model = NULL,
+                                clean_response = TRUE) {
+  
+  # Extract plot data (first layer) and truncate
+  plot_data <- ggplot2::ggplot_build(plot)$data[[1]] |>
+    dplyr::mutate_if(is.numeric, round, 2) |>
+    head(30)
+  plot_data_text <- capture.output(print(plot_data))
+  
+  # Extract title, subtitle, caption
+  labels <- plot$labels
+  title    <- if (!is.null(labels$title))    labels$title    else ""
+  subtitle <- if (!is.null(labels$subtitle)) labels$subtitle else ""
+  caption  <- if (!is.null(labels$caption))  labels$caption  else ""
+  
+  # Extract mapping aesthetics
+  mapping_info <- if (!is.null(plot$mapping)) {
+    mapping_text <- capture.output(print(plot$mapping))
+    paste("Global mapping:", paste(mapping_text, collapse = " "))
+  } else {
+    "No global mapping defined"
+  }
 
-    if (is.null(plot_data)) {
-        return("Could not analyze plot data.")
+  # Extract layer-specific mappings
+  layer_mappings <- sapply(plot$layers, function(layer) {
+    if (!is.null(layer$mapping)) {
+      paste("Layer mapping:", capture.output(print(layer$mapping)))
+    } else {
+      "No layer-specific mapping"
     }
-
-    plot_data_text <- capture.output(print(plot_data))
-
-    # Extract title, subtitle, caption
-    labels <- plot$labels
-    title <- if (!is.null(labels$title)) labels$title else ""
-    subtitle <- if (!is.null(labels$subtitle)) labels$subtitle else ""
-    caption <- if (!is.null(labels$caption)) labels$caption else ""
-
-    # Detect geoms used
-    geoms <- tryCatch(
-        {
-            unique(sapply(plot$layers, function(layer) class(layer$geom)[1]))
-        },
-        error = function(e) ""
-    )
-    geoms_text <- paste(geoms, collapse = ", ")
-
-    # Build prompt
-    system_prompt <- paste0(
-        "You are an expert Information Management Officer and Protection Officer. ",
-        "Your role is to interpret humanitarian data visualizations and provide clear, insightful narratives. ",
-        "Consider the context of all possible plots in the country and region flat files to provide a holistic view."
-    )
-    prompt <- paste0(
-        "Title: ", title, "\n",
-        "Subtitle: ", subtitle, "\n",
-        "Caption: ", caption, "\n\n",
-        "Data (first 30 rows):\n", paste(plot_data_text, collapse = "\n"),
-        "Consider the type of plot geoms used: ", geoms_text, ".",
-        "\n\nWrite a story in plain English, up to about ", max_tokens, " tokens."
-    )
-
-    # Auto-detect provider if not specified
-    if (is.null(provider)) {
-        if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
-            provider <- "openai"
-        } else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
-            provider <- "gemini"
-        } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
-            provider <- "anthropic"
-        } else {
-            warning("No supported API key found (OPENAI, GEMINI, ANTHROPIC). Returning placeholder text.")
-            return("AI narrative generation skipped (no API key found).")
-        }
-    }
-
-    provider <- tolower(provider)
-
-    # Set default models if not provided
-    if (is.null(model)) {
-        model <- switch(provider,
-            openai = "gpt-4o-mini",
-            gemini = "gemini-2.0-flash",
-            anthropic = "claude-3-5-sonnet-latest",
-            ollama = "phi3:latest",
-            {
-                warning("Invalid provider specified. Returning placeholder text.")
-                return("AI narrative generation skipped (invalid provider).")
-            }
-        )
-    }
-
-    # Initialize chat object
-    chat <- tryCatch(
-        {
-            switch(provider,
-                openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
-                gemini = ellmer::chat_google_gemini(
-                    system_prompt = system_prompt,
-                    model = model
-                ),
-                anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
-                ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
-                stop("Invalid provider")
-            )
-        },
-        error = function(e) {
-            warning("Failed to initialize chat provider: ", e$message)
-            return(NULL)
-        }
-    )
-
-    if (is.null(chat)) {
-        return("AI narrative generation failed (chat init error).")
-    }
-
-    # Send prompt and get response
-    response <- tryCatch(
-        {
-            chat$chat(prompt)
-        },
-        error = function(e) {
-            warning("LLM chat failed: ", e$message)
-            return("AI narrative generation failed (API error).")
-        }
-    )
-
-    return(response)
-}
-```
-
-```{r examples-generate_plot_story}
-library(ggplot2)
-p <- ggplot(mtcars, aes(wt, mpg)) +
-    geom_point() +
-    labs(title = "Car Weight vs MPG")
-# Only run if API key is present
-if (Sys.getenv("OPENAI_API_KEY") != "") {
-    story <- generate_plot_story(p, provider = "openai")
-    message(story)
-}
-```
-
-```{r tests-generate_plot_story}
-test_that("generate_plot_story handles missing keys gracefully", {
-    # Mock Sys.getenv to return empty
-    withr::with_envvar(c("OPENAI_API_KEY" = ""), {
-        p <- ggplot2::ggplot(mtcars, ggplot2::aes(wt, mpg)) +
-            ggplot2::geom_point()
-        res <- generate_plot_story(p)
-        expect_match(res, "skipped")
+  })
+  layer_mappings_text <- paste(unique(layer_mappings), collapse = "; ")
+  
+  # Detect scales and transformations
+  scale_info <- if (!is.null(plot$scales$scales) && length(plot$scales$scales) > 0) {
+    scale_types <- sapply(plot$scales$scales, function(scale) {
+      paste(class(scale)[1], "scale (", scale$aesthetics[1], ")")
     })
+    paste("Scale transformations:", paste(unique(scale_types), collapse = ", "))
+  } else {
+    "No custom scale transformations detected"
+  }
+  
+  # Detect geoms used
+  geoms <- unique(sapply(plot$layers, function(layer) class(layer$geom)[1]))
+  geoms_text <- paste(geoms, collapse = ", ")
+  
+  system_prompt <- paste0(
+    "You are a humanitarian data analysis expert, working for UNHCR and specialised in Statistics on Forced Displacement. Your role is to: \n",
+    "1. Extract, from a given dataset and its visualization parameters, key insights with quotable and specific data points \n",
+    "2. Create compelling, accessible narratives tailored for a humanitarian proposal writer audience \n",
+    "3. Highlight patterns, trends, and implications to consider when looking for funding opportunities \n",
+    "4. Adapt interpretation depth based on available data and context \n",
+    "5. Use clear, plain language with appropriate practical recommendations \n\n",
+    
+    "CRITICAL INSTRUCTIONS:\n",
+    "- DO NOT include any thinking tags like <think> or </think> in your response\n",
+    "- DO NOT use markdown formatting, asterisks, or special characters\n",
+    "- Provide ONLY the final narrative text\n",
+    "- Your response should be clean plain text ready for display\n\n"
+    
+  )
+  
+  # Build enhanced prompt
+  prompt <- paste0(
+    "VISUALIZATION CONTEXT:\n",
+    "Consider what each mapped variable represents and any data transformations applied.\n\n",
+    "Title: ", title, "\n",
+    "Subtitle: ", subtitle, "\n", 
+    "Caption: ", caption, "\n",
+    "Chart type(s): ", geoms_text, "\n",
+    "Data mappings: ", mapping_info, "\n",
+    "Layer mappings: ", layer_mappings_text, "\n", 
+    "Scales: ", scale_info, "\n\n",
+    
+    "Use the following DATA:\n", paste(plot_data_text, collapse = "\n"), "\n\n",
+    
+    "TASK: Create a fund raising analysis using the provided data and visualization parameters.\n",
+    
+    "ADAPTIVE CONSTRAINTS:\n",
+    "- Important! Maximum length for the generated output: ", max_tokens, " tokens\n",
+    "- Prioritize clarity over completeness\n",
+    "- Focus on 2-3 key insights if space is limited\n",
+    "- Use concise but impactful language\n",
+    "- IMPORTANT: Provide only clean text output without any thinking tags or markdown\n\n"
+    
+  )
+  
+  # Auto-detect provider if not specified
+  if (is.null(provider)) {
+    # Check for Azure-specific environment variables
+    if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_)) &&
+        !is.na(Sys.getenv("AZURE_OPENAI_API_KEY", unset = NA_character_))) {
+      provider <- "azure"
+    } else if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
+      provider <- "openai"
+    } else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
+      provider <- "gemini"
+    } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
+      provider <- "anthropic"
+    } else {
+      stop("No supported API key found. Set AZURE_OPENAI_ENDPOINT/KEY, OPENAI_API_KEY, GEMINI_API_KEY,
+           ANTHROPIC_API_KEY, or install and set it to a local OLLAMA")
+    }
+  }
+  
+  provider <- tolower(provider)
+  
+  # Set default models if not provided
+  if (is.null(model)) {
+    model <- switch(
+      provider,
+      openai = "gpt-4o-mini",
+      gemini = "gemini-2.5-flash",
+      anthropic = "claude-3-5-sonnet-20241022",
+      ollama = "deepseek-r1",
+      azure = "gpt-4", # Placeholder: Must be a valid deployment name
+      stop("Invalid provider specified. Choose from 
+           'openai', 'gemini', 'anthropic', 'ollama', 'azure'.")
+    )
+  }
+  
+  # Initialize chat object
+  chat <- switch(
+    provider,
+    openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
+    
+    # Azure OpenAI using the dedicated function and explicit environment variable checks
+    azure = {
+      # Fetch required environment variables
+      azure_key <- Sys.getenv("AZURE_OPENAI_API_KEY")
+      azure_endpoint <- Sys.getenv("AZURE_OPENAI_ENDPOINT")
+      azure_version <- Sys.getenv("AZURE_OPENAI_API_VERSION")
+      
+      # VALIDATION: Check if any required variable is unset (returns "")
+      if (azure_key == "" || azure_endpoint == "" || azure_version == "") {
+        stop("For 'azure' provider, AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, and AZURE_OPENAI_VERSION environment variables must all be set correctly in the R session.")
+      }
+      
+      # Initialize chat object, passing the validated environment variables
+      ellmer::chat_azure_openai(
+        system_prompt = system_prompt,
+        model = model,
+        api_version = azure_version,
+        endpoint = azure_endpoint,
+        api_key = azure_key
+      )
+    },
+    
+    gemini = ellmer::chat_google_gemini(
+      model = model,
+      system_prompt = system_prompt,
+      base_url = "https://generativelanguage.googleapis.com/v1beta/",
+      api_key = Sys.getenv("GEMINI_API_KEY")),
+    
+    anthropic = ellmer::chat_anthropic(
+      model = model, 
+      system_prompt = system_prompt),
+    
+    ollama = ellmer::chat_ollama(
+      model = model,
+      system_prompt = system_prompt),
+    
+    stop(
+      "Invalid provider specified. Choose from
+         'openai', 'gemini', 'anthropic', 'ollama', 'azure'."
+    )
+  )
+  
+  # Send prompt and get response
+  response <- chat$chat(prompt)
+  
+  # Clean response if requested
+  if (clean_response) {
+    response <- clean_llm_response(response)
+  }
+  
+  return(response)
+}
+
+```
+  
+```{r example-generate_plot_story}
+
+library(ggplot2)
+p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
+   geom_point() +
+    unhcrthemes::theme_unhcr(grid = "Y", axis = "X", axis_title = FALSE) +
+   labs(title = "Vehicle Efficiency",
+        subtitle = "Fuel consumption vs weight",
+        caption = "Source: mtcars dataset")
+
+generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
+
+story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
+# To use as subtitle:
+p + ggplot2::labs(subtitle = story)
+```
+  
+```{r tests-generate_plot_story}
+test_that("generate_plot_story works", {
+  expect_true(inherits(generate_plot_story, "function")) 
 })
 ```
 
+
+
+
+
+
 # Report Rendering
 
-```{r function-render_country_report}
-#' Render Country Report
-#'
-#' Renders a Quarto report for a specific country and year.
-#'
-#' @param country_iso3 ISO3 code of the country (e.g., "COL").
-#' @param year Numeric year.
-#' @param output_dir Directory to save the report.
-#' @param output_file Filename for the report.
-#'
-#' @importFrom quarto quarto_render
-#' @importFrom tools file_path_sans_ext
+ 
+## slugify
+
+```{r function-slugify}
+#' slugify
+#' 
+#' Convert string to slug
+#' 
+#' @param x the string
+#' 
+#' @return slugified string
+#' @importFrom stringr str_to_lower str_replace_all str_remove_all str_squish
+#' @importFrom stringi stri_enc_toutf8
 #' @export
-render_country_report <- function(country_iso3, year, output_dir = ".", output_file = NULL) {
-    template_path <- system.file("templates", "country_report.qmd", package = "auto.report") # Adjust package name if needed
-
-    # Fallback for dev mode if package not installed
-    if (template_path == "") {
-        template_path <- file.path("inst", "templates", "country_report.qmd")
-    }
-
-    if (!file.exists(template_path)) {
-        stop("Template file not found at: ", template_path)
-    }
-
-    if (is.null(output_file)) {
-        output_file <- paste0("report_", country_iso3, "_", year, ".html")
-    }
-
-    # Ensure output directory exists
-    if (!dir.exists(output_dir)) {
-        dir.create(output_dir, recursive = TRUE)
-    }
-
-    # Copy template to output directory to avoid writing to package dir
-    temp_template <- file.path(output_dir, "country_report.qmd")
-    file.copy(template_path, temp_template, overwrite = TRUE)
-
-    # Render the copy
-    quarto::quarto_render(
-        input = temp_template,
-        output_file = output_file,
-        execute_params = list(
-            country_iso3 = country_iso3,
-            year = year,
-            package_path = getwd() # Pass current working directory as package root
-        )
-    )
-
-    # Clean up template copy
-    file.remove(temp_template)
-
-    return(file.path(output_dir, output_file))
+slugify <- function(x) {
+  x |>
+    stringi::stri_enc_toutf8() |>
+    # Remove extra whitespace first
+    stringr::str_squish() |>
+    # Convert to lowercase
+    stringr::str_to_lower() |>
+    # Replace accented characters with their ASCII equivalents
+    stringr::str_replace_all("[àáâãäå]", "a") |>
+    stringr::str_replace_all("[èéêë]", "e") |>
+    stringr::str_replace_all("[ìíîï]", "i") |>
+    stringr::str_replace_all("[òóôõöø]", "o") |>
+    stringr::str_replace_all("[ùúûü]", "u") |>
+    stringr::str_replace_all("[ñ]", "n") |>
+    stringr::str_replace_all("[ç]", "c") |>
+    stringr::str_replace_all("[ýÿ]", "y") |>
+    stringr::str_replace_all("[ž]", "z") |>
+    # Remove all non-alphanumeric characters except spaces, underscores, AND hyphens
+    stringr::str_replace_all("[^a-z0-9\\s_-]", "") |>
+    # Replace spaces and underscores with hyphens
+    stringr::str_replace_all("[\\s_]+", "-") |>
+    # Remove consecutive hyphens
+    stringr::str_replace_all("-+", "-") |>
+    # Remove leading/trailing hyphens
+    stringr::str_remove_all("^-|-$")
 }
+```
+  
+```{r example-slugify}
+strings <- c("Café au Lait", "Niño Español", "Data_Science_Project", "--test--string--")
+slugify(strings)
+```
+  
+```{r tests-slugify}
+test_that("slugify works", {
+  expect_true(inherits(slugify, "function")) 
+})
+```
+  
+  
+  
+## Generate Section Summary
+   
+  
+```{r function-generate_section_summary}
+#' Generate Section Summary from Plot Stories
+#'
+#' Aggregates individual plot stories into a cohesive section summary.
+#'
+#' @param stories A character vector of stories generated from plots within the section.
+#' @param section_name The title of the section (e.g., "Population Overview").
+#' @param provider Optional provider (openai, gemini, anthropic). Auto-detected if NULL.
+#' @param model Optional model name.
+#' @param max_tokens Max tokens for the summary.
+#'
+#' @return A character string containing the section summary.
+#' @export
+#' @examples
+#' \dontrun{
+#' stories <- c("Story 1...", "Story 2...")
+#' summary <- generate_section_summary(stories, "Population")
+#' }
+generate_section_summary <- function(stories,
+                                     section_name,
+                                     provider = NULL,
+                                     model = NULL,
+                                     max_tokens = 400) {
+  # Graceful degradation if no stories or empty
+  valid_stories <- stories[!is.na(stories) &
+                             stories != "" & !grepl("AI narrative generation skipped", stories)]
+  
+  if (length(valid_stories) == 0) {
+    return(paste0("No AI insights available for ", section_name, "."))
+  }
+  
+  combined_text <- paste(valid_stories, collapse = "\n\n")
+  
+  system_prompt <- paste0(
+    "You are an expert Protection Officer and Reporting Officer. ",
+    "Synthesize the provided plot narratives into a cohesive section summary for a humanitarian report. ",
+    "Focus on key trends, protection risks, and actionable insights."
+  )
+  
+  prompt <- paste0(
+    "Section: ",
+    section_name,
+    "\n\n",
+    "Plot Narratives:\n",
+    combined_text,
+    "\n\n",
+    "Write a concise summary of this section (approx ",
+    max_tokens,
+    " tokens)."
+  )
+  
+  # Auto-detect provider if not specified
+  if (is.null(provider)) {
+    if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
+      provider <- "openai"
+    } else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
+      provider <- "gemini"
+    } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
+      provider <- "anthropic"
+    } else {
+      return(paste0("AI summary for ", section_name, " skipped (no API key)."))
+    }
+  }
+  
+  provider <- tolower(provider)
+  
+  if (is.null(model)) {
+    model <- switch(
+      provider,
+      openai = "gpt-4o-mini",
+      gemini = "gemini-2.0-flash",
+      anthropic = "claude-3-5-sonnet-latest",
+      ollama = "phi3:latest",
+      return("AI summary skipped (invalid provider).")
+    )
+  }
+  
+  chat <- tryCatch({
+    switch(
+      provider,
+      openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
+      gemini = ellmer::chat_google_gemini(system_prompt = system_prompt, model = model),
+      anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
+      ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
+      stop("Invalid provider")
+    )
+  }, error = function(e)
+    NULL)
+  
+  if (is.null(chat)) {
+    return("AI summary failed (chat init).")
+  }
+  
+  response <- tryCatch(
+    chat$chat(prompt),
+    error = function(e)
+      "AI summary failed (API error)."
+  )
+  
+  return(response)
+}
+```
+  
+```{r example-generate_section_summary}
+#generate_section_summary()
+```
+  
+```{r tests-generate_section_summary}
+test_that("generate_section_summary works", {
+  expect_true(inherits(generate_section_summary, "function")) 
+})
+```
+ 
+## Generate Report Summary
+    
+  
+```{r function-generate_report_summary}
+#' Generate Report Executive Summary
+#'
+#' Aggregates section summaries into a final executive summary.
+#'
+#' @param section_summaries A named list or character vector of section summaries.
+#' @param country_name Name of the country.
+#' @param year Year of the report.
+#' @param provider Optional provider.
+#' @param model Optional model.
+#' @param max_tokens Max tokens.
+#'
+#' @return A character string containing the executive summary.
+#' @export
+#' @examples
+#' \dontrun{
+#' sections <- list("Population" = "Summary...", "Asylum" = "Summary...")
+#' report_summary <- generate_report_summary(sections, "Colombia", 2022)
+#' }
+generate_report_summary <- function(section_summaries,
+                                    country_name,
+                                    year,
+                                    provider = NULL,
+                                    model = NULL,
+                                    max_tokens = 400) {
+  valid_summaries <- section_summaries[!is.na(section_summaries) &
+                                         !grepl("AI summary.*skipped", section_summaries)]
+  
+  if (length(valid_summaries) == 0) {
+    return("No AI executive summary available.")
+  }
+  
+  combined_text <- paste(names(valid_summaries), ":\n", valid_summaries, collapse = "\n\n")
+  
+  system_prompt <- paste0(
+    "You are an expert Protection Officer and Reporting Officer. ",
+    "Create an executive summary for a humanitarian report based on the provided section summaries. ",
+    "Highlight the most critical humanitarian needs, protection concerns, and key figures."
+  )
+  
+  prompt <- paste0(
+    "Country: ",
+    country_name,
+    "\n",
+    "Year: ",
+    year,
+    "\n\n",
+    "Section Summaries:\n",
+    combined_text,
+    "\n\n",
+    "Write an executive summary for the report (approx ",
+    max_tokens,
+    " tokens)."
+  )
+  
+  # Auto-detect provider if not specified
+  if (is.null(provider)) {
+    if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
+      provider <- "openai"
+    } else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
+      provider <- "gemini"
+    } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
+      provider <- "anthropic"
+    } else {
+      return("Executive summary skipped (no API key).")
+    }
+  }
+  
+  provider <- tolower(provider)
+  
+  if (is.null(model)) {
+    model <- switch(
+      provider,
+      openai = "gpt-4o-mini",
+      gemini = "gemini-2.0-flash",
+      anthropic = "claude-3-5-sonnet-latest",
+      ollama = "phi3:latest",
+      return("AI summary skipped (invalid provider).")
+    )
+  }
+  
+  chat <- tryCatch({
+    switch(
+      provider,
+      openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
+      gemini = ellmer::chat_google_gemini(system_prompt = system_prompt, model = model),
+      anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
+      ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
+      stop("Invalid provider")
+    )
+  }, error = function(e)
+    NULL)
+  
+  if (is.null(chat)) {
+    return("AI summary failed (chat init).")
+  }
+  
+  response <- tryCatch(
+    chat$chat(prompt),
+    error = function(e)
+      "AI summary failed (API error)."
+  )
+  
+  return(response)
+}
+```
+  
+```{r example-generate_report_summary}
+#generate_report_summary()
+```
+  
+```{r tests-generate_report_summary}
+test_that("generate_report_summary works", {
+  expect_true(inherits(generate_report_summary, "function")) 
+})
+```
+      
+          
+
+---
+
+
+
+# Refresh package
+<!--
+# There can be development actions
+
+Create a chunk with 'development' actions
+
+- The chunk needs to be named `development` or `dev`
+- It contains functions that are used for package development only
+- Note that you may want to store most of these functions in the 0-dev_history.Rmd file
+
+These are only included in the present flat template file, their content will not be part of the package anywhere else.
+-->
+
+```{r development-inflate, eval=FALSE}
+# Keep eval=FALSE to avoid infinite loop in case you hit the knit button
+# Execute in the console directly
+
+#remotes::install_github("thinkr-open/checkhelper")
+# checkhelper::print_globals()
+ # tools::showNonASCIIfile("dev/flat_ai_reporting.Rmd")
+fusen::inflate(flat_file = "dev/flat_ai_reporting.Rmd", vignette_name = "Analysis with AI", overwrite = "yes")
+pkgdown::build_site()
 ```

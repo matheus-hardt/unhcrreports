@@ -2,9 +2,7 @@
 
 ### All vignettes
 
-- [AI
-  Reporting](https://matheus-hardt.github.io/unhcrreports/articles/ai-reporting.md):
-- [Country
-  Plots](https://matheus-hardt.github.io/unhcrreports/articles/country-plots.md):
-- [Region
-  Plots](https://matheus-hardt.github.io/unhcrreports/articles/region-plots.md):
+- [AI Powered
+  Reports](https://matheus-hardt.github.io/unhcrreports/articles/ai-powered-reports.md):
+- [Analysis with
+  AI](https://matheus-hardt.github.io/unhcrreports/articles/analysis-with-ai.md):

@@ -2,15 +2,23 @@ flat_ai_reporting.Rmd:
   path: dev/flat_ai_reporting.Rmd
   state: active
   R:
+  - R/clean_llm_response.R
   - R/generate_plot_story.R
-  - R/render_country_report.R
-  tests: tests/testthat/test-generate_plot_story.R
-  vignettes: vignettes/ai-reporting.Rmd
+  - R/generate_report_summary.R
+  - R/generate_section_summary.R
+  - R/slugify.R
+  tests:
+  - tests/testthat/test-clean_llm_response.R
+  - tests/testthat/test-generate_plot_story.R
+  - tests/testthat/test-slugify.R
+  - tests/testthat/test-generate_section_summary.R
+  - tests/testthat/test-generate_report_summary.R
+  vignettes: vignettes/analysis-with-ai.Rmd
   inflate:
     flat_file: dev/flat_ai_reporting.Rmd
-    vignette_name: AI Reporting
-    open_vignette: false
-    check: false
+    vignette_name: Analysis with AI
+    open_vignette: true
+    check: true
     document: true
     overwrite: 'yes'
     clean: ask
@@ -94,5 +102,20 @@ flat_plots_region.Rmd:
     check: false
     document: true
     overwrite: 'yes'
+    clean: ask
+    codecov: false
+flat_reports.Rmd:
+  path: dev/flat_reports.Rmd
+  state: active
+  R: R/generate_report.R
+  tests: tests/testthat/test-regional-report.R
+  vignettes: vignettes/ai-powered-reports.Rmd
+  inflate:
+    flat_file: dev/flat_reports.Rmd
+    vignette_name: AI Powered Reports
+    open_vignette: true
+    check: false
+    document: true
+    overwrite: ask
     clean: ask
     codecov: false

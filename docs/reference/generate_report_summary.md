@@ -11,7 +11,7 @@ generate_report_summary(
   year,
   provider = NULL,
   model = NULL,
-  max_tokens = 600
+  max_tokens = 400
 )
 ```
 
@@ -44,3 +44,13 @@ generate_report_summary(
 ## Value
 
 A character string containing the executive summary.
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+sections <- list("Population" = "Summary...", "Asylum" = "Summary...")
+report_summary <- generate_report_summary(sections, "Colombia", 2022)
+} # }
+#generate_report_summary()
+```

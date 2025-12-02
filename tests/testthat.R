@@ -1,4 +1,5 @@
 library(testthat)
 library(unhcrreports)
 
-test_check("auto.report")
+test_check("unhcrreports")
+

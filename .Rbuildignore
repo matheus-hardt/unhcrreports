@@ -1,0 +1,16 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^unhcrreports\.Rproj$
+usethis::use_data_raw()
+^dev$
+^dev\.R$
+^dev\.Rmd$
+^LICENSE\.md$
+^README\.Rmd$
+^CODE_OF_CONDUCT\.md$
+^\.github$
+^docs$
+^data-raw$
+^_pkgdown\.yml$
+^pkgdown$
+^Report
