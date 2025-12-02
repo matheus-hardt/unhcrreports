@@ -9,7 +9,7 @@ format:
     theme: cosmo
 params:
   country_iso3: "COL"
-  year: 2022
+  year: 2024
   gp_provider: "openai"
   gp_model: "gpt-4o-mini"
   package_path: NULL
@@ -20,7 +20,8 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 library(ggplot2)
 library(dplyr)
 library(ellmer)
-# library(unhcrreports) # Uncomment when package is built
+library(unhcrdatapackage)
+library(unhcrreports) 
 
 # Fix font issue on Windows
 update_geom_defaults("text", list(family = "sans"))
