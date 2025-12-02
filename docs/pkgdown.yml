@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   ai-powered-reports: ai-powered-reports.html
   analysis-with-ai: analysis-with-ai.html
-last_built: 2025-12-02T11:03Z
+last_built: 2025-12-02T13:55Z
 urls:
   reference: https://matheus-hardt.github.io/unhcrreports/reference
   article: https://matheus-hardt.github.io/unhcrreports/articles

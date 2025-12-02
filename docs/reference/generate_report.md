@@ -6,7 +6,13 @@ of countries, generating a report file for each.
 ## Usage
 
 ``` r
-generate_report(type = "country", year = 2024, name = NULL)
+generate_report(
+  type = "country",
+  year = 2024,
+  name = NULL,
+  gp_provider = "azure",
+  gp_model = "gpt-4.1-mini"
+)
 ```
 
 ## Arguments
@@ -23,6 +29,14 @@ generate_report(type = "country", year = 2024, name = NULL)
 
   name of donor recipient or destination if NULL batch process them
 
+- gp_provider:
+
+  for instance "azure"
+
+- gp_model:
+
+  for instance "gpt-4.1-mini"
+
 ## Value
 
 links to genrated reports.
@@ -30,7 +44,7 @@ links to genrated reports.
 ## Examples
 
 ``` r
- # unhcrreports::generate_report(type = "country", name = "Brazil" )
+ # unhcrreports::generate_report(type = "country", name = "BRA", gp_provider ="azure", gp_model = "gpt-4.1-mini" )
 # linkcountryreport <- generate_report(type = "country" )
 # dput(linkcountryreport )
 

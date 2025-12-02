@@ -95,16 +95,17 @@ generate_report <- function(type="country",
         input = template_path,
         output_file = output_filename,
         # Pass parameters to the YAML header and R code chunks
-        execute_params = list(name = this,
+        execute_params = list(
             country_iso3 = this,
             year = year,
             gp_provider = gp_provider,
             gp_model = gp_model )
       )
       # Move the file
-     file.rename(from = here::here( system.file(paste0("templatees/", type),
+     file.rename(from = 
+          system.file(
+            paste0("templates/", type, "_report.html"),
                                 package = "unhcrreports"),
-                                output_filename ),
                  to = output_filepath)
       message("Successfully generated: ", output_filename)
     # Link

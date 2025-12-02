@@ -46,7 +46,13 @@ countries, generating a report file for each.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_report</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"country"</span>, year <span class="op">=</span> <span class="fl">2024</span>, name <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_report</span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"country"</span>,</span>
+<span>  year <span class="op">=</span> <span class="fl">2024</span>,</span>
+<span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gp_provider <span class="op">=</span> <span class="st">"azure"</span>,</span>
+<span>  gp_model <span class="op">=</span> <span class="st">"gpt-4.1-mini"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -64,6 +70,14 @@ countries, generating a report file for each.</p>
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
 <dd><p>name of  donor recipient or destination if NULL batch process them</p></dd>
 
+
+<dt id="arg-gp-provider">gp_provider<a class="anchor" aria-label="anchor" href="#arg-gp-provider"></a></dt>
+<dd><p>for instance "azure"</p></dd>
+
+
+<dt id="arg-gp-model">gp_model<a class="anchor" aria-label="anchor" href="#arg-gp-model"></a></dt>
+<dd><p>for instance "gpt-4.1-mini"</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -72,7 +86,7 @@ countries, generating a report file for each.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span> <span class="co"># unhcrreports::generate_report(type = "country", name = "Brazil" )</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span> <span class="co"># unhcrreports::generate_report(type = "country", name = "BRA", gp_provider ="azure", gp_model = "gpt-4.1-mini" )</span></span></span>
 <span class="r-in"><span><span class="co"># linkcountryreport &lt;- generate_report(type = "country" )</span></span></span>
 <span class="r-in"><span><span class="co"># dput(linkcountryreport )</span></span></span>
 <span class="r-in"><span></span></span>

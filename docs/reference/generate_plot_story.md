@@ -82,7 +82,7 @@ p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
         caption = "Source: mtcars dataset")
 
 generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
-#> [1] "Lighter vehicles consume significantly less fuel than heavier ones. A tiny car like Car20, weighing only 1.83 tons, gets much better gas mileage than a heavy pickup truck equivalent such as Car7 weighing over five tons and achieving just 10-15 mpg."
+#> [1] "Heavier displaced persons vehicles consume more fuel relative to their lighter counterparts. Points like (5.42,10.4), representing significant weight increase with a sharp drop in MPG, are visually prominent and costly for aid operations. Even moderately heavier average weights shown here consistently result in lower fuel efficiency levels across the data points. Efficiency improvements through lightweight vehicle choices offer clear operational advantages during displacement emergencies, reducing both fuel use costs and environmental impact."
 
 story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
 # To use as subtitle:

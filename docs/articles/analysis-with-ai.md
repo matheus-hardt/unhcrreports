@@ -35,7 +35,7 @@ p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
         caption = "Source: mtcars dataset")
 
 generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
-#> [1] "Heavier cars consistently show lower fuel efficiency in our dataset, with a clear negative relationship shown by the trend of points. For instance, the most efficient car (18/row 18), consuming only 6.3 liters per 100 km equivalent, is paired with low weight. Conversely, inefficient models like those over 5 tons often average double-digit fuel consumption, highlighting a direct link where increased displacement directly reduces mileage potential."
+#> [1] "Higher vehicle efficiency is linked directly to lower weight: Cars weighing over 4 tons average just 16 mpg fuel economy."
 
 story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
 # To use as subtitle:

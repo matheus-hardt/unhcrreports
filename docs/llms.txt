@@ -25,7 +25,7 @@ devtools::install_github("matheus-hardt/unhcrreports")
 # Install from local source
 devtools::install(".")
 ## Main function
-unhcrreports::generate_report(type = "country", name = "Brazil", year = 2024 )
+unhcrreports::generate_report(type = "country", name = "BRA", gp_provider ="azure", gp_model = "gpt-4.1-mini" )
 ```
 
 ## Setup

@@ -108,7 +108,7 @@
 <span>        caption <span class="op">=</span> <span class="st">"Source: mtcars dataset"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/generate_plot_story.html">generate_plot_story</a></span><span class="op">(</span><span class="va">p</span>, provider <span class="op">=</span> <span class="st">"ollama"</span>, model <span class="op">=</span> <span class="st">"deepseek-r1"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Heavier cars consistently show lower fuel efficiency in our dataset, with a clear negative relationship shown by the trend of points. For instance, the most efficient car (18/row 18), consuming only 6.3 liters per 100 km equivalent, is paired with low weight. Conversely, inefficient models like those over 5 tons often average double-digit fuel consumption, highlighting a direct link where increased displacement directly reduces mileage potential."</span></span>
+<span><span class="co">#&gt; [1] "Higher vehicle efficiency is linked directly to lower weight: Cars weighing over 4 tons average just 16 mpg fuel economy."</span></span>
 <span></span>
 <span><span class="va">story</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generate_plot_story.html">generate_plot_story</a></span><span class="op">(</span><span class="va">p</span>, provider <span class="op">=</span> <span class="st">"azure"</span>, model <span class="op">=</span> <span class="st">"gpt-4.1-mini"</span>, max_tokens <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span>
 <span><span class="co"># To use as subtitle:</span></span>

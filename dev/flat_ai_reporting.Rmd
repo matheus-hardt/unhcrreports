@@ -386,7 +386,7 @@ test_that("generate_plot_story works", {
 # Report Rendering
 
  
-# slugify
+## slugify
 
 ```{r function-slugify}
 #' slugify
@@ -556,7 +556,7 @@ test_that("generate_section_summary works", {
 })
 ```
  
-# Generate Report Summary
+## Generate Report Summary
     
   
 ```{r function-generate_report_summary}
