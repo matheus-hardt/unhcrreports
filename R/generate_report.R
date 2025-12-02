@@ -8,6 +8,8 @@
 #' @param type either donor recipient or destination.
 #' @param name name of  donor recipient or destination if NULL batch process them
 #' @param year year
+#' @param gp_provider for instance "azure"
+#' @param gp_model for instance "gpt-4.1-mini"
 #'
 #' @importFrom dplyr filter select pull
 #' @importFrom quarto quarto_render
@@ -18,7 +20,7 @@
 #'
 #' @export
 #' @examples
-#'  # unhcrreports::generate_report(type = "country", name = "Brazil" )
+#'  # unhcrreports::generate_report(type = "country", name = "BRA", gp_provider ="azure", gp_model = "gpt-4.1-mini" )
 #' # linkcountryreport <- generate_report(type = "country" )
 #' # dput(linkcountryreport )
 #'
@@ -143,7 +145,9 @@
 #'
 generate_report <- function(type="country",
                             year = 2024,
-                            name=NULL) {
+                            name=NULL,
+                            gp_provider ="azure",
+                            gp_model = "gpt-4.1-mini") {
   
   template_path = system.file(paste0("templates/", type,"_report.qmd"), 
                                 package = "unhcrreports")
@@ -199,8 +203,10 @@ generate_report <- function(type="country",
         output_file = output_filename,
         # Pass parameters to the YAML header and R code chunks
         execute_params = list(name = this,
-            country_iso3 = country_iso3,
-            year = year )
+            country_iso3 = this,
+            year = year,
+            gp_provider = gp_provider,
+            gp_model = gp_model )
       )
       # Move the file
      file.rename(from = here::here( system.file(paste0("templatees/", type),

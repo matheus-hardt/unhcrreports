@@ -30,7 +30,7 @@ library(unhcrreports)
 #| warning: no
 #| include: no
 
- # unhcrreports::generate_report(type = "country", name = "Brazil" )
+ # unhcrreports::generate_report(type = "country", name = "BRA", gp_provider ="azure", gp_model = "gpt-4.1-mini" )
 # linkcountryreport <- generate_report(type = "country" )
 # dput(linkcountryreport )
 

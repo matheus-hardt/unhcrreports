@@ -4,7 +4,13 @@
 \alias{generate_report}
 \title{Generate Quarto HTML / PDF Country Factsheets in Batch}
 \usage{
-generate_report(type = "country", year = 2024, name = NULL)
+generate_report(
+  type = "country",
+  year = 2024,
+  name = NULL,
+  gp_provider = "azure",
+  gp_model = "gpt-4.1-mini"
+)
 }
 \arguments{
 \item{type}{either donor recipient or destination.}
@@ -12,6 +18,10 @@ generate_report(type = "country", year = 2024, name = NULL)
 \item{year}{year}
 
 \item{name}{name of  donor recipient or destination if NULL batch process them}
+
+\item{gp_provider}{for instance "azure"}
+
+\item{gp_model}{for instance "gpt-4.1-mini"}
 }
 \value{
 links to genrated reports.
@@ -21,7 +31,7 @@ This function renders the 'Country_Factsheet' Quarto template for a list of
 countries, generating a report file for each.
 }
 \examples{
- # unhcrreports::generate_report(type = "country", name = "Brazil" )
+ # unhcrreports::generate_report(type = "country", name = "BRA", gp_provider ="azure", gp_model = "gpt-4.1-mini" )
 # linkcountryreport <- generate_report(type = "country" )
 # dput(linkcountryreport )
 

@@ -1,4 +1,4 @@
-# {unhcrreports}: Automated Displacement Statictics Analysis <img src="man/figures/logo.png" align="right" height="139" />
+# {unhcrreports}: Automated Displacement Statictics Analysis <img src="man/figures/logo.png" align="right" height="139" />  
 
 > [!IMPORTANT]
 > **Work in Process**: This package is currently under active development.
@@ -18,7 +18,7 @@ devtools::install_github("matheus-hardt/unhcrreports")
 # Install from local source
 devtools::install(".")
 ## Main function
-unhcrreports::generate_report(type = "country", name = "Brazil", year = 2024 )
+unhcrreports::generate_report(type = "country", name = "BRA", gp_provider ="azure", gp_model = "gpt-4.1-mini" )
 
 ```
 
