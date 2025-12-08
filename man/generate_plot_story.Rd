@@ -57,14 +57,15 @@ calling \code{usethis::edit_r_environ()}
 }
 }
 \examples{
-
 library(ggplot2)
 p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
-   geom_point() +
-    unhcrthemes::theme_unhcr(grid = "Y", axis = "X", axis_title = FALSE) +
-   labs(title = "Vehicle Efficiency",
-        subtitle = "Fuel consumption vs weight",
-        caption = "Source: mtcars dataset")
+  geom_point() +
+  unhcrthemes::theme_unhcr(grid = "Y", axis = "X", axis_title = FALSE) +
+  labs(
+    title = "Vehicle Efficiency",
+    subtitle = "Fuel consumption vs weight",
+    caption = "Source: mtcars dataset"
+  )
 
 generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
 

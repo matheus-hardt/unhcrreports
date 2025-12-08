@@ -11,25 +11,27 @@
 #' @export
 #' @examples
 #' response <- "<think>
-#' First, I'm a humanitarian data visualization expert. My role includes extracting insights 
+#' First, I'm a humanitarian data visualization expert. My role includes extracting insights
 #' from visualizations, creating accessible narratives, highlighting patterns relevant to aid
 #' efforts, using clear language with emotional resonance.
-#' Aligning with constraints: Use plain language, be concise and impactful. Don't rehash 
+#' Aligning with constraints: Use plain language, be concise and impactful. Don't rehash
 #' every detail; build narrative depth around 2 key insights maximum in under 30 tokens.
 #' </think>
-#' This visualization tracks a relationship potentially critical for humanitarian logistics: 
+#' This visualization tracks a relationship potentially critical for humanitarian logistics:
 #' higher fuel consumption versus increased weight. 车辆设计"
 #' clean_llm_response(response)
 clean_llm_response <- function(response, keep_punctuation = TRUE) {
-  if (!is.character(response)) return(response)
-  
+  if (!is.character(response)) {
+    return(response)
+  }
+
   # Split into lines
   lines <- strsplit(response, "\n")[[1]]
-  
+
   # Find thinking tag boundaries
   think_start <- which(grepl("<think>", lines, ignore.case = TRUE))
   think_end <- which(grepl("</think>", lines, ignore.case = TRUE))
-  
+
   # Remove ALL lines between thinking tags (inclusive)
   if (length(think_start) > 0 && length(think_end) > 0) {
     remove_indices <- integer(0)
@@ -42,33 +44,33 @@ clean_llm_response <- function(response, keep_punctuation = TRUE) {
       lines <- lines[-remove_indices]
     }
   }
-  
+
   # Combine back
   response <- paste(lines, collapse = " ")
-  
+
   # Remove all non-ASCII characters
   response <- gsub("[^\x20-\x7E]", "", response)
-  
+
   # Remove common LLM artifacts and introductory phrases
   response <- gsub("^(Sure|Certainly|Okay|Here|First).*?(:|\\.)\\s*", "", response, ignore.case = TRUE)
   response <- gsub("^(As an AI|I am an AI|I'm a).*?\\.\\s*", "", response, ignore.case = TRUE)
   response <- gsub("^(My role includes|This includes).*?\\.\\s*", "", response, ignore.case = TRUE)
   response <- gsub("^(Aligning with constraints).*?\\.\\s*", "", response, ignore.case = TRUE)
-  
+
   # Remove markdown formatting
   response <- gsub("\\*\\*|\\*|__|_", "", response)
   response <- gsub("\\[.*?\\]\\(.*?\\)", "", response)
   response <- gsub("#+\\s*", "", response)
   response <- gsub("`{1,3}", "", response)
-  
+
   # Remove excessive whitespace
   response <- gsub("\\s+", " ", response)
   response <- trimws(response)
-  
+
   # If empty after cleaning, provide fallback
   if (nchar(response) == 0) {
     return("Unable to generate story from this visualization.")
   }
-  
+
   return(response)
 }

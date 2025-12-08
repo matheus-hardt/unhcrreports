@@ -34,5 +34,5 @@ Aggregates individual plot stories into a cohesive section summary.
 stories <- c("Story 1...", "Story 2...")
 summary <- generate_section_summary(stories, "Population")
 }
-#generate_section_summary()
+# generate_section_summary()
 }

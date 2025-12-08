@@ -5,9 +5,9 @@
 #' This function takes a ggplot2 object and generates a storytelling narrative
 #' focused on humanitarian insights. It uses the \{ellmer\} package to call
 #' a large or small language model from a supported provider.
-#' 
-#' If you do not have API keys or need to work offline, simply get ollama and 
-#' look at top reasoning models - https://ollama.com/search?c=thinking 
+#'
+#' If you do not have API keys or need to work offline, simply get ollama and
+#' look at top reasoning models - https://ollama.com/search?c=thinking
 #'
 #' Setup:
 #' 1. Install \{ellmer\}: `install.packages("ellmer")`
@@ -21,11 +21,11 @@
 #'    calling `usethis::edit_r_environ()`
 #'
 #' @param plot A `ggplot` object from ggplot2.
-#' @param max_tokens Maximum number of tokens (approximate) 
+#' @param max_tokens Maximum number of tokens (approximate)
 #' for the narrative (default = 30).
-#' @param provider Optional character string specifying the provider. Options 
+#' @param provider Optional character string specifying the provider. Options
 #' include:
-#'   `"openai"`, `"gemini"`, `"anthropic"`, `"ollama"`, `"azure"`. If `NULL`, 
+#'   `"openai"`, `"gemini"`, `"anthropic"`, `"ollama"`, `"azure"`. If `NULL`,
 #'   auto-detect from environment keys.
 #' @param model Optional character string specifying the model name. For Azure,
 #'    this is typically the deployment name. If `NULL`, a default model for the
@@ -42,38 +42,38 @@
 #' @importFrom ellmer chat_openai chat_google_gemini chat_anthropic chat_ollama chat_azure_openai
 #' @export
 #' @examples
-#'
 #' library(ggplot2)
 #' p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
-#'    geom_point() +
-#'     unhcrthemes::theme_unhcr(grid = "Y", axis = "X", axis_title = FALSE) +
-#'    labs(title = "Vehicle Efficiency",
-#'         subtitle = "Fuel consumption vs weight",
-#'         caption = "Source: mtcars dataset")
+#'   geom_point() +
+#'   unhcrthemes::theme_unhcr(grid = "Y", axis = "X", axis_title = FALSE) +
+#'   labs(
+#'     title = "Vehicle Efficiency",
+#'     subtitle = "Fuel consumption vs weight",
+#'     caption = "Source: mtcars dataset"
+#'   )
 #'
 #' generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
 #'
 #' story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
 #' # To use as subtitle:
 #' p + ggplot2::labs(subtitle = story)
-generate_plot_story <- function(plot, 
+generate_plot_story <- function(plot,
                                 max_tokens = 30,
                                 provider = NULL,
                                 model = NULL,
                                 clean_response = TRUE) {
-  
   # Extract plot data (first layer) and truncate
   plot_data <- ggplot2::ggplot_build(plot)$data[[1]] |>
     dplyr::mutate_if(is.numeric, round, 2) |>
     head(30)
   plot_data_text <- capture.output(print(plot_data))
-  
+
   # Extract title, subtitle, caption
   labels <- plot$labels
-  title    <- if (!is.null(labels$title))    labels$title    else ""
+  title <- if (!is.null(labels$title)) labels$title else ""
   subtitle <- if (!is.null(labels$subtitle)) labels$subtitle else ""
-  caption  <- if (!is.null(labels$caption))  labels$caption  else ""
-  
+  caption <- if (!is.null(labels$caption)) labels$caption else ""
+
   # Extract mapping aesthetics
   mapping_info <- if (!is.null(plot$mapping)) {
     mapping_text <- capture.output(print(plot$mapping))
@@ -91,7 +91,7 @@ generate_plot_story <- function(plot,
     }
   })
   layer_mappings_text <- paste(unique(layer_mappings), collapse = "; ")
-  
+
   # Detect scales and transformations
   scale_info <- if (!is.null(plot$scales$scales) && length(plot$scales$scales) > 0) {
     scale_types <- sapply(plot$scales$scales, function(scale) {
@@ -101,57 +101,51 @@ generate_plot_story <- function(plot,
   } else {
     "No custom scale transformations detected"
   }
-  
+
   # Detect geoms used
   geoms <- unique(sapply(plot$layers, function(layer) class(layer$geom)[1]))
   geoms_text <- paste(geoms, collapse = ", ")
-  
+
   system_prompt <- paste0(
-    "You are a humanitarian data analysis expert, working for UNHCR and specialised in Statistics on Forced Displacement. Your role is to: \n",
-    "1. Extract, from a given dataset and its visualization parameters, key insights with quotable and specific data points \n",
-    "2. Create compelling, accessible narratives tailored for a humanitarian proposal writer audience \n",
-    "3. Highlight patterns, trends, and implications to consider when looking for funding opportunities \n",
-    "4. Adapt interpretation depth based on available data and context \n",
-    "5. Use clear, plain language with appropriate practical recommendations \n\n",
-    
-    "CRITICAL INSTRUCTIONS:\n",
-    "- DO NOT include any thinking tags like <think> or </think> in your response\n",
-    "- DO NOT use markdown formatting, asterisks, or special characters\n",
-    "- Provide ONLY the final narrative text\n",
-    "- Your response should be clean plain text ready for display\n\n"
-    
+    "You are a Senior Data Analyst and Reporting Officer for UNHCR, writing for the flagship 'Global Trends' report. ",
+    "Your goal is to interpret data visualizations with the precise, authoritative, and humanitarian tone characteristic of UNHCR official publications.\n\n",
+    "### VOICE AND STYLE GUIDELINES:\n",
+    "1. **Tone:** Objective but impactful. Use professional humanitarian terminology (e.g., 'forcibly displaced', 'people in need of international protection'). Avoid colloquialisms.\n",
+    "2. **Structure:** Start with the headline figure or main trend. Follow with context (increases/decreases, % change). End with implications or drivers if evident.\n",
+    "3. **Key Metrics:** Where data permits, highlight:\n",
+    "   - Year-on-year percentage changes (e.g., 'a 15 per cent increase compared to 2022').\n",
+    "   - Disproportionality (e.g., 'Low- and middle-income countries hosted X per cent...').\n",
+    "   - Ratios (e.g., '1 in X people').\n",
+    "4. **Drivers:** Attribute trends to known major displacement drivers (conflict, violence, human rights violations) if the data relates to specific countries like Sudan, Ukraine, Myanmar, or DRC.\n",
+    "5. **formatting:** Do NOT use 'Introduction' or 'Conclusion' labels. Do NOT use markdown bolding (**text**) excessively. Write in fluid paragraphs.\n\n",
+    "### DATA INTERPRETATION RULES:\n",
+    "- Always cite the specific numbers from the data provided.\n",
+    "- If the trend is rising, use terms like 'surge', 'continued to grow', 'reached a record high'.\n",
+    "- If the trend is flat or falling, contextualize it (e.g., 'remained stable', 'decreased slightly due to...').\n",
+    "- Distinguish clearly between 'Refugees', 'IDPs', and 'Asylum-seekers'.\n"
   )
-  
+
   # Build enhanced prompt
   prompt <- paste0(
-    "VISUALIZATION CONTEXT:\n",
-    "Consider what each mapped variable represents and any data transformations applied.\n\n",
+    "Analyze the following ggplot2 visualization data to create a narrative caption suitable for the UNHCR Global Trends Report.\n\n",
+    "PLOT METADATA:\n",
     "Title: ", title, "\n",
-    "Subtitle: ", subtitle, "\n", 
+    "Subtitle: ", subtitle, "\n",
     "Caption: ", caption, "\n",
-    "Chart type(s): ", geoms_text, "\n",
-    "Data mappings: ", mapping_info, "\n",
-    "Layer mappings: ", layer_mappings_text, "\n", 
+    "Geometries: ", geoms_text, "\n",
+    "Layer mappings: ", layer_mappings_text, "\n",
     "Scales: ", scale_info, "\n\n",
-    
-    "Use the following DATA:\n", paste(plot_data_text, collapse = "\n"), "\n\n",
-    
-    "TASK: Create a fund raising analysis using the provided data and visualization parameters.\n",
-    
-    "ADAPTIVE CONSTRAINTS:\n",
-    "- Important! Maximum length for the generated output: ", max_tokens, " tokens\n",
-    "- Prioritize clarity over completeness\n",
-    "- Focus on 2-3 key insights if space is limited\n",
-    "- Use concise but impactful language\n",
-    "- IMPORTANT: Provide only clean text output without any thinking tags or markdown\n\n"
-    
+    "Use the following DATA SUMMARY (first 30 rows):\n",
+    paste(plot_data_text, collapse = "\n"), "\n\n",
+    "TASK: Write a 2-3 sentence narrative describing the key insight. \n",
+    "CONSTRAINT: Maximum ", max_tokens, " tokens. Focus on the 'So What?'. Use the specific UNHCR style defined in the system prompt."
   )
-  
+
   # Auto-detect provider if not specified
   if (is.null(provider)) {
     # Check for Azure-specific environment variables
     if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_)) &&
-        !is.na(Sys.getenv("AZURE_OPENAI_API_KEY", unset = NA_character_))) {
+      !is.na(Sys.getenv("AZURE_OPENAI_API_KEY", unset = NA_character_))) {
       provider <- "azure"
     } else if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
       provider <- "openai"
@@ -164,40 +158,38 @@ generate_plot_story <- function(plot,
            ANTHROPIC_API_KEY, or install and set it to a local OLLAMA")
     }
   }
-  
+
   provider <- tolower(provider)
-  
+
   # Set default models if not provided
   if (is.null(model)) {
-    model <- switch(
-      provider,
+    model <- switch(provider,
       openai = "gpt-4o-mini",
       gemini = "gemini-2.5-flash",
       anthropic = "claude-3-5-sonnet-20241022",
       ollama = "deepseek-r1",
       azure = "gpt-4", # Placeholder: Must be a valid deployment name
-      stop("Invalid provider specified. Choose from 
+      stop("Invalid provider specified. Choose from
            'openai', 'gemini', 'anthropic', 'ollama', 'azure'.")
     )
   }
-  
+
   # Initialize chat object
-  chat <- switch(
-    provider,
+  chat <- switch(provider,
     openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
-    
+
     # Azure OpenAI using the dedicated function and explicit environment variable checks
     azure = {
       # Fetch required environment variables
       azure_key <- Sys.getenv("AZURE_OPENAI_API_KEY")
       azure_endpoint <- Sys.getenv("AZURE_OPENAI_ENDPOINT")
       azure_version <- Sys.getenv("AZURE_OPENAI_API_VERSION")
-      
+
       # VALIDATION: Check if any required variable is unset (returns "")
       if (azure_key == "" || azure_endpoint == "" || azure_version == "") {
         stop("For 'azure' provider, AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, and AZURE_OPENAI_VERSION environment variables must all be set correctly in the R session.")
       }
-      
+
       # Initialize chat object, passing the validated environment variables
       ellmer::chat_azure_openai(
         system_prompt = system_prompt,
@@ -207,35 +199,33 @@ generate_plot_story <- function(plot,
         api_key = azure_key
       )
     },
-    
     gemini = ellmer::chat_google_gemini(
       model = model,
       system_prompt = system_prompt,
       base_url = "https://generativelanguage.googleapis.com/v1beta/",
-      api_key = Sys.getenv("GEMINI_API_KEY")),
-    
+      api_key = Sys.getenv("GEMINI_API_KEY")
+    ),
     anthropic = ellmer::chat_anthropic(
-      model = model, 
-      system_prompt = system_prompt),
-    
+      model = model,
+      system_prompt = system_prompt
+    ),
     ollama = ellmer::chat_ollama(
       model = model,
-      system_prompt = system_prompt),
-    
+      system_prompt = system_prompt
+    ),
     stop(
       "Invalid provider specified. Choose from
          'openai', 'gemini', 'anthropic', 'ollama', 'azure'."
     )
   )
-  
+
   # Send prompt and get response
   response <- chat$chat(prompt)
-  
+
   # Clean response if requested
   if (clean_response) {
     response <- clean_llm_response(response)
   }
-  
+
   return(response)
 }
-

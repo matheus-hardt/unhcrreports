@@ -10,17 +10,18 @@ format:
     theme: cosmo
 params:
   country_iso3: "BRA"
+  name: "Brazil"
   year: 2024
   gp_provider: "azure"
   gp_model: "gpt-4.1-mini"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dev = "svg", out.width = "100%")
 library(ggplot2)
 library(dplyr)
 library(ellmer)
-library(unhcrdatapackage)
+
 library(unhcrreports) 
 
 # Fix font issue on Windows
@@ -251,8 +252,8 @@ summary_report <- generate_report_summary(
 `r summary_report`
 
 ```{r key-figures}
-#| fig.width: 10
-#| fig.height: 4
+#| fig.width: 6
+#| fig.height: 2.4
 p_key
 ```
 
@@ -262,145 +263,145 @@ p_key
 
 ## Demographics
 
-```{r treemap}
-#| fig.width: 10
-#| fig.height: 6
-p_tree
-```
-
 > **AI Insight**: `r story_tree`
 
-```{r pyramid}
-#| fig.width: 10
-#| fig.height: 8
-p_pyramid
+```{r treemap}
+#| fig.width: 6
+#| fig.height: 3.6
+p_tree
 ```
 
 > **AI Insight**: `r story_pyramid`
 
-## Trends Over Time
-
-```{r trends}
-#| fig.width: 10
-#| fig.height: 6
-p_trend
+```{r pyramid}
+#| fig.width: 6
+#| fig.height: 4.8
+p_pyramid
 ```
+
+## Trends Over Time
 
 > **AI Insight**: `r story_trend`
 
-```{r diff-pop}
-#| fig.width: 10
-#| fig.height: 6
-p_diff
+```{r trends}
+#| fig.width: 6
+#| fig.height: 3.6
+p_trend
 ```
 
 > **AI Insight**: `r story_diff`
 
-```{r pop-perc}
-#| fig.width: 10
-#| fig.height: 6
-p_perc
+```{r diff-pop}
+#| fig.width: 6
+#| fig.height: 3.6
+p_diff
 ```
 
 > **AI Insight**: `r story_perc`
+
+```{r pop-perc}
+#| fig.width: 6
+#| fig.height: 3.6
+p_perc
+```
 
 # Geography & Movements
 
 `r summary_geo`
 
+> **AI Insight**: `r story_map`
+
 ```{r map}
-#| fig.width: 10
-#| fig.height: 8
+#| fig.width: 6
+#| fig.height: 4.8
 p_map
 ```
 
-> **AI Insight**: `r story_map`
-
 ## Origin of Displaced Populations
-
-```{r origin}
-#| fig.width: 10
-#| fig.height: 8
-p_origin
-```
 
 > **AI Insight**: `r story_origin`
 
-```{r origin-history}
-#| fig.width: 10
-#| fig.height: 6
-p_hist
+```{r origin}
+#| fig.width: 6
+#| fig.height: 4.8
+p_origin
 ```
 
 > **AI Insight**: `r story_hist`
 
+```{r origin-history}
+#| fig.width: 6
+#| fig.height: 3.6
+p_hist
+```
+
 ## Destination
 
+> **AI Insight**: `r story_dest`
+
 ```{r destination}
-#| fig.width: 10
-#| fig.height: 6
+#| fig.width: 6
+#| fig.height: 3.6
 # Note: This plot shows where people FROM the country go (Outflow)
 p_dest
 ```
-
-> **AI Insight**: `r story_dest`
 
 # Asylum System
 
 `r summary_asylum`
 
-```{r asylum}
-#| fig.width: 10
-#| fig.height: 6
-p_asylum
-```
-
 > **AI Insight**: `r story_asylum`
 
-```{r process}
-#| fig.width: 10
-#| fig.height: 8
-p_process
+```{r asylum}
+#| fig.width: 6
+#| fig.height: 3.6
+p_asylum
 ```
 
 > **AI Insight**: `r story_process`
 
-```{r processing-time}
-#| fig.width: 10
-#| fig.height: 6
-p_time
+```{r process}
+#| fig.width: 6
+#| fig.height: 4.8
+p_process
 ```
 
 > **AI Insight**: `r story_time`
 
-## Recognition Rates
-
-```{r recognition}
-#| fig.width: 10
-#| fig.height: 8
-p_rec
+```{r processing-time}
+#| fig.width: 6
+#| fig.height: 3.6
+p_time
 ```
+
+## Recognition Rates
 
 > **AI Insight**: `r story_rec`
 
-```{r origin-recognition}
-#| fig.width: 10
-#| fig.height: 8
-# Note: This plot shows recognition rates for nationals FROM the country (Outflow)
-p_rec_origin
+```{r recognition}
+#| fig.width: 6
+#| fig.height: 4.8
+p_rec
 ```
 
 > **AI Insight**: `r story_rec_origin`
+
+```{r origin-recognition}
+#| fig.width: 6
+#| fig.height: 4.8
+# Note: This plot shows recognition rates for nationals FROM the country (Outflow)
+p_rec_origin
+```
 
 # Solutions
 
 `r summary_sol`
 
+> **AI Insight**: `r story_sol`
+
 ```{r solutions}
-#| fig.width: 10
-#| fig.height: 6
+#| fig.width: 6
+#| fig.height: 3.6
 p_sol
 ```
-
-> **AI Insight**: `r story_sol`
 

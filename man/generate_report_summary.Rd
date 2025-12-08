@@ -37,5 +37,5 @@ Aggregates section summaries into a final executive summary.
 sections <- list("Population" = "Summary...", "Asylum" = "Summary...")
 report_summary <- generate_report_summary(sections, "Colombia", 2022)
 }
-#generate_report_summary()
+# generate_report_summary()
 }

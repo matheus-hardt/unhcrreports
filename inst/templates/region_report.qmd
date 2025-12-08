@@ -16,7 +16,7 @@ params:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dev = "svg")
 library(ggplot2)
 library(dplyr)
 library(ellmer)
@@ -137,112 +137,112 @@ This report provides an automated overview of the humanitarian situation in `r p
 
 ## Demographics
 
+> **AI Insight**: `r story_tree`
+
 ```{r treemap}
-#| fig.width: 10
-#| fig.height: 6
+#| fig.width: 8
+#| fig.height: 4.8
 p_tree
 ```
 
-> **AI Insight**: `r story_tree`
-
 ## Trends Over Time
-
-```{r trends}
-#| fig.width: 10
-#| fig.height: 6
-p_trend
-```
 
 > **AI Insight**: `r story_trend`
 
-## Key Figures
-
-```{r abs}
-#| fig.width: 10
-#| fig.height: 8
-p_abs
+```{r trends}
+#| fig.width: 8
+#| fig.height: 4.8
+p_trend
 ```
+
+## Key Figures
 
 > **AI Insight**: `r story_abs`
 
-```{r share}
-#| fig.width: 10
-#| fig.height: 6
-p_share
+```{r abs}
+#| fig.width: 8
+#| fig.height: 6.4
+p_abs
 ```
 
 > **AI Insight**: `r story_share`
 
-## Changes
-
-```{r increase}
-#| fig.width: 10
-#| fig.height: 8
-p_increase
+```{r share}
+#| fig.width: 8
+#| fig.height: 4.8
+p_share
 ```
+
+## Changes
 
 > **AI Insight**: `r story_increase`
 
-```{r decrease}
-#| fig.width: 10
-#| fig.height: 8
-p_decrease
+```{r increase}
+#| fig.width: 8
+#| fig.height: 6.4
+p_increase
 ```
 
 > **AI Insight**: `r story_decrease`
+
+```{r decrease}
+#| fig.width: 8
+#| fig.height: 6.4
+p_decrease
+```
 
 # Geography & Movements
 
 `r summary_geo`
 
+> **AI Insight**: `r story_map`
+
 ```{r map}
-#| fig.width: 10
-#| fig.height: 8
+#| fig.width: 8
+#| fig.height: 6.4
 #| warning: false
 p_map
 ```
 
-> **AI Insight**: `r story_map`
-
 ## Origin-Destination
 
 ```{r od}
-#| fig.width: 10
-#| fig.height: 10
+#| fig.width: 8
+#| fig.height: 8
 # This plot draws directly to the device
 plot_reg_origin_dest(year = params$year, region = params$region)
 ```
 
 ## Proportion of Origin
 
+> **AI Insight**: `r story_prop`
+
 ```{r prop}
-#| fig.width: 10
-#| fig.height: 8
+#| fig.width: 8
+#| fig.height: 6.4
 p_prop
 ```
-
-> **AI Insight**: `r story_prop`
 
 # Asylum System
 
 `r summary_asylum`
 
+> **AI Insight**: `r story_rsd`
+
 ```{r rsd}
-#| fig.width: 12
-#| fig.height: 8
+#| fig.width: 9.6
+#| fig.height: 6.4
 p_rsd
 ```
-
-> **AI Insight**: `r story_rsd`
 
 # Solutions
 
 `r summary_sol`
 
+> **AI Insight**: `r story_sol`
+
 ```{r solutions}
-#| fig.width: 10
-#| fig.height: 6
+#| fig.width: 8
+#| fig.height: 4.8
 p_sol
 ```
-
-> **AI Insight**: `r story_sol`
