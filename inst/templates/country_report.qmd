@@ -285,7 +285,7 @@ p_pyramid
 
 ```{r trends}
 #| fig.width: 6
-#| fig.height: 3.6
+#| fig.height: 7
 p_trend
 ```
 
@@ -293,7 +293,7 @@ p_trend
 
 ```{r diff-pop}
 #| fig.width: 6
-#| fig.height: 3.6
+#| fig.height: 6
 p_diff
 ```
 
@@ -301,7 +301,7 @@ p_diff
 
 ```{r pop-perc}
 #| fig.width: 6
-#| fig.height: 3.6
+#| fig.height: 7
 p_perc
 ```
 
@@ -323,7 +323,7 @@ p_map
 
 ```{r origin}
 #| fig.width: 6
-#| fig.height: 4.8
+#| fig.height: 6
 p_origin
 ```
 
@@ -331,7 +331,7 @@ p_origin
 
 ```{r origin-history}
 #| fig.width: 6
-#| fig.height: 3.6
+#| fig.height: 6
 p_hist
 ```
 
@@ -341,7 +341,7 @@ p_hist
 
 ```{r destination}
 #| fig.width: 6
-#| fig.height: 3.6
+#| fig.height: 6
 # Note: This plot shows where people FROM the country go (Outflow)
 p_dest
 ```
@@ -354,7 +354,7 @@ p_dest
 
 ```{r asylum}
 #| fig.width: 6
-#| fig.height: 3.6
+#| fig.height: 6
 p_asylum
 ```
 
@@ -370,7 +370,7 @@ p_process
 
 ```{r processing-time}
 #| fig.width: 6
-#| fig.height: 3.6
+#| fig.height: 6
 p_time
 ```
 
@@ -380,7 +380,7 @@ p_time
 
 ```{r recognition}
 #| fig.width: 6
-#| fig.height: 4.8
+#| fig.height: 6
 p_rec
 ```
 
@@ -388,7 +388,7 @@ p_rec
 
 ```{r origin-recognition}
 #| fig.width: 6
-#| fig.height: 4.8
+#| fig.height: 6
 # Note: This plot shows recognition rates for nationals FROM the country (Outflow)
 p_rec_origin
 ```
@@ -401,7 +401,7 @@ p_rec_origin
 
 ```{r solutions}
 #| fig.width: 6
-#| fig.height: 3.6
+#| fig.height: 6
 p_sol
 ```
 
