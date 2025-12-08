@@ -29,6 +29,7 @@ library(unhcrthemes)
 # font_import()
 # loadfonts()
 # font_install('fontcm')
+# usethis::use_package("unhcrtemplate", type = "Suggests")
 ```
 
 ```{r development-load}
