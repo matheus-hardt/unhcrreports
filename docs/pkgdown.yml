@@ -2,10 +2,9 @@ pandoc: 3.6.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  ai-reporting: ai-reporting.html
-  country-plots: country-plots.html
-  region-plots: region-plots.html
-last_built: 2025-12-01T16:04Z
+  ai-powered-reports: ai-powered-reports.html
+  analysis-with-ai: analysis-with-ai.html
+last_built: 2025-12-02T13:55Z
 urls:
   reference: https://matheus-hardt.github.io/unhcrreports/reference
   article: https://matheus-hardt.github.io/unhcrreports/articles

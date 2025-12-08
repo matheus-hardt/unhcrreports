@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Automated Humanitarian Reports • unhcrreports</title>
+<title>Automated Displacement Statictics Analysis • unhcrreports</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -13,18 +13,19 @@
 <link rel="manifest" href="site.webmanifest">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/Lato-0.4.10/font.css" rel="stylesheet">
+<link href="deps/Source_Code_Pro-0.4.10/font.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Automated Humanitarian Reports">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Automated Displacement Statictics Analysis">
 <meta name="description" content="Generates automated humanitarian reports using UNHCR data, ggplot2, and AI narratives.">
 <meta property="og:description" content="Generates automated humanitarian reports using UNHCR data, ggplot2, and AI narratives.">
-<meta property="og:image" content="https://matheus-hardt.github.io/unhcrreports/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="index.html">unhcrreports</a>
 
@@ -37,14 +38,12 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="active nav-item"><a class="nav-link" href="index.html">Get Started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/ai-reporting.html">AI Reporting</a></li>
-    <li><a class="dropdown-item" href="articles/country-plots.html">Country Plots</a></li>
-    <li><a class="dropdown-item" href="articles/region-plots.html">Region Plots</a></li>
+<li><a class="dropdown-item" href="articles/ai-powered-reports.html">AI Powered Reports</a></li>
+    <li><a class="dropdown-item" href="articles/analysis-with-ai.html">Analysis with AI</a></li>
   </ul>
 </li>
       </ul>
@@ -61,25 +60,25 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header">
-<img src="logo.png" class="logo" alt=""><h1 id="unhcrreports-automated-humanitarian-reports-">unhcrreports: Automated Humanitarian Reports <a class="anchor" aria-label="anchor" href="#unhcrreports-automated-humanitarian-reports-"></a>
-</h1>
-</div>
+<div class="page-header"><h1 id="unhcrreports-automated-displacement-statictics-analysis-">{unhcrreports}: Automated Displacement Statictics Analysis <img src="reference/figures/logo.png" align="right" height="139"><a class="anchor" aria-label="anchor" href="#unhcrreports-automated-displacement-statictics-analysis-"></a>
+</h1></div>
 <blockquote>
 <p>[!IMPORTANT] <strong>Work in Process</strong>: This package is currently under active development.</p>
-<p>The plotting functions in this package are based on the excellent work by Edouard Legoupil in the <a href="https://github.com/Edouard-Legoupil/unhcrdatapackage" class="external-link">unhcrdatapackage</a>.</p>
+<p>The plotting functions in this package are based on <a href="https://github.com/Edouard-Legoupil/unhcrdatapackage" class="external-link">unhcrdatapackage</a> chart library.</p>
 </blockquote>
 <p><code>unhcrreports</code> is an R package designed to generate automated humanitarian reports using UNHCR data, <code>ggplot2</code>, and AI-generated narratives. It supports both country-level and regional reports.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of <code>unhcrreports</code> from GitHub or locally:</p>
+<p>This package is built with the help of <a href="https://thinkr-open.github.io/fusen/" class="external-link">{fusen}</a> package which allows to maintain consistent documentation through notebooks ( cf <code>dev</code> folder). You can install it from GitHub with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"matheus-hardt/unhcrreports"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Install from local source</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span>
+<span><span class="co">## Main function</span></span>
+<span><span class="fu">unhcrreports</span><span class="fu">::</span><span class="fu"><a href="reference/generate_report.html">generate_report</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"country"</span>, name <span class="op">=</span> <span class="st">"BRA"</span>, gp_provider <span class="op">=</span><span class="st">"azure"</span>, gp_model <span class="op">=</span> <span class="st">"gpt-4.1-mini"</span> <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
@@ -107,27 +106,12 @@
 <li>
 <strong>Install Ollama</strong>: Download from <a href="https://ollama.com" class="external-link">ollama.com</a>.</li>
 <li>
-<strong>Pull a Model</strong>: Open your terminal and pull a model (e.g., <code>qwen2.5:32b</code> or <code>llama3</code>). ```bash ollama pull qwen2.5:32b region &lt;- “The Americas” year &lt;- 2022</li>
+<strong>Pull a Model</strong>: Open your terminal and pull a model (e.g., <code>qwen2.5:32b</code> or <code>llama3</code>).</li>
 </ol>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">ollama</span> pull qwen2.5:32b</span></code></pre></div>
 </div>
 </div>
 </div>
-<div class="section level1">
-<h1 id="render">Render<a class="anchor" aria-label="anchor" href="#render"></a>
-</h1>
-<p>quarto_render( input = system.file(“templates”, “region_report.qmd”, package = “unhcrreports”), output_file = paste0(“report_”, gsub(” “,”“, region),”_“, year,”.html”), execute_params = list( region = region, year = year ) ) ```</p>
-<div class="section level2">
-<h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
-</h2>
-<ul>
-<li>
-<strong>Verification Scripts</strong>: Check <code>dev/verify_report.R</code> and <code>dev/verify_region_report.R</code> for example usage.</li>
-<li>
-<strong>Tests</strong>: Run <code><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">devtools::test()</a></code> to run the test suite.</li>
-</ul>
-</div>
-</div>
-
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
@@ -157,6 +141,7 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Matheus Hardt <br><small class="roles"> Author, maintainer </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
@@ -171,7 +156,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p><a href="https://www.unhcr.org/" target="_blank" rel="noopener noreferrer" class="external-link"><img src="https://raw.githubusercontent.com/unhcr-dataviz/unhcrtemplate/master/man/figures/logo.svg" alt="UNHCR logo" style="max-height:2.5rem"></a></p>
 </div>
 
     </footer>
