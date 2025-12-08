@@ -1,0 +1,306 @@
+---
+title: "Debug Fonts (Exact Layout)"
+subtitle: "Brazil - 2024"
+author: "Debug Mode (No AI)"
+format:
+  html:
+    toc: true
+    code-fold: true
+    self-contained: true
+    theme: cosmo
+params:
+  country_iso3: "BRA"
+  year: 2024
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dev = "svg", out.width = "100%")
+library(ggplot2)
+library(dplyr)
+library(unhcrreports)
+library(unhcrthemes)
+
+# Fix font issue on Windows
+update_geom_defaults("text", list(family = "sans"))
+update_geom_defaults("label", list(family = "sans"))
+theme_set(theme_gray(base_family = "sans"))
+```
+
+```{r setup_data, include=FALSE}
+# --- Pre-calculate Plots only (No AI) ---
+
+# Mock AI variables for layout preservation
+mock_story <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit. AI Insight Placeholder."
+summary_report <- "Executive Summary Placeholder."
+summary_pop <- "Population Overview Summary Placeholder."
+summary_geo <- "Geography Summary Placeholder."
+summary_asylum <- "Asylum Summary Placeholder."
+summary_sol <- "Solutions Summary Placeholder."
+
+# 1. Key Figures
+p_key <- plot_ctr_keyfig(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3
+)
+story_key <- ""
+
+# 2. Population Overview
+p_tree <- plot_ctr_treemap(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3
+)
+story_tree <- mock_story
+
+p_pyramid <- plot_ctr_pyramid(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3,
+    pop_type = c("REF", "ASY", "IDP", "OIP", "STA", "OOC")
+)
+story_pyramid <- mock_story
+
+p_trend <- plot_ctr_population_type_per_year(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3
+)
+story_trend <- mock_story
+
+p_diff <- plot_ctr_diff_in_pop_groups(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3,
+    pop_type = c("REF", "ASY", "IDP", "OIP", "STA", "OOC")
+)
+story_diff <- mock_story
+
+p_perc <- plot_ctr_population_type_perc(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3,
+    pop_type = "REF"
+)
+story_perc <- mock_story
+
+
+# 3. Geography & Movements
+p_map <- plot_ctr_location(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3
+)
+story_map <- mock_story
+
+p_origin <- plot_ctr_population_type_abs(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3,
+    pop_type = "REF"
+)
+story_origin <- mock_story
+
+p_hist <- plot_ctr_origin_history(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3
+)
+story_hist <- mock_story
+
+p_dest <- plot_ctr_destination(
+    year = params$year,
+    country_origin_iso3c = params$country_iso3
+)
+story_dest <- mock_story
+
+
+# 4. Asylum System
+p_asylum <- plot_ctr_asylum(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3
+)
+story_asylum <- mock_story
+
+p_process <- plot_ctr_process(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3
+)
+story_process <- mock_story
+
+p_time <- plot_ctr_processing_time(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3
+)
+story_time <- mock_story
+
+p_rec <- plot_ctr_recognition(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3
+)
+story_rec <- mock_story
+
+p_rec_origin <- plot_ctr_origin_recognition(
+    year = params$year,
+    country_origin_iso3c = params$country_iso3
+)
+story_rec_origin <- mock_story
+
+
+# 5. Solutions
+p_sol <- plot_ctr_solution(
+    year = params$year,
+    country_asylum_iso3c = params$country_iso3,
+    sol_type = c("NAT", "RST", "RET", "RDP")
+)
+story_sol <- mock_story
+```
+
+# Executive Summary
+
+`r summary_report`
+
+```{r key-figures}
+#| fig.width: 6
+#| fig.height: 2.4
+p_key
+```
+
+# Population Overview
+
+`r summary_pop`
+
+## Demographics
+
+> **AI Insight**: `r story_tree`
+
+```{r treemap}
+#| fig.width: 6
+#| fig.height: 3.6
+p_tree
+```
+
+> **AI Insight**: `r story_pyramid`
+
+```{r pyramid}
+#| fig.width: 6
+#| fig.height: 4.8
+p_pyramid
+```
+
+## Trends Over Time
+
+> **AI Insight**: `r story_trend`
+
+```{r trends}
+#| fig.width: 6
+#| fig.height: 7
+p_trend
+```
+
+> **AI Insight**: `r story_diff`
+
+```{r diff-pop}
+#| fig.width: 6
+#| fig.height: 7
+p_diff
+```
+
+> **AI Insight**: `r story_perc`
+
+```{r pop-perc}
+#| fig.width: 6
+#| fig.height: 3.6
+p_perc
+```
+
+# Geography & Movements
+
+`r summary_geo`
+
+> **AI Insight**: `r story_map`
+
+```{r map}
+#| fig.width: 6
+#| fig.height: 4.8
+p_map
+```
+
+## Origin of Displaced Populations
+
+> **AI Insight**: `r story_origin`
+
+```{r origin}
+#| fig.width: 6
+#| fig.height: 4.8
+p_origin
+```
+
+> **AI Insight**: `r story_hist`
+
+```{r origin-history}
+#| fig.width: 6
+#| fig.height: 3.6
+p_hist
+```
+
+## Destination
+
+> **AI Insight**: `r story_dest`
+
+```{r destination}
+#| fig.width: 6
+#| fig.height: 3.6
+# Note: This plot shows where people FROM the country go (Outflow)
+p_dest
+```
+
+# Asylum System
+
+`r summary_asylum`
+
+> **AI Insight**: `r story_asylum`
+
+```{r asylum}
+#| fig.width: 6
+#| fig.height: 3.6
+p_asylum
+```
+
+> **AI Insight**: `r story_process`
+
+```{r process}
+#| fig.width: 6
+#| fig.height: 4.8
+p_process
+```
+
+> **AI Insight**: `r story_time`
+
+```{r processing-time}
+#| fig.width: 6
+#| fig.height: 3.6
+p_time
+```
+
+## Recognition Rates
+
+> **AI Insight**: `r story_rec`
+
+```{r recognition}
+#| fig.width: 6
+#| fig.height: 4.8
+p_rec
+```
+
+> **AI Insight**: `r story_rec_origin`
+
+```{r origin-recognition}
+#| fig.width: 6
+#| fig.height: 4.8
+# Note: This plot shows recognition rates for nationals FROM the country (Outflow)
+p_rec_origin
+```
+
+# Solutions
+
+`r summary_sol`
+
+> **AI Insight**: `r story_sol`
+
+```{r solutions}
+#| fig.width: 6
+#| fig.height: 3.6
+p_sol
+```

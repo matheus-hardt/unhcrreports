@@ -1,4 +1,4 @@
-# {unhcrreports}: Automated Displacement Statictics Analysis <img src="man/figures/logo.png" align="right" height="139" />  
+# {unhcrreports}: Automated Displacement Statictics Analysis <img src="man/figures/logo.svg" align="right" height="139" />  
 
 > [!IMPORTANT]
 > **Work in Process**: This package is currently under active development.
