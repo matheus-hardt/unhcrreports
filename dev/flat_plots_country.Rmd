@@ -1998,7 +1998,7 @@ plot_ctr_pyramid <- function(year,
   if (nrow(demographics1) == 0) {
     info <- paste0(
       "No Gender disaggregation recorded\n for Forcibly Displaced People across Borders \n in ",
-      ctrylabel,
+      country_name_text,
       " as of ",
       year
     )
@@ -2143,7 +2143,7 @@ plot_ctr_pyramid <- function(year,
           title = paste0(
             "Population Pyramid for ",
             sub(",\\s+([^,]+)$", " and \\1", toString(poptype_label)),
-            " | ", ctrylabel
+            " | ", country_name_text
           ),
           subtitle = paste0(
             " As of ", year,
