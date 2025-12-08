@@ -1,8 +1,8 @@
 ---
-title: "Country Plots"
+title: "Country Report Visualizations"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Country Plots}
+  %\VignetteIndexEntry{Country Report Visualizations}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -23,7 +23,7 @@ library(unhcrreports)
 
 
 
-Below is the library with all Country Focused questions organised around the 7 key questions!
+Below are the visualization functions used in the Country Reports, organized around the 7 key questions!
 
 # 1. Category
 

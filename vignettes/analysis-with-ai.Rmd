@@ -47,6 +47,8 @@ clean_llm_response(response)
 ## generate_plot_story
   
 ```{r example-generate_plot_story}
+#| eval: no
+
 library(ggplot2)
 p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
   geom_point() +

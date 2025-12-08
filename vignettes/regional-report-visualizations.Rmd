@@ -1,8 +1,8 @@
 ---
-title: "Region Plots"
+title: "Regional Report Visualizations"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Region Plots}
+  %\VignetteIndexEntry{Regional Report Visualizations}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

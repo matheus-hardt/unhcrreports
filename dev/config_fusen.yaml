@@ -13,10 +13,10 @@ flat_ai_reporting.Rmd:
   - tests/testthat/test-slugify.R
   - tests/testthat/test-generate_section_summary.R
   - tests/testthat/test-generate_report_summary.R
-  vignettes: vignettes/ai-reporting.Rmd
+  vignettes: vignettes/analysis-with-ai.Rmd
   inflate:
     flat_file: dev/flat_ai_reporting.Rmd
-    vignette_name: AI Reporting
+    vignette_name: Analysis with AI
     open_vignette: false
     check: false
     document: true
@@ -58,10 +58,10 @@ flat_plots_country.Rmd:
   - tests/testthat/test-plot_ctr_solution.R
   - tests/testthat/test-plot_ctr_solution_recognition.R
   - tests/testthat/test-plot_ctr_disp_migrant.R
-  vignettes: vignettes/country-plots.Rmd
+  vignettes: vignettes/country-report-visualizations.Rmd
   inflate:
     flat_file: dev/flat_plots_country.Rmd
-    vignette_name: Country Plots
+    vignette_name: Country Report Visualizations
     open_vignette: false
     check: false
     document: true
@@ -94,10 +94,10 @@ flat_plots_region.Rmd:
   - tests/testthat/test-plot_reg_rsd.R
   - tests/testthat/test-plot_reg_solution.R
   - tests/testthat/test-plot_reg_map.R
-  vignettes: vignettes/region-plots.Rmd
+  vignettes: vignettes/regional-report-visualizations.Rmd
   inflate:
     flat_file: dev/flat_plots_region.Rmd
-    vignette_name: Region Plots
+    vignette_name: Regional Report Visualizations
     open_vignette: false
     check: false
     document: true
