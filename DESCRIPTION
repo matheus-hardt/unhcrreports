@@ -50,11 +50,13 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    unhcrtemplate
 VignetteBuilder: 
     knitr
 Remotes: 
-    edouard-legoupil/unhcrdatapackage
+    edouard-legoupil/unhcrdatapackage,
+    unhcr-dataviz/unhcrtemplate
 Config/fusen/version: 0.7.2
 Config/testthat/edition: 3
 Encoding: UTF-8
