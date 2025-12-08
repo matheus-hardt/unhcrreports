@@ -1,11 +1,15 @@
-# {unhcrreports}: Automated Displacement Statictics Analysis <img src="man/figures/logo.svg" align="right" height="139" />  
+# {unhcrreports}: AI-Powered Humanitarian Reporting <img src="man/figures/logo.svg" align="right" height="139" />  
 
 > [!IMPORTANT]
-> **Work in Process**: This package is currently under active development.
+> **Reporting Engine**: This package functions as the "Reporting Engine" for UNHCR statistics. It focuses on **orchestrating automated reports** by combining data, visualization, and AI narratives.
 >
-> The plotting functions in this package are based on [unhcrdatapackage](https://github.com/Edouard-Legoupil/unhcrdatapackage) chart library.
+> **Graphics Source**: The standardized charts used in these reports are built upon the styles and foundations provided by the [unhcrthemes](https://github.com/vidonne/unhcrthemes) package.
 
-`unhcrreports` is an R package designed to generate automated humanitarian reports using UNHCR data, `ggplot2`, and AI-generated narratives. It supports both country-level and regional reports.
+`unhcrreports` automates the production of analytical reports (Country and Regional) by:
+1.  **Retrieving Data**: Fetching the latest official statistics via the `refugees` package.
+2.  **Visualizing Trends**: Generating standardized plots (powered by `unhcrthemes`).
+3.  **Generating Narratives**: Using Large Language Models (LLMs) to interpret data and write context-aware insights.
+4.  **Publishing**: Compiling everything into polished Quarto reports.
 
 ## Installation
 

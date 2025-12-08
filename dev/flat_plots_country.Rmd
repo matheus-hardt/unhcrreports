@@ -1,5 +1,5 @@
 ---
-title: "Chart Library Country"
+title: "Country Report Visualizations"
 output: html_document
 editor_options:
   chunk_output_type: console
@@ -79,7 +79,7 @@ cols_poptype_label <- c(
 pkgload::load_all(export_all = FALSE)
 ```
 
-Below is the library with all Country Focused questions organised around the 7 key questions!
+Below are the visualization functions used in the Country Reports, organized around the 7 key questions!
 
 # 1. Category
 
