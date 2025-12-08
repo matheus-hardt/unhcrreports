@@ -54,8 +54,8 @@ plot_ctr_pyramid <- function(year,
     dplyr::mutate(
       Total = f_total + m_total,
       totGen = f_total + m_total,
-      totbreak = f_0_4 + f_5_11 + f_12_17 + f_18_59 + f_60 + f_unknown +
-        m_0_4 + m_5_11 + m_12_17 + m_18_59 + m_60 + m_unknown,
+      totbreak = f_0_4 + f_5_11 + f_12_17 + f_18_59 + f_60 + f_other +
+        m_0_4 + m_5_11 + m_12_17 + m_18_59 + m_60 + m_other,
       hasbreak = ifelse(Total - totGen == 0, "yes", "no")
     )
 
@@ -71,8 +71,8 @@ plot_ctr_pyramid <- function(year,
       dplyr::mutate(
         Total = f_total + m_total,
         totGen = f_total + m_total,
-        totbreak = f_0_4 + f_5_11 + f_12_17 + f_18_59 + f_60 + f_unknown +
-          m_0_4 + m_5_11 + m_12_17 + m_18_59 + m_60 + m_unknown,
+        totbreak = f_0_4 + f_5_11 + f_12_17 + f_18_59 + f_60 + f_other +
+          m_0_4 + m_5_11 + m_12_17 + m_18_59 + m_60 + m_other,
         hasbreak = ifelse(Total - totGen == 0, "yes", "no")
       )
   }
@@ -115,13 +115,13 @@ plot_ctr_pyramid <- function(year,
           "f_12_17",
           "f_18_59",
           "f_60",
-          "f_unknown",
+          "f_other",
           "m_0_4",
           "m_5_11",
           "m_12_17",
           "m_18_59",
           "m_60",
-          "m_unknown"
+          "m_other"
         )
       ]
 
@@ -129,7 +129,7 @@ plot_ctr_pyramid <- function(year,
         as.numeric(gsub("NA", "0", x))
       })) |>
         pivot_longer(
-          cols = f_0_4:m_unknown,
+          cols = f_0_4:m_other,
           names_to = "Class",
           values_to = "Sum",
           values_drop_na = TRUE
@@ -155,7 +155,7 @@ plot_ctr_pyramid <- function(year,
           str_detect(Class, "12_17") ~ "12-17",
           str_detect(Class, "18_59") ~ "18-59",
           str_detect(Class, "60") ~ "60+",
-          str_detect(Class, "unknown") ~ "Unknown"
+          str_detect(Class, "other") ~ "Unknown"
         ))
 
       pyramid3$pc <- pyramid3$Count / sum(pyramid3$Count)
