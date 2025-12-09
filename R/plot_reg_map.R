@@ -213,7 +213,7 @@ plot_reg_map <- function(year = 2022,
   ## Generate Map   ##################
   # Maps is created here with [MapSF package](https://riatelab.github.io/mapsf/index.html)
   # Select a font already installed on your system !!
-  graphics::par(family = "Lato")
+  # graphics::par(family = "sans")
   # set a theme
   # set a theme
   mapsfunhcr <- list(

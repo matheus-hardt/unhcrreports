@@ -27,57 +27,62 @@
 #' @examples
 #' plot_reg_origin_dest(year = 2022, region = "Asia and the Pacific")
 plot_reg_origin_dest <- function(year = 2022, region = "The Americas"){
+  tryCatch({
+    chords <- refugees::population |>
+      dplyr::filter(year == !!year) |>
+      dplyr::mutate(unhcr_region = countrycode::countrycode(coa_iso, "iso3c", "unhcr.region")) |>
+      dplyr::filter(unhcr_region == region) |>
+      dplyr::mutate(
+        refugees = tidyr::replace_na(refugees, 0),
+        asylum_seekers = tidyr::replace_na(asylum_seekers, 0),
+        oip = tidyr::replace_na(oip, 0),
+        total = refugees + asylum_seekers + oip
+      ) |>
+      dplyr::group_by(coo_name, coa_name) |>
+      dplyr::summarise(total = sum(total, na.rm = TRUE), .groups = "drop") |>
+      dplyr::mutate(
+        CountryAsylumName = forcats::fct_lump_prop(coa_name, prop = .02, w = total),
+        CountryOriginName = forcats::fct_lump_prop(coo_name, prop = .02, w = total)
+      ) |>
+      dplyr::group_by(CountryOriginName, CountryAsylumName) |>
+      dplyr::summarize(total = sum(total), .groups = "drop")  |>
+      # CountryOriginName = fct_recode(CountryOriginName, "Other" = "China")
+      dplyr::mutate(CountryOriginName = stringr::str_replace(CountryOriginName, " \\(Bolivarian Republic of\\)", ""),
+                    CountryAsylumName = stringr::str_replace(CountryAsylumName, " \\(Bolivarian Republic of\\)", ""),
+                    CountryOriginName = stringr::str_replace(CountryOriginName, " \\(Plurinational State of\\)", ""),
+                    CountryAsylumName = stringr::str_replace(CountryAsylumName, " \\(Plurinational State of\\)", ""),
+                    CountryOriginName = stringr::str_replace(CountryOriginName, "United States of America", "USA"),
+                    CountryAsylumName = stringr::str_replace(CountryAsylumName, "United States of America", "USA"))
 
-  chords <- refugees::population |>
-    dplyr::filter(year == !!year) |>
-    dplyr::mutate(unhcr_region = countrycode::countrycode(coa_iso, "iso3c", "unhcr.region")) |>
-    dplyr::filter(unhcr_region == region) |>
-    dplyr::mutate(
-      refugees = tidyr::replace_na(refugees, 0),
-      asylum_seekers = tidyr::replace_na(asylum_seekers, 0),
-      oip = tidyr::replace_na(oip, 0),
-      total = refugees + asylum_seekers + oip
-    ) |>
-    dplyr::group_by(coo_name, coa_name) |>
-    dplyr::summarise(total = sum(total, na.rm = TRUE), .groups = "drop") |>
-    dplyr::mutate(
-      CountryAsylumName = forcats::fct_lump_prop(coa_name, prop = .02, w = total),
-      CountryOriginName = forcats::fct_lump_prop(coo_name, prop = .02, w = total)
-    ) |>
-    dplyr::group_by(CountryOriginName, CountryAsylumName) |>
-    dplyr::summarize(total = sum(total), .groups = "drop")  |>
-    # CountryOriginName = fct_recode(CountryOriginName, "Other" = "China")
-    dplyr::mutate(CountryOriginName = stringr::str_replace(CountryOriginName, " \\(Bolivarian Republic of\\)", ""),
-                  CountryAsylumName = stringr::str_replace(CountryAsylumName, " \\(Bolivarian Republic of\\)", ""),
-                  CountryOriginName = stringr::str_replace(CountryOriginName, " \\(Plurinational State of\\)", ""),
-                  CountryAsylumName = stringr::str_replace(CountryAsylumName, " \\(Plurinational State of\\)", ""),
-                  CountryOriginName = stringr::str_replace(CountryOriginName, "United States of America", "USA"),
-                  CountryAsylumName = stringr::str_replace(CountryAsylumName, "United States of America", "USA"))
+    circlize::chordDiagram(chords,
+                           self.link = 1,
+                           # grid.col = colorRampPalette(RColorBrewer::brewer.pal(11, "Paired"))(15),
+                           annotationTrack = "grid" ,
+                           # preAllocateTracks = list(track.height = max(strwidth(unlist(dimnames(chords))))),
+                           preAllocateTracks = 1.6
+    )
 
-  circlize::chordDiagram(chords,
-                         self.link = 1,
-                         # grid.col = colorRampPalette(RColorBrewer::brewer.pal(11, "Paired"))(15),
-                         annotationTrack = "grid" ,
-                         # preAllocateTracks = list(track.height = max(strwidth(unlist(dimnames(chords))))),
-                         preAllocateTracks = 1.6
-  )
-
-  circlize::circos.track(track.index = 1,
-                         panel.fun = function(x, y) {
-                           circlize::circos.text(circlize::CELL_META$xcenter,
-                                                 circlize::CELL_META$ylim[1],
-                                                 circlize::CELL_META$sector.index,
-                                                 facing = "clockwise",
-                                                 niceFacing = TRUE,
-                                                 adj = c(0, 0.5))
-                         },
-                         bg.border = NA) # here set bg.border to NA is important
+    circlize::circos.track(track.index = 1,
+                           panel.fun = function(x, y) {
+                             circlize::circos.text(circlize::CELL_META$xcenter,
+                                                   circlize::CELL_META$ylim[1],
+                                                   circlize::CELL_META$sector.index,
+                                                   facing = "clockwise",
+                                                   niceFacing = TRUE,
+                                                   adj = c(0, 0.5))
+                           },
+                           bg.border = NA) # here set bg.border to NA is important
 
 
-  graphics::title(main = "Movement of Forcibly Displaced Population",
-        sub = paste0("In ", region, " as of ", year),
-        cex.main = 1.5)
-
+    graphics::title(main = "Movement of Forcibly Displaced Population",
+          sub = paste0("In ", region, " as of ", year),
+          cex.main = 1.5)
+  }, error = function(e) {
+    message("Error generating origin-destination plot: ", e$message)
+    # Return empty plot or text on error to avoid breaking the report
+    plot(1, type = "n", axes = FALSE, xlab = "", ylab = "")
+    text(1, 1, paste("Plot generation failed:", e$message))
+  })
 
   return(invisible(NULL))
 

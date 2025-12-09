@@ -79,7 +79,7 @@ plot_reg_treemap <- function(year = 2022,
       "STA" = "#E1CC0D",
       "HCO" = "#1b9e77"
     )) +
-    unhcrthemes::theme_unhcr(font_size = 22) + ## Insert UNHCR Style
+    unhcrthemes::theme_unhcr(font_family = "sans", font_size = 22) + ## Insert UNHCR Style
     ggplot2::theme(legend.position = "none") +
     ## and the chart labels
     ggplot2::labs(

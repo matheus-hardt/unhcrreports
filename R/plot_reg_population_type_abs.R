@@ -68,7 +68,7 @@ plot_reg_population_type_abs <- function(year = 2022,
       colour = "white",
       fill = NA,
       label.size = NA,
-      family = "Lato",
+      family = "sans",
       size = 6
     ) +
     ggplot2::geom_hline(yintercept = 0, size = 1, colour = "#333333") +

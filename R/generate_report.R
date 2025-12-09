@@ -196,22 +196,47 @@ generate_report <- function(type="country",
     output_filename <- paste0('Analysis-', type, '-', thisslug, '-',  year, '-',  'report.html')
     output_filepath <- here::here(folder,output_filename )
 
+    # Define parameters based on report type
+    if (type == "country") {
+      # lookup country name
+      country_full_name <- countrycode::countrycode(this, "iso3c", "country.name")
+      
+      params_list <- list(
+        country_iso3 = this,
+        name = country_full_name,
+        year = year,
+        gp_provider = gp_provider,
+        gp_model = gp_model
+      )
+    } else if (type == "region") {
+      params_list <- list(
+        region = this,
+        year = year,
+        gp_provider = gp_provider,
+        gp_model = gp_model
+      )
+    } else {
+       params_list <- list(
+        year = year,
+        gp_provider = gp_provider,
+        gp_model = gp_model
+      )
+    }
+
     # 3. Render the Quarto document
+    link <- NULL
     tryCatch({
       quarto::quarto_render(
         input = template_path,
         output_file = output_filename,
         # Pass parameters to the YAML header and R code chunks
-        execute_params = list(name = this,
-            country_iso3 = this,
-            year = year,
-            gp_provider = gp_provider,
-            gp_model = gp_model )
+        execute_params = params_list
       )
       # Move the file
-     file.rename(from = here::here( system.file(paste0("templatees/", type),
+     file.rename(from = 
+          system.file(
+            paste0("templates/", type, "_report.html"),
                                 package = "unhcrreports"),
-                                output_filename ),
                  to = output_filepath)
       message("Successfully generated: ", output_filename)
     # Link
@@ -223,7 +248,9 @@ generate_report <- function(type="country",
       warning("Failed to render report for ", this, ": ", e$message)
     })
     # links
-    links <- c(links, link)
+    if (!is.null(link)) {
+      links <- c(links, link)
+    }
   }
   
   return(links)

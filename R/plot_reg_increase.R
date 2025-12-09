@@ -124,7 +124,7 @@ plot_reg_increase <- function(year = 2021,
       caption = "Source: UNHCR.org/refugee-statistics"
     ) +
     ggplot2::scale_x_continuous(labels = scales::label_number(scale_cut = scales::cut_short_scale())) +
-    unhcrthemes::theme_unhcr() +
+    unhcrthemes::theme_unhcr(font_family = "sans", font_family = "sans") +
     ggplot2::theme(
       panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb"),
       panel.grid.major.y = ggplot2::element_blank()

@@ -69,7 +69,7 @@ plot_reg_solution <- function(year = 2022,
       vjust = 0.5,
       fill = "white",
       label.size = NA,
-      family = "Lato",
+      family = "sans",
       size = 4
     ) +
     unhcrthemes::theme_unhcr(

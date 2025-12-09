@@ -120,7 +120,7 @@ plot_reg_decrease <- function(year = 2021,
       accuracy = 1,
       scale_cut = scales::cut_short_scale()
     )) +
-    unhcrthemes::theme_unhcr(font_size = 14) + ## Insert UNHCR Style
+    unhcrthemes::theme_unhcr(font_family = "sans", font_size = 14) + ## Insert UNHCR Style
     ggplot2::theme(
       panel.grid.major.x = ggplot2::element_line(color = "#cbcbcb"),
       panel.grid.major.y = ggplot2::element_blank()

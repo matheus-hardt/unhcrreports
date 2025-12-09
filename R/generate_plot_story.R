@@ -62,6 +62,14 @@ generate_plot_story <- function(plot,
                                 provider = NULL,
                                 model = NULL,
                                 clean_response = TRUE) {
+  
+  if (is.null(plot)) {
+    return("AI narrative generation skipped (plot is NULL).")
+  }
+  if (!inherits(plot, "ggplot")) {
+    return("AI narrative generation skipped (plot is not a ggplot object).")
+  }
+
   # Extract plot data (first layer) and truncate
   plot_data <- ggplot2::ggplot_build(plot)$data[[1]] |>
     dplyr::mutate_if(is.numeric, round, 2) |>

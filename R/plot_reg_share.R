@@ -103,7 +103,7 @@ plot_reg_share <- function(year = 2022,
       place = "centre", size = 15
     ) +
     unhcrthemes::scale_fill_unhcr_d(palette = "pal_unhcr") +
-    unhcrthemes::theme_unhcr(font_size = 12) + ## Insert UNHCR Style
+    unhcrthemes::theme_unhcr(font_family = "sans", font_size = 12) + ## Insert UNHCR Style
     ggplot2::theme(legend.position = "none") +
     ## and the chart labels
     ggplot2::labs(

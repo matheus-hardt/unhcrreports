@@ -13,10 +13,10 @@ flat_ai_reporting.Rmd:
   - tests/testthat/test-slugify.R
   - tests/testthat/test-generate_section_summary.R
   - tests/testthat/test-generate_report_summary.R
-  vignettes: vignettes/analysis-with-ai.Rmd
+  vignettes: vignettes/ai-reporting-and-rendering-functions.Rmd
   inflate:
     flat_file: dev/flat_ai_reporting.Rmd
-    vignette_name: Analysis with AI
+    vignette_name: AI Reporting and Rendering Functions
     open_vignette: false
     check: false
     document: true
@@ -109,13 +109,13 @@ flat_reports.Rmd:
   state: active
   R: R/generate_report.R
   tests: tests/testthat/test-regional-report.R
-  vignettes: vignettes/ai-powered-reports.Rmd
+  vignettes: vignettes/generate-reports.Rmd
   inflate:
     flat_file: dev/flat_reports.Rmd
-    vignette_name: AI Powered Reports
-    open_vignette: true
+    vignette_name: Generate Reports
+    open_vignette: false
     check: false
     document: true
-    overwrite: ask
+    overwrite: 'yes'
     clean: ask
     codecov: false
