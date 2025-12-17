@@ -128,7 +128,245 @@ test_that("clean_llm_response works", {
 ```
   
 
+
+# Three-Tier Architecture for AI Reporting
+
+The AI reporting toolkit uses a modular architecture to analyze ggplot2 objects and generate context-aware narratives. This approach ensures that the description is grounded in the actual visual structure and data of the plot.
+
+1.  **Phase 1: Structural Extractor (`extract_structure`)**
+    Interrogates the rendered plot object (using `ggplot_build`) to retrieve "trained" metadata, such as exact axis ranges, visible labels, and legend mappings. This is the "ground truth" of what the user sees.
+
+2.  **Phase 2: Statistical Profiler (`profile_data`)**
+    Summarizes the underlying data distributions and, where appropriate (e.g., scatterplots), calculates statistical relationships like correlations. This provides the "data context" that might not be immediately obvious visually.
+
+3.  **Phase 3: Semantic Generator (`generate_description`)**
+    Combines the structural metadata and statistical profile into a structured prompt for the LLM. It returns a JSON object containing a WCAG-compliant short description (alt text) and a detailed long description.
+
+## extract_structure
+
+```{r function-extract_structure}
+#' Extract Plot Structure and Metadata (Phase 1)
+#'
+#' This function implements Phase 1 of the AI reporting architecture.
+#' It extracts visual metadata from a ggplot object by forcing a render build.
+#' Unlike simple label extraction, this captures the "trained" ranges and
+#' legend mappings that are actually displayed to the user.
+#'
+#' @param p A `ggplot` object.
+#' @return A list containing:
+#'   \item{labels}{Title, subtitle, caption, and axis labels.}
+#'   \item{ranges}{Exact x and y ranges for each panel (trained).}
+#'   \item{guides}{Mapping of visuals (color/shape) to data values.}
+#'   \item{geoms}{List of geometric layers used.}
+#' @importFrom ggplot2 ggplot_build get_guide_data
+#' @importFrom purrr map map_chr
+#' @export
+extract_structure <- function(p) {
+  if (is.null(p)) return(NULL)
+  
+  # Force layout build to get trained ranges
+  built <- ggplot2::ggplot_build(p)
+  
+  # Extract trained axis ranges (handling facets)
+  layout_ranges <- built$layout$panel_params |>
+    purrr::map(function(panel) {
+      list(
+        x_range = panel$x.range,
+        y_range = panel$y.range
+      )
+    })
+  
+  # Decode legends using get_guide_data (available in ggplot2 >= 3.5.0)
+  guides_map <- tryCatch({
+    ggplot2::get_guide_data(p)
+  }, error = function(e) {
+    NULL
+  })
+  
+  # Basic geoms
+  geoms <- purrr::map_chr(p$layers, ~ class(.x$geom)[1])
+  
+  list(
+    labels = p$labels,
+    ranges = layout_ranges,
+    guides = guides_map,
+    geoms = geoms,
+    scales = p$scales$scales
+  )
+}
+```
+
+## profile_data
+
+```{r function-profile_data}
+#' Profile Plot Data (Phase 2)
+#'
+#' This function implements Phase 2 of the AI reporting architecture.
+#' It generates a statistical profile of the data used in the plot to provide
+#' context for the AI.
+#'
+#' @details
+#' It performs two main tasks:
+#' 1. **Distribution Analysis**: Uses `skimr::skim()` to summarize variables mapped in the plot.
+#' 2. **Correlation Check**: For scatterplots (`geom_point`), it calculates Pearson correlations
+#'    to help the AI identify relationships.
+#'
+#' @param p A `ggplot` object.
+#' @return A list containing:
+#'   \item{distributions}{A `skim_df` object summarizing mapped variables.}
+#'   \item{correlations}{A list of correlation coefficients (if applicable).}
+#' @importFrom skimr skim
+#' @importFrom stats cor
+#' @export
+profile_data <- function(p) {
+  if (is.null(p) || is.null(p$data)) return(NULL)
+  
+  df <- p$data
+  
+  # Distribution analysis using skimr
+  # We focus on variables actually mapped in aes
+  mapped_vars <- unique(unlist(purrr::map(p$mapping, all.vars)))
+  mapped_vars <- mapped_vars[mapped_vars %in% names(df)]
+  
+  if (length(mapped_vars) > 0) {
+    df_mapped <- df[mapped_vars]
+  } else {
+    df_mapped <- df
+  }
+  
+  # Capture skimr output
+  dist_summary <- skimr::skim(df_mapped)
+  
+  # Correlation check for Scatterplots
+  correlations <- list()
+  has_points <- any(sapply(p$layers, function(l) inherits(l$geom, "GeomPoint")))
+  
+  if (has_points && "x" %in% names(p$mapping) && "y" %in% names(p$mapping)) {
+    x_vars <- all.vars(p$mapping$x)
+    y_vars <- all.vars(p$mapping$y)
+    
+    if (length(x_vars) == 1 && length(y_vars) == 1) {
+      x_var <- x_vars
+      y_var <- y_vars
+      
+      # Check if they exist in data and are numeric
+      if (x_var %in% names(df) && y_var %in% names(df) && 
+          is.numeric(df[[x_var]]) && is.numeric(df[[y_var]])) {
+        cor_val <- stats::cor(df[[x_var]], df[[y_var]], use = "complete.obs")
+        correlations[[paste(x_var, "vs", y_var)]] = cor_val
+      }
+    }
+  }
+  
+  list(
+    distributions = dist_summary,
+    correlations = correlations
+  )
+}
+```
+
+## generate_description
+
+```{r function-generate_description}
+#' Generate Plot Description with AI (Phase 3)
+#'
+#' This function implements Phase 3 of the AI reporting architecture.
+#' It serves as the "Semantic Generator," combining structure and statistics
+#' to prompt an LLM for a structured description.
+#'
+#' @param structure Metadata list returned by `extract_structure`.
+#' @param stats Statistical profile returned by `profile_data`.
+#' @param provider The LLM provider (e.g., "openai", "azure", "anthropic").
+#' @param model The specific model to use.
+#' @param max_tokens Maximum token limit for the response.
+#' @return A list containing:
+#'   \item{short_desc}{A concise, WCAG-compliant alt text string.}
+#'   \item{long_desc}{A detailed analytical description of the visualization.}
+#' @importFrom ellmer chat_openai chat_google_gemini chat_anthropic chat_ollama chat_azure_openai
+#' @importFrom utils capture.output
+#' @importFrom jsonlite fromJSON
+#' @export
+generate_description <- function(structure, stats, provider = NULL, model = NULL, max_tokens = 500) {
+  
+  # Construct Context
+  context_str <- paste0(
+    "PLOT METADATA:\n",
+    "Title: ", structure$labels$title, "\n",
+    "Subtitle: ", structure$labels$subtitle, "\n",
+    "Geoms: ", paste(unique(structure$geoms), collapse = ", "), "\n",
+    "X Label: ", structure$labels$x, "\n",
+    "Y Label: ", structure$labels$y, "\n\n",
+    
+    "STATISTICAL PROFILE:\n",
+    capture.output(print(stats$distributions)) |> paste(collapse = "\n"), "\n",
+    "Correlations: ", paste(names(stats$correlations), unlist(stats$correlations), sep=": ", collapse = ", "), "\n"
+  )
+  
+  system_prompt <- paste0(
+    "You are an expert accessibility consultant and data analyst for UNHCR. ",
+    "Your task is to generate two outputs for a given data visualization:\n",
+    "1. 'short_desc': A WCAG-compliant alt text following the formula '* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
+    "2. 'long_desc': A detailed statistical analysis and context description.\n",
+    "Return the result as a strict JSON object with keys 'short_desc' and 'long_desc'."
+  )
+  
+  prompt <- paste0(
+    "Context:\n", context_str, "\n\n",
+    "Task: Generate the JSON object containing short_desc and long_desc based on the provided context."
+  )
+  
+  # Logic to select provider (duplicated from generate_plot_story for now to adhere to modularity)
+  if (is.null(provider)) {
+     if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_))) provider <- "azure"
+     else if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) provider <- "openai"
+     else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) provider <- "gemini"
+     else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) provider <- "anthropic"
+     else stop("No supported API key found.")
+  }
+  
+  provider <- tolower(provider)
+  if (is.null(model)) {
+    model <- switch(provider,
+      openai = "gpt-4o-mini",
+      gemini = "gemini-2.0-flash",
+      anthropic = "claude-3-5-sonnet-latest",
+      ollama = "deepseek-r1",
+      azure = "gpt-4",
+      stop("Invalid provider")
+    )
+  }
+  
+  chat <- switch(provider,
+    openai = ellmer::chat_openai(model = model, system_prompt = system_prompt, type = "json_object"),
+    azure = {
+       azure_key <- Sys.getenv("AZURE_OPENAI_API_KEY")
+       azure_endpoint <- Sys.getenv("AZURE_OPENAI_ENDPOINT")
+       azure_version <- Sys.getenv("AZURE_OPENAI_API_VERSION")
+       ellmer::chat_azure_openai(system_prompt = system_prompt, model = model, 
+                                 api_version = azure_version, endpoint = azure_endpoint, api_key = azure_key, type = "json_object")
+    },
+    gemini = ellmer::chat_google_gemini(model = model, system_prompt = system_prompt, api_key = Sys.getenv("GEMINI_API_KEY")),
+    anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
+    ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
+    stop("Invalid provider")
+  )
+  
+  response <- chat$chat(prompt)
+  
+  # Parse JSON
+  # Clean potential markdown code blocks if the model insists on adding them
+  cleaned_json <- gsub("^```json\\s*|\\s*```$", "", response)
+  
+  tryCatch({
+    jsonlite::fromJSON(cleaned_json)
+  }, error = function(e) {
+    list(short_desc = "Error parsing JSON", long_desc = response)
+  })
+}
+```
+
 ## generate_plot_story
+
 
 ```{r function-generate_plot_story}
 #' Generate Humanitarian Data Story from ggplot
@@ -172,186 +410,41 @@ test_that("clean_llm_response works", {
 #' @importFrom utils capture.output head
 #' @importFrom ellmer chat_openai chat_google_gemini chat_anthropic chat_ollama chat_azure_openai
 #' @export
+#' Generate Humanitarian Data Story from ggplot
+#'
+#' This function takes a ggplot2 object and generates a storytelling narrative.
+#' It now uses a modular architecture (extract_structure, profile_data, generate_description).
+#'
+#' @param plot A `ggplot` object.
+#' @param max_tokens Max tokens for description.
+#' @param provider LLM provider.
+#' @param model LLM model.
+#' @param clean_response Deprecated. Response is now structured JSON.
+#'
+#' @return A list containing `$short_desc` and `$long_desc`.
+#' @export
 generate_plot_story <- function(plot,
-                                max_tokens = 30,
+                                max_tokens = 300,
                                 provider = NULL,
                                 model = NULL,
                                 clean_response = TRUE) {
+                                  
+  if (is.null(plot) || !inherits(plot, "ggplot")) {
+    return(list(short_desc = "Invalid input", long_desc = "Plot is NULL or not a ggplot object."))
+  }
   
-  if (is.null(plot)) {
-    return("AI narrative generation skipped (plot is NULL).")
-  }
-  if (!inherits(plot, "ggplot")) {
-    return("AI narrative generation skipped (plot is not a ggplot object).")
-  }
-
-  # Extract plot data (first layer) and truncate
-  plot_data <- ggplot2::ggplot_build(plot)$data[[1]] |>
-    dplyr::mutate_if(is.numeric, round, 2) |>
-    head(30)
-  plot_data_text <- capture.output(print(plot_data))
-
-  # Extract title, subtitle, caption
-  labels <- plot$labels
-  title <- if (!is.null(labels$title)) labels$title else ""
-  subtitle <- if (!is.null(labels$subtitle)) labels$subtitle else ""
-  caption <- if (!is.null(labels$caption)) labels$caption else ""
-
-  # Extract mapping aesthetics
-  mapping_info <- if (!is.null(plot$mapping)) {
-    mapping_text <- capture.output(print(plot$mapping))
-    paste("Global mapping:", paste(mapping_text, collapse = " "))
-  } else {
-    "No global mapping defined"
-  }
-
-  # Extract layer-specific mappings
-  layer_mappings <- sapply(plot$layers, function(layer) {
-    if (!is.null(layer$mapping)) {
-      paste("Layer mapping:", capture.output(print(layer$mapping)))
-    } else {
-      "No layer-specific mapping"
-    }
-  })
-  layer_mappings_text <- paste(unique(layer_mappings), collapse = "; ")
-
-  # Detect scales and transformations
-  scale_info <- if (!is.null(plot$scales$scales) && length(plot$scales$scales) > 0) {
-    scale_types <- sapply(plot$scales$scales, function(scale) {
-      paste(class(scale)[1], "scale (", scale$aesthetics[1], ")")
-    })
-    paste("Scale transformations:", paste(unique(scale_types), collapse = ", "))
-  } else {
-    "No custom scale transformations detected"
-  }
-
-  # Detect geoms used
-  geoms <- unique(sapply(plot$layers, function(layer) class(layer$geom)[1]))
-  geoms_text <- paste(geoms, collapse = ", ")
-
-  system_prompt <- paste0(
-    "You are a Senior Data Analyst and Reporting Officer for UNHCR, writing for the flagship 'Global Trends' report. ",
-    "Your goal is to interpret data visualizations with the precise, authoritative, and humanitarian tone characteristic of UNHCR official publications.\n\n",
-    "### VOICE AND STYLE GUIDELINES:\n",
-    "1. **Tone:** Objective but impactful. Use professional humanitarian terminology (e.g., 'forcibly displaced', 'people in need of international protection'). Avoid colloquialisms.\n",
-    "2. **Structure:** Start with the headline figure or main trend. Follow with context (increases/decreases, % change). End with implications or drivers if evident.\n",
-    "3. **Key Metrics:** Where data permits, highlight:\n",
-    "   - Year-on-year percentage changes (e.g., 'a 15 per cent increase compared to 2022').\n",
-    "   - Disproportionality (e.g., 'Low- and middle-income countries hosted X per cent...').\n",
-    "   - Ratios (e.g., '1 in X people').\n",
-    "4. **Drivers:** Attribute trends to known major displacement drivers (conflict, violence, human rights violations) if the data relates to specific countries like Sudan, Ukraine, Myanmar, or DRC.\n",
-    "5. **formatting:** Do NOT use 'Introduction' or 'Conclusion' labels. Do NOT use markdown bolding (**text**) excessively. Write in fluid paragraphs.\n\n",
-    "### DATA INTERPRETATION RULES:\n",
-    "- Always cite the specific numbers from the data provided.\n",
-    "- If the trend is rising, use terms like 'surge', 'continued to grow', 'reached a record high'.\n",
-    "- If the trend is flat or falling, contextualize it (e.g., 'remained stable', 'decreased slightly due to...').\n",
-    "- Distinguish clearly between 'Refugees', 'IDPs', and 'Asylum-seekers'.\n"
-  )
-
-  # Build enhanced prompt
-  prompt <- paste0(
-    "Analyze the following ggplot2 visualization data to create a narrative caption suitable for the UNHCR Global Trends Report.\n\n",
-    "PLOT METADATA:\n",
-    "Title: ", title, "\n",
-    "Subtitle: ", subtitle, "\n",
-    "Caption: ", caption, "\n",
-    "Geometries: ", geoms_text, "\n",
-    "Layer mappings: ", layer_mappings_text, "\n",
-    "Scales: ", scale_info, "\n\n",
-    "Use the following DATA SUMMARY (first 30 rows):\n",
-    paste(plot_data_text, collapse = "\n"), "\n\n",
-    "TASK: Write a 2-3 sentence narrative describing the key insight. \n",
-    "CONSTRAINT: Maximum ", max_tokens, " tokens. Focus on the 'So What?'. Use the specific UNHCR style defined in the system prompt."
-  )
-
-  # Auto-detect provider if not specified
-  if (is.null(provider)) {
-    # Check for Azure-specific environment variables
-    if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_)) &&
-      !is.na(Sys.getenv("AZURE_OPENAI_API_KEY", unset = NA_character_))) {
-      provider <- "azure"
-    } else if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
-      provider <- "openai"
-    } else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
-      provider <- "gemini"
-    } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
-      provider <- "anthropic"
-    } else {
-      stop("No supported API key found. Set AZURE_OPENAI_ENDPOINT/KEY, OPENAI_API_KEY, GEMINI_API_KEY,
-           ANTHROPIC_API_KEY, or install and set it to a local OLLAMA")
-    }
-  }
-
-  provider <- tolower(provider)
-
-  # Set default models if not provided
-  if (is.null(model)) {
-    model <- switch(provider,
-      openai = "gpt-4o-mini",
-      gemini = "gemini-2.5-flash",
-      anthropic = "claude-3-5-sonnet-20241022",
-      ollama = "deepseek-r1",
-      azure = "gpt-4", # Placeholder: Must be a valid deployment name
-      stop("Invalid provider specified. Choose from
-           'openai', 'gemini', 'anthropic', 'ollama', 'azure'.")
-    )
-  }
-
-  # Initialize chat object
-  chat <- switch(provider,
-    openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
-
-    # Azure OpenAI using the dedicated function and explicit environment variable checks
-    azure = {
-      # Fetch required environment variables
-      azure_key <- Sys.getenv("AZURE_OPENAI_API_KEY")
-      azure_endpoint <- Sys.getenv("AZURE_OPENAI_ENDPOINT")
-      azure_version <- Sys.getenv("AZURE_OPENAI_API_VERSION")
-
-      # VALIDATION: Check if any required variable is unset (returns "")
-      if (azure_key == "" || azure_endpoint == "" || azure_version == "") {
-        stop("For 'azure' provider, AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, and AZURE_OPENAI_VERSION environment variables must all be set correctly in the R session.")
-      }
-
-      # Initialize chat object, passing the validated environment variables
-      ellmer::chat_azure_openai(
-        system_prompt = system_prompt,
-        model = model,
-        api_version = azure_version,
-        endpoint = azure_endpoint,
-        api_key = azure_key
-      )
-    },
-    gemini = ellmer::chat_google_gemini(
-      model = model,
-      system_prompt = system_prompt,
-      base_url = "https://generativelanguage.googleapis.com/v1beta/",
-      api_key = Sys.getenv("GEMINI_API_KEY")
-    ),
-    anthropic = ellmer::chat_anthropic(
-      model = model,
-      system_prompt = system_prompt
-    ),
-    ollama = ellmer::chat_ollama(
-      model = model,
-      system_prompt = system_prompt
-    ),
-    stop(
-      "Invalid provider specified. Choose from
-         'openai', 'gemini', 'anthropic', 'ollama', 'azure'."
-    )
-  )
-
-  # Send prompt and get response
-  response <- chat$chat(prompt)
-
-  # Clean response if requested
-  if (clean_response) {
-    response <- clean_llm_response(response)
-  }
-
-  return(response)
+  # Phase 1: Structure
+  structure <- extract_structure(plot)
+  
+  # Phase 2: Profile
+  stats <- profile_data(plot)
+  
+  # Phase 3: Semantic Generation
+  description <- generate_description(structure, stats, provider, model, max_tokens)
+  
+  return(description)
 }
+```
 ```
   
 ```{r example-generate_plot_story, eval=FALSE}
@@ -466,15 +559,24 @@ generate_section_summary <- function(stories,
                                      provider = NULL,
                                      model = NULL,
                                      max_tokens = 400) {
-  # Graceful degradation if no stories or empty
-  valid_stories <- stories[!is.na(stories) &
-    stories != "" & !grepl("AI narrative generation skipped", stories)]
-
   if (length(valid_stories) == 0) {
     return(paste0("No AI insights available for ", section_name, "."))
   }
+  
+  # Handle list objects (if passed from new generate_plot_story)
+  # Iterate and extract $long_desc
+  story_texts <- sapply(valid_stories, function(s) {
+    if (is.list(s) && !is.null(s$long_desc)) {
+      return(s$long_desc)
+    } else if (is.character(s)) {
+      return(s)
+    } else {
+      return("")
+    }
+  })
+  story_texts <- story_texts[story_texts != ""]
 
-  combined_text <- paste(valid_stories, collapse = "\n\n")
+  combined_text <- paste(story_texts, collapse = "\n\n")
 
   system_prompt <- paste0(
     "You are the Lead Editor for the UNHCR Global Report. ",

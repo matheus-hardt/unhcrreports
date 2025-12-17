@@ -36,6 +36,7 @@ Imports:
     rnaturalearth,
     scales,
     sf,
+    skimr,
     stats,
     stringi,
     stringr,
@@ -54,8 +55,8 @@ Suggests:
 VignetteBuilder: 
     knitr
 Remotes: 
-    edouard-legoupil/unhcrdatapackage,
-    unhcr-dataviz/unhcrtemplate
+    unhcr-dataviz/unhcrtemplate,
+    Edouard-Legoupil/unhcrdatapackage
 Config/fusen/version: 0.7.2
 Config/testthat/edition: 3
 Encoding: UTF-8
