@@ -1,12 +1,20 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://matheus-hardt.github.io/unhcrreports/404.html</loc></url>
-<url><loc>https://matheus-hardt.github.io/unhcrreports/articles/ai-reporting.html</loc></url>
-<url><loc>https://matheus-hardt.github.io/unhcrreports/articles/country-plots.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/articles/ai-powered-reports.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/articles/ai-reporting-and-rendering-functions.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/articles/analysis-with-ai.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/articles/country-report-visualizations.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/articles/generate-reports.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/articles/how-to-generate-report.html</loc></url>
 <url><loc>https://matheus-hardt.github.io/unhcrreports/articles/index.html</loc></url>
-<url><loc>https://matheus-hardt.github.io/unhcrreports/articles/region-plots.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/articles/regional-report-visualizations.html</loc></url>
 <url><loc>https://matheus-hardt.github.io/unhcrreports/authors.html</loc></url>
 <url><loc>https://matheus-hardt.github.io/unhcrreports/index.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/reference/clean_llm_response.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/reference/extract_structure.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/reference/generate_description.html</loc></url>
 <url><loc>https://matheus-hardt.github.io/unhcrreports/reference/generate_plot_story.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/reference/generate_report.html</loc></url>
 <url><loc>https://matheus-hardt.github.io/unhcrreports/reference/generate_report_summary.html</loc></url>
 <url><loc>https://matheus-hardt.github.io/unhcrreports/reference/generate_section_summary.html</loc></url>
 <url><loc>https://matheus-hardt.github.io/unhcrreports/reference/index.html</loc></url>
@@ -38,6 +46,7 @@
 <url><loc>https://matheus-hardt.github.io/unhcrreports/reference/plot_reg_share.html</loc></url>
 <url><loc>https://matheus-hardt.github.io/unhcrreports/reference/plot_reg_solution.html</loc></url>
 <url><loc>https://matheus-hardt.github.io/unhcrreports/reference/plot_reg_treemap.html</loc></url>
-<url><loc>https://matheus-hardt.github.io/unhcrreports/reference/render_country_report.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/reference/profile_data.html</loc></url>
+<url><loc>https://matheus-hardt.github.io/unhcrreports/reference/slugify.html</loc></url>
 </urlset>
 

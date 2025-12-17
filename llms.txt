@@ -1,20 +1,28 @@
-# unhcrreports: Automated Humanitarian Reports
+# {unhcrreports}: AI-Powered Humanitarian Reporting
 
-> \[!IMPORTANT\] **Work in Process**: This package is currently under
-> active development.
+> \[!IMPORTANT\] **Reporting Engine**: This package functions as the
+> “Reporting Engine” for UNHCR statistics. It focuses on **orchestrating
+> automated reports** by combining data, visualization, and AI
+> narratives.
 >
-> The plotting functions in this package are based on the excellent work
-> by Edouard Legoupil in the
-> [unhcrdatapackage](https://github.com/Edouard-Legoupil/unhcrdatapackage).
+> **Graphics Source**: The standardized charts used in these reports are
+> built upon the styles and foundations provided by the
+> [unhcrthemes](https://github.com/vidonne/unhcrthemes) package.
 
-`unhcrreports` is an R package designed to generate automated
-humanitarian reports using UNHCR data, `ggplot2`, and AI-generated
-narratives. It supports both country-level and regional reports.
+`unhcrreports` automates the production of analytical reports (Country
+and Regional) by: 1. **Retrieving Data**: Fetching the latest official
+statistics via the `refugees` package. 2. **Visualizing Trends**:
+Generating standardized plots (powered by `unhcrthemes`). 3.
+**Generating Narratives**: Using Large Language Models (LLMs) to
+interpret data and write context-aware insights. 4. **Publishing**:
+Compiling everything into polished Quarto reports.
 
 ## Installation
 
-You can install the development version of `unhcrreports` from GitHub or
-locally:
+This package is built with the help of
+[{fusen}](https://thinkr-open.github.io/fusen/) package which allows to
+maintain consistent documentation through notebooks ( cf `dev` folder).
+You can install it from GitHub with:
 
 ``` r
 # Install from GitHub
@@ -22,6 +30,8 @@ devtools::install_github("matheus-hardt/unhcrreports")
 
 # Install from local source
 devtools::install(".")
+## Main function
+unhcrreports::generate_report(type = "country", name = "BRA", gp_provider ="azure", gp_model = "gpt-4.1-mini" )
 ```
 
 ## Setup
@@ -52,41 +62,30 @@ If you prefer to run a local model using Ollama:
 
 1.  **Install Ollama**: Download from [ollama.com](https://ollama.com).
 2.  **Pull a Model**: Open your terminal and pull a model (e.g.,
-    `qwen2.5:32b` or `llama3`). \`\`\`bash ollama pull qwen2.5:32b
-    region \<- “The Americas” year \<- 2022
+    `qwen2.5:32b` or `llama3`).
 
-# Render
-
-quarto_render( input = system.file(“templates”, “region_report.qmd”,
-package = “unhcrreports”), output_file = paste0(“report\_”, gsub(” “,”“,
-region),”\_“, year,”.html”), execute_params = list( region = region,
-year = year ) ) \`\`\`
-
-## Development
-
-- **Verification Scripts**: Check `dev/verify_report.R` and
-  `dev/verify_region_report.R` for example usage.
-- **Tests**: Run `devtools::test()` to run the test suite.
+``` bash
+ollama pull qwen2.5:32b
+```
 
 # Package index
 
-## Report Generation
+## All functions
 
-Functions for generating reports and summaries.
-
+- [`clean_llm_response()`](https://matheus-hardt.github.io/unhcrreports/reference/clean_llm_response.md)
+  : Clean LLM Response
+- [`extract_structure()`](https://matheus-hardt.github.io/unhcrreports/reference/extract_structure.md)
+  : Extract Plot Structure and Metadata (Phase 1)
+- [`generate_description()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_description.md)
+  : Generate Plot Description with AI (Phase 3)
 - [`generate_plot_story()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_plot_story.md)
-  : Generate Humanitarian Data Story from ggplot (using ellmer)
-- [`generate_section_summary()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_section_summary.md)
-  : Generate Section Summary from Plot Stories
+  : Generate Humanitarian Data Story from ggplot
+- [`generate_report()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_report.md)
+  : Generate Quarto HTML / PDF Country Factsheets in Batch
 - [`generate_report_summary()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_report_summary.md)
   : Generate Report Executive Summary
-- [`render_country_report()`](https://matheus-hardt.github.io/unhcrreports/reference/render_country_report.md)
-  : Render Country Report
-
-## Country Plots
-
-Plots for country-level analysis.
-
+- [`generate_section_summary()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_section_summary.md)
+  : Generate Section Summary from Plot Stories
 - [`plot_ctr_asylum()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_ctr_asylum.md)
   : Asylum Applications & Decision over time
 - [`plot_ctr_destination()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_ctr_destination.md)
@@ -126,11 +125,6 @@ Plots for country-level analysis.
   : Title
 - [`plot_ctr_treemap()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_ctr_treemap.md)
   : Tree map of Population Groups within a country
-
-## Region Plots
-
-Plots for regional analysis.
-
 - [`plot_reg_decrease()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_reg_decrease.md)
   : Plot Biggest decrease in Refugee Population
 - [`plot_reg_increase()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_reg_increase.md)
@@ -152,14 +146,26 @@ Plots for regional analysis.
   : Plot Solution over time in the region
 - [`plot_reg_treemap()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_reg_treemap.md)
   : Population group in the region
+- [`profile_data()`](https://matheus-hardt.github.io/unhcrreports/reference/profile_data.md)
+  : Profile Plot Data (Phase 2)
+- [`slugify()`](https://matheus-hardt.github.io/unhcrreports/reference/slugify.md)
+  : slugify
 
 # Articles
 
 ### All vignettes
 
-- [AI
-  Reporting](https://matheus-hardt.github.io/unhcrreports/articles/ai-reporting.md):
-- [Country
-  Plots](https://matheus-hardt.github.io/unhcrreports/articles/country-plots.md):
-- [Region
-  Plots](https://matheus-hardt.github.io/unhcrreports/articles/region-plots.md):
+- [AI Powered
+  Reports](https://matheus-hardt.github.io/unhcrreports/articles/ai-powered-reports.md):
+- [AI Reporting and Rendering
+  Functions](https://matheus-hardt.github.io/unhcrreports/articles/ai-reporting-and-rendering-functions.md):
+- [Analysis with
+  AI](https://matheus-hardt.github.io/unhcrreports/articles/analysis-with-ai.md):
+- [Country Report
+  Visualizations](https://matheus-hardt.github.io/unhcrreports/articles/country-report-visualizations.md):
+- [Generate
+  Reports](https://matheus-hardt.github.io/unhcrreports/articles/generate-reports.md):
+- [Get Started: Generating
+  Reports](https://matheus-hardt.github.io/unhcrreports/articles/how-to-generate-report.md):
+- [Regional Report
+  Visualizations](https://matheus-hardt.github.io/unhcrreports/articles/regional-report-visualizations.md):

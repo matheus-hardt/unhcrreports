@@ -1,22 +1,21 @@
 # Package index
 
-## Report Generation
+## All functions
 
-Functions for generating reports and summaries.
-
+- [`clean_llm_response()`](https://matheus-hardt.github.io/unhcrreports/reference/clean_llm_response.md)
+  : Clean LLM Response
+- [`extract_structure()`](https://matheus-hardt.github.io/unhcrreports/reference/extract_structure.md)
+  : Extract Plot Structure and Metadata (Phase 1)
+- [`generate_description()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_description.md)
+  : Generate Plot Description with AI (Phase 3)
 - [`generate_plot_story()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_plot_story.md)
-  : Generate Humanitarian Data Story from ggplot (using ellmer)
-- [`generate_section_summary()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_section_summary.md)
-  : Generate Section Summary from Plot Stories
+  : Generate Humanitarian Data Story from ggplot
+- [`generate_report()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_report.md)
+  : Generate Quarto HTML / PDF Country Factsheets in Batch
 - [`generate_report_summary()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_report_summary.md)
   : Generate Report Executive Summary
-- [`render_country_report()`](https://matheus-hardt.github.io/unhcrreports/reference/render_country_report.md)
-  : Render Country Report
-
-## Country Plots
-
-Plots for country-level analysis.
-
+- [`generate_section_summary()`](https://matheus-hardt.github.io/unhcrreports/reference/generate_section_summary.md)
+  : Generate Section Summary from Plot Stories
 - [`plot_ctr_asylum()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_ctr_asylum.md)
   : Asylum Applications & Decision over time
 - [`plot_ctr_destination()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_ctr_destination.md)
@@ -56,11 +55,6 @@ Plots for country-level analysis.
   : Title
 - [`plot_ctr_treemap()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_ctr_treemap.md)
   : Tree map of Population Groups within a country
-
-## Region Plots
-
-Plots for regional analysis.
-
 - [`plot_reg_decrease()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_reg_decrease.md)
   : Plot Biggest decrease in Refugee Population
 - [`plot_reg_increase()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_reg_increase.md)
@@ -82,3 +76,7 @@ Plots for regional analysis.
   : Plot Solution over time in the region
 - [`plot_reg_treemap()`](https://matheus-hardt.github.io/unhcrreports/reference/plot_reg_treemap.md)
   : Population group in the region
+- [`profile_data()`](https://matheus-hardt.github.io/unhcrreports/reference/profile_data.md)
+  : Profile Plot Data (Phase 2)
+- [`slugify()`](https://matheus-hardt.github.io/unhcrreports/reference/slugify.md)
+  : slugify

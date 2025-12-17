@@ -1,52 +1,66 @@
-# Generate Humanitarian Data Story from ggplot (using ellmer)
+# Generate Humanitarian Data Story from ggplot
 
 This function takes a ggplot2 object and generates a storytelling
-narrative focused on humanitarian insights. It uses the ellmer package
-to call a large language model from a supported provider.
+narrative. It now uses a modular architecture (extract_structure,
+profile_data, generate_description).
 
 ## Usage
 
 ``` r
-generate_plot_story(plot, max_tokens = 300, provider = NULL, model = NULL)
+generate_plot_story(
+  plot,
+  max_tokens = 300,
+  provider = NULL,
+  model = NULL,
+  clean_response = TRUE
+)
 ```
 
 ## Arguments
 
 - plot:
 
-  A `ggplot` object from ggplot2.
+  A `ggplot` object.
 
 - max_tokens:
 
-  Maximum number of tokens (approximate) for the narrative (default =
-  300).
+  Max tokens for description.
 
 - provider:
 
-  Optional character string specifying the provider. Options include:
-  `"openai"`, `"gemini"`, `"anthropic"`, `"ollama"`. If `NULL`,
-  auto-detect from environment keys.
+  LLM provider.
 
 - model:
 
-  Optional character string specifying the model name. If `NULL`, a
-  default model for the chosen provider will be used.
+  LLM model.
+
+- clean_response:
+
+  Deprecated. Response is now structured JSON.
 
 ## Value
 
-A character string containing a storytelling narrative focused on
-humanitarian data.
+A list containing `$short_desc` and `$long_desc`.
 
 ## Examples
 
 ``` r
 library(ggplot2)
-p <- ggplot(mtcars, aes(wt, mpg)) +
-    geom_point() +
-    labs(title = "Car Weight vs MPG")
-# Only run if API key is present
-if (Sys.getenv("OPENAI_API_KEY") != "") {
-    story <- generate_plot_story(p, provider = "openai")
-    message(story)
-}
+p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  unhcrthemes::theme_unhcr(grid = "Y", axis = "X", axis_title = FALSE) +
+  labs(
+    title = "Vehicle Efficiency",
+    subtitle = "Fuel consumption vs weight",
+    caption = "Source: mtcars dataset"
+  )
+
+generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
+#> Error in ellmer::chat_ollama(model = model, system_prompt = system_prompt): Can't find locally running ollama.
+
+story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
+#> Error in ellmer::chat_azure_openai(system_prompt = system_prompt, model = model,     api_version = azure_version, endpoint = azure_endpoint, api_key = azure_key,     type = "json_object"): unused argument (type = "json_object")
+# To use as subtitle:
+p + ggplot2::labs(subtitle = story)
+#> Error: object 'story' not found
 ```

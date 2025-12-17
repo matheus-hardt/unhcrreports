@@ -67,10 +67,10 @@ calculated rates.
 
 ``` r
 plot_ctr_recognition(
-    year = 2022,
-    country_asylum_iso3c = "USA",
-    top_n_countries = 10,
-    measure = "RefugeeRecognitionRate",
-    order_by = "TotalDecided"
+  year = 2022,
+  country_asylum_iso3c = "USA",
+  top_n_countries = 10,
+  measure = "RefugeeRecognitionRate",
+  order_by = "TotalDecided"
 )
 ```

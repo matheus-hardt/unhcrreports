@@ -4,17 +4,19 @@
 
 - **Matheus Hardt**. Author, maintainer.
 
+- **UNHCR**. Copyright holder.
+
 ## Citation
 
 Source:
 [`DESCRIPTION`](https://github.com/matheus-hardt/unhcrreports/blob/main/DESCRIPTION)
 
-Hardt M (2025). *unhcrreports: Automated Humanitarian Reports*. R
-package version 0.0.0.9000,
+Hardt M (2025). *unhcrreports: Automated Displacement Statictics
+Analysis*. R package version 0.0.0.9000,
 <https://matheus-hardt.github.io/unhcrreports>.
 
     @Manual{,
-      title = {unhcrreports: Automated Humanitarian Reports},
+      title = {unhcrreports: Automated Displacement Statictics Analysis},
       author = {Matheus Hardt},
       year = {2025},
       note = {R package version 0.0.0.9000},

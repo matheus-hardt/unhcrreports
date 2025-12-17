@@ -1,20 +1,28 @@
-# unhcrreports: Automated Humanitarian Reports
+# {unhcrreports}: AI-Powered Humanitarian Reporting
 
-> \[!IMPORTANT\] **Work in Process**: This package is currently under
-> active development.
+> \[!IMPORTANT\] **Reporting Engine**: This package functions as the
+> “Reporting Engine” for UNHCR statistics. It focuses on **orchestrating
+> automated reports** by combining data, visualization, and AI
+> narratives.
 >
-> The plotting functions in this package are based on the excellent work
-> by Edouard Legoupil in the
-> [unhcrdatapackage](https://github.com/Edouard-Legoupil/unhcrdatapackage).
+> **Graphics Source**: The standardized charts used in these reports are
+> built upon the styles and foundations provided by the
+> [unhcrthemes](https://github.com/vidonne/unhcrthemes) package.
 
-`unhcrreports` is an R package designed to generate automated
-humanitarian reports using UNHCR data, `ggplot2`, and AI-generated
-narratives. It supports both country-level and regional reports.
+`unhcrreports` automates the production of analytical reports (Country
+and Regional) by: 1. **Retrieving Data**: Fetching the latest official
+statistics via the `refugees` package. 2. **Visualizing Trends**:
+Generating standardized plots (powered by `unhcrthemes`). 3.
+**Generating Narratives**: Using Large Language Models (LLMs) to
+interpret data and write context-aware insights. 4. **Publishing**:
+Compiling everything into polished Quarto reports.
 
 ## Installation
 
-You can install the development version of `unhcrreports` from GitHub or
-locally:
+This package is built with the help of
+[{fusen}](https://thinkr-open.github.io/fusen/) package which allows to
+maintain consistent documentation through notebooks ( cf `dev` folder).
+You can install it from GitHub with:
 
 ``` r
 # Install from GitHub
@@ -22,6 +30,8 @@ devtools::install_github("matheus-hardt/unhcrreports")
 
 # Install from local source
 devtools::install(".")
+## Main function
+unhcrreports::generate_report(type = "country", name = "BRA", gp_provider ="azure", gp_model = "gpt-4.1-mini" )
 ```
 
 ## Setup
@@ -52,18 +62,8 @@ If you prefer to run a local model using Ollama:
 
 1.  **Install Ollama**: Download from [ollama.com](https://ollama.com).
 2.  **Pull a Model**: Open your terminal and pull a model (e.g.,
-    `qwen2.5:32b` or `llama3`). \`\`\`bash ollama pull qwen2.5:32b
-    region \<- “The Americas” year \<- 2022
+    `qwen2.5:32b` or `llama3`).
 
-# Render
-
-quarto_render( input = system.file(“templates”, “region_report.qmd”,
-package = “unhcrreports”), output_file = paste0(“report\_”, gsub(” “,”“,
-region),”\_“, year,”.html”), execute_params = list( region = region,
-year = year ) ) \`\`\`
-
-## Development
-
-- **Verification Scripts**: Check `dev/verify_report.R` and
-  `dev/verify_region_report.R` for example usage.
-- **Tests**: Run `devtools::test()` to run the test suite.
+``` bash
+ollama pull qwen2.5:32b
+```
