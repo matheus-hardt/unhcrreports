@@ -2504,14 +2504,6 @@ plot_ctr_asylum <- function(year = 2022,
       TotalDecided = sum(dec_total, na.rm = TRUE)
     ) |>
     dplyr::rename(CountryAsylumCode = coa_iso)
-  group_by(year, CountryAsylumCode) |>
-    summarize(
-      Recognized = sum(Recognized, na.rm = TRUE),
-      ComplementaryProtection = sum(ComplementaryProtection, na.rm = TRUE),
-      OtherwiseClosed = sum(OtherwiseClosed, na.rm = TRUE),
-      Rejected = sum(Rejected, na.rm = TRUE),
-      TotalDecided = sum(TotalDecided, na.rm = TRUE)
-    )
 
 
   data <- dplyr::inner_join(apps, decs) |> # names(data)

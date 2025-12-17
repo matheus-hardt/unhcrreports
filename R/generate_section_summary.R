@@ -23,15 +23,24 @@ generate_section_summary <- function(stories,
                                      provider = NULL,
                                      model = NULL,
                                      max_tokens = 400) {
-  # Graceful degradation if no stories or empty
-  valid_stories <- stories[!is.na(stories) &
-    stories != "" & !grepl("AI narrative generation skipped", stories)]
-
   if (length(valid_stories) == 0) {
     return(paste0("No AI insights available for ", section_name, "."))
   }
+  
+  # Handle list objects (if passed from new generate_plot_story)
+  # Iterate and extract $long_desc
+  story_texts <- sapply(valid_stories, function(s) {
+    if (is.list(s) && !is.null(s$long_desc)) {
+      return(s$long_desc)
+    } else if (is.character(s)) {
+      return(s)
+    } else {
+      return("")
+    }
+  })
+  story_texts <- story_texts[story_texts != ""]
 
-  combined_text <- paste(valid_stories, collapse = "\n\n")
+  combined_text <- paste(story_texts, collapse = "\n\n")
 
   system_prompt <- paste0(
     "You are the Lead Editor for the UNHCR Global Report. ",

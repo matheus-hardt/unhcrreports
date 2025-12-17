@@ -3,9 +3,12 @@ flat_ai_reporting.Rmd:
   state: active
   R:
   - R/clean_llm_response.R
+  - R/extract_structure.R
+  - R/generate_description.R
   - R/generate_plot_story.R
   - R/generate_report_summary.R
   - R/generate_section_summary.R
+  - R/profile_data.R
   - R/slugify.R
   tests:
   - tests/testthat/test-clean_llm_response.R
@@ -13,11 +16,11 @@ flat_ai_reporting.Rmd:
   - tests/testthat/test-slugify.R
   - tests/testthat/test-generate_section_summary.R
   - tests/testthat/test-generate_report_summary.R
-  vignettes: vignettes/ai-reporting-and-rendering-functions.Rmd
+  vignettes: vignettes/ai-powered-reports.Rmd
   inflate:
     flat_file: dev/flat_ai_reporting.Rmd
-    vignette_name: AI Reporting and Rendering Functions
-    open_vignette: false
+    vignette_name: AI Powered Reports
+    open_vignette: true
     check: false
     document: true
     overwrite: 'yes'
@@ -62,7 +65,7 @@ flat_plots_country.Rmd:
   inflate:
     flat_file: dev/flat_plots_country.Rmd
     vignette_name: Country Report Visualizations
-    open_vignette: false
+    open_vignette: true
     check: false
     document: true
     overwrite: 'yes'
