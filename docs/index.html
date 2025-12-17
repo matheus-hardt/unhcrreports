@@ -20,6 +20,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Automated Displacement Statictics Analysis">
 <meta name="description" content="Generates automated humanitarian reports using UNHCR data, ggplot2, and AI narratives.">
 <meta property="og:description" content="Generates automated humanitarian reports using UNHCR data, ggplot2, and AI narratives.">
+<meta property="og:image" content="https://matheus-hardt.github.io/unhcrreports/logo.svg">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -43,7 +44,12 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/ai-powered-reports.html">AI Powered Reports</a></li>
+    <li><a class="dropdown-item" href="articles/ai-reporting-and-rendering-functions.html">AI Reporting and Rendering Functions</a></li>
     <li><a class="dropdown-item" href="articles/analysis-with-ai.html">Analysis with AI</a></li>
+    <li><a class="dropdown-item" href="articles/country-report-visualizations.html">Country Report Visualizations</a></li>
+    <li><a class="dropdown-item" href="articles/generate-reports.html">Generate Reports</a></li>
+    <li><a class="dropdown-item" href="articles/how-to-generate-report.html">Get Started: Generating Reports</a></li>
+    <li><a class="dropdown-item" href="articles/regional-report-visualizations.html">Regional Report Visualizations</a></li>
   </ul>
 </li>
       </ul>
@@ -60,13 +66,15 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="unhcrreports-automated-displacement-statictics-analysis-">{unhcrreports}: Automated Displacement Statictics Analysis <img src="reference/figures/logo.png" align="right" height="139"><a class="anchor" aria-label="anchor" href="#unhcrreports-automated-displacement-statictics-analysis-"></a>
-</h1></div>
+<div class="page-header">
+<img src="logo.svg" class="logo" alt=""><h1 id="unhcrreports-ai-powered-humanitarian-reporting-">{unhcrreports}: AI-Powered Humanitarian Reporting <a class="anchor" aria-label="anchor" href="#unhcrreports-ai-powered-humanitarian-reporting-"></a>
+</h1>
+</div>
 <blockquote>
-<p>[!IMPORTANT] <strong>Work in Process</strong>: This package is currently under active development.</p>
-<p>The plotting functions in this package are based on <a href="https://github.com/Edouard-Legoupil/unhcrdatapackage" class="external-link">unhcrdatapackage</a> chart library.</p>
+<p>[!IMPORTANT] <strong>Reporting Engine</strong>: This package functions as the “Reporting Engine” for UNHCR statistics. It focuses on <strong>orchestrating automated reports</strong> by combining data, visualization, and AI narratives.</p>
+<p><strong>Graphics Source</strong>: The standardized charts used in these reports are built upon the styles and foundations provided by the <a href="https://github.com/vidonne/unhcrthemes" class="external-link">unhcrthemes</a> package.</p>
 </blockquote>
-<p><code>unhcrreports</code> is an R package designed to generate automated humanitarian reports using UNHCR data, <code>ggplot2</code>, and AI-generated narratives. It supports both country-level and regional reports.</p>
+<p><code>unhcrreports</code> automates the production of analytical reports (Country and Regional) by: 1. <strong>Retrieving Data</strong>: Fetching the latest official statistics via the <code>refugees</code> package. 2. <strong>Visualizing Trends</strong>: Generating standardized plots (powered by <code>unhcrthemes</code>). 3. <strong>Generating Narratives</strong>: Using Large Language Models (LLMs) to interpret data and write context-aware insights. 4. <strong>Publishing</strong>: Compiling everything into polished Quarto reports.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
