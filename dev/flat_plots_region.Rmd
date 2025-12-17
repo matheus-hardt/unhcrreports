@@ -1631,7 +1631,7 @@ plot_reg_map <- function(year = 2022,
   )
   # labels for a few  countries - https://riatelab.github.io/mapsf/reference/mf_label.html
   mapsf::mf_label(
-    x = map_data[map_data$value >= minPopMap, ],
+    x = map_data[!is.na(map_data$value) & map_data$value >= minPopMap, ],
     var = "coa_name", # name(s) of the variable(s) to plot
     cex = 0.9, #  labels cex
     col = "black",
