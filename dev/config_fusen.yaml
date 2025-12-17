@@ -101,7 +101,7 @@ flat_plots_region.Rmd:
   inflate:
     flat_file: dev/flat_plots_region.Rmd
     vignette_name: Regional Report Visualizations
-    open_vignette: false
+    open_vignette: true
     check: false
     document: true
     overwrite: 'yes'
