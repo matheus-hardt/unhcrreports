@@ -32,7 +32,8 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     unhcrthemes
-VignetteBuilder: knitr
+VignetteBuilder: 
+    knitr
 Remotes: 
     matheus-hardt/unhcrviz
 Config/fusen/version: 0.7.2

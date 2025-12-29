@@ -232,19 +232,11 @@ generate_report <- function(type = "country",
         quarto::quarto_render(
           input = template_path,
           output_file = output_filename,
+          quarto_args = c("--output-dir", output_dir),
           # Pass parameters to the YAML header and R code chunks
           execute_params = params_list
         )
-        # Move the file
-        file.rename(
-          from =
-            system.file(
-              paste0("templates/", type, "_report.html"),
-              package = "unhcrreports"
-            ),
-          to = output_filepath
-        )
-        message("Successfully generated: ", output_filename)
+
         # Link
         link <- paste0(
           "[Profile Report for ",

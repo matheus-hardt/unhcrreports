@@ -33,6 +33,15 @@ theme_set(theme_gray(base_family = "sans"))
 
 ```
 
+```{r debug_info, echo=TRUE}
+message("DEBUG INFO START")
+print(sessionInfo())
+message("unhcrviz version: ", packageVersion("unhcrviz"))
+message("Args for plot_ctr_location:")
+print(args(unhcrviz::plot_ctr_location))
+message("DEBUG INFO END")
+```
+
 ```{r setup_data, include=FALSE}
 # --- Pre-calculate Plots and Stories ---
 
@@ -108,7 +117,8 @@ summary_pop <- generate_section_summary(
 
 # 3. Geography & Movements
 p_map <- plot_ctr_location(year = params$year,
-                           country_asylum_iso3c = params$country_iso3)
+                           country_origin_iso3c = params$country_iso3,
+                           pop_type = c("REF", "ASY", "IDP", "OIP", "STA", "OOC"))
 story_map <- generate_plot_story(
   p_map,
   provider = params$gp_provider,
@@ -259,7 +269,7 @@ summary_report <- generate_report_summary(
     "Asylum System" = summary_asylum,
     "Solutions" = summary_sol
   ),
-  country_name = params$country_iso3,
+  country_name = params$name,
   year = params$year,
   provider = params$gp_provider,
   model = params$gp_model

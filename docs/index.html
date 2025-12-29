@@ -43,8 +43,11 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/ai-analysis-architecture.html">AI Analysis Architecture</a></li>
+<li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Get Started</h6></li>
     <li><a class="dropdown-item" href="articles/get-started.html">Get Started</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="articles/index.html">More articles...</a></li>
   </ul>
 </li>
       </ul>
@@ -67,31 +70,45 @@
 </div>
 <blockquote>
 <p>[!IMPORTANT] <strong>Reporting Engine</strong>: This package functions as the “Reporting Engine” for UNHCR statistics. It focuses on <strong>orchestrating automated reports</strong> by combining data, visualization, and AI narratives.</p>
-<p><strong>Graphics Source</strong>: The standardized charts used in these reports are built upon the styles and foundations provided by the <a href="https://github.com/vidonne/unhcrthemes" class="external-link">unhcrthemes</a> package.</p>
+<p><strong>Graphics Source</strong>: The standardized charts and maps used in these reports are built upon the <a href="https://github.com/matheus-hardt/unhcrviz" class="external-link"><code>unhcrviz</code></a> package, which provides a high-level API over <code>unhcrthemes</code>.</p>
 </blockquote>
-<p><code>unhcrreports</code> automates the production of analytical reports (Country and Regional) by: 1. <strong>Retrieving Data</strong>: Fetching the latest official statistics via the <code>refugees</code> package. 2. <strong>Visualizing Trends</strong>: Generating standardized plots (powered by <code>unhcrthemes</code>). 3. <strong>Generating Narratives</strong>: Using Large Language Models (LLMs) to interpret data and write context-aware insights. 4. <strong>Publishing</strong>: Compiling everything into polished Quarto reports.</p>
+<p><code>unhcrreports</code> automates the production of analytical reports (Country and Regional) by: 1. <strong>Retrieving Data</strong>: Fetching the latest official statistics via the <code>refugees</code> package. 2. <strong>Visualizing Trends</strong>: Generating standardized plots using <code>unhcrviz</code>. 3. <strong>Generating Narratives</strong>: Using Large Language Models (LLMs) to interpret data and write context-aware insights. 4. <strong>Publishing</strong>: Compiling everything into polished Quarto reports.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>This package is built with the help of <a href="https://thinkr-open.github.io/fusen/" class="external-link">{fusen}</a> package which allows to maintain consistent documentation through notebooks ( cf <code>dev</code> folder). You can install it from GitHub with:</p>
+<p>This package is built with the help of <a href="https://thinkr-open.github.io/fusen/" class="external-link">{fusen}</a>. You can install it from GitHub with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"matheus-hardt/unhcrreports"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Install from local source</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span>
-<span><span class="co">## Main function</span></span>
-<span><span class="fu">unhcrreports</span><span class="fu">::</span><span class="fu"><a href="reference/generate_report.html">generate_report</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"country"</span>, name <span class="op">=</span> <span class="st">"BRA"</span>, gp_provider <span class="op">=</span><span class="st">"azure"</span>, gp_model <span class="op">=</span> <span class="st">"gpt-4.1-mini"</span> <span class="op">)</span></span></code></pre></div>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
+<h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<div class="section level3">
-<h3 id="id_1-api-keys-for-ai-summaries">1. API Keys for AI Summaries<a class="anchor" aria-label="anchor" href="#id_1-api-keys-for-ai-summaries"></a>
-</h3>
-<p>To enable AI-generated narratives, you need to set up an API key for a supported LLM provider. The package supports OpenAI, Google Gemini, Anthropic, and Ollama.</p>
-<p>Set your API key as an environment variable. You can do this in your <code>.Renviron</code> file or in your R session:</p>
+<p>Generate a full report with a single command:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://matheus-hardt.github.io/unhcrreports">unhcrreports</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Generate a Country Report (e.g., Brazil)</span></span>
+<span><span class="fu"><a href="reference/generate_report.html">generate_report</a></span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="st">"country"</span>, </span>
+<span>  name <span class="op">=</span> <span class="st">"BRA"</span>, </span>
+<span>  year <span class="op">=</span> <span class="fl">2024</span>,</span>
+<span>  gp_provider <span class="op">=</span> <span class="st">"openai"</span>, <span class="co"># or "azure", "gemini", "ollama"</span></span>
+<span>  gp_model <span class="op">=</span> <span class="st">"gpt-4o-mini"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="ai-configuration">AI Configuration<a class="anchor" aria-label="anchor" href="#ai-configuration"></a>
+</h2>
+<p>To enable AI-generated narratives, you need to set up an API key for a supported LLM provider.</p>
+<div class="section level3">
+<h3 id="environment-setup">Environment Setup<a class="anchor" aria-label="anchor" href="#environment-setup"></a>
+</h3>
+<p>Set your API key as an environment variable in your <code>.Renviron</code> file or session:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For Google Gemini</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>GEMINI_API_KEY <span class="op">=</span> <span class="st">"your_api_key_here"</span><span class="op">)</span></span>
 <span></span>
@@ -99,19 +116,25 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>OPENAI_API_KEY <span class="op">=</span> <span class="st">"your_api_key_here"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># For Anthropic</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>ANTHROPIC_API_KEY <span class="op">=</span> <span class="st">"your_api_key_here"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>ANTHROPIC_API_KEY <span class="op">=</span> <span class="st">"your_api_key_here"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># For Azure OpenAI</span></span>
+<span><span class="co"># Sys.setenv(AZURE_OPENAI_ENDPOINT = "...")</span></span>
+<span><span class="co"># Sys.setenv(AZURE_OPENAI_API_KEY = "...")</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="id_2-using-ollama-local-llm">2. Using Ollama (Local LLM)<a class="anchor" aria-label="anchor" href="#id_2-using-ollama-local-llm"></a>
+<h3 id="local-llm-ollama">Local LLM (Ollama)<a class="anchor" aria-label="anchor" href="#local-llm-ollama"></a>
 </h3>
 <p>If you prefer to run a local model using Ollama:</p>
 <ol style="list-style-type: decimal">
 <li>
 <strong>Install Ollama</strong>: Download from <a href="https://ollama.com" class="external-link">ollama.com</a>.</li>
 <li>
-<strong>Pull a Model</strong>: Open your terminal and pull a model (e.g., <code>qwen2.5:32b</code> or <code>llama3</code>).</li>
+<strong>Pull a Model</strong>: <code>bash     ollama pull qwen2.5:32b</code>
+</li>
+<li>
+<strong>Run Report</strong>: Passing <code>gp_provider = "ollama"</code> and <code>gp_model = "qwen2.5:32b"</code>.</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">ollama</span> pull qwen2.5:32b</span></code></pre></div>
 </div>
 </div>
 </div>

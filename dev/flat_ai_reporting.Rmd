@@ -1,10 +1,6 @@
 ---
 title: "AI Analysis Architecture"
 output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{AI Analysis Architecture}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 editor_options:
   chunk_output_type: console
 ---
