@@ -1,9 +1,22 @@
 ---
-title: "AI Reporting and Rendering Functions"
-output: html_document
+title: "AI Analysis Architecture"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AI Analysis Architecture}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 editor_options:
   chunk_output_type: console
 ---
+
+# Overview
+
+`unhcrreports` uses a modular, three-tier architecture to generate "AI Insights" for data visualizations. This ensures that the narratives are not just generic text but are grounded in the specific structure and statistics of the plot.
+
+1.  **Structure**: Extracting what the user *sees* (axes, legends, titles).
+2.  **Statistics**: Profiling the *data* (distributions, correlations).
+3.  **Semantics**: Using an LLM to synthesize this into a *story*.
+
 
 
 ```{r development, include=FALSE}
@@ -769,6 +782,6 @@ These are only included in the present flat template file, their content will no
 # remotes::install_github("thinkr-open/checkhelper")
 # checkhelper::print_globals()
 # tools::showNonASCIIfile("dev/flat_ai_reporting.Rmd")
-fusen::inflate(flat_file = "dev/flat_ai_reporting.Rmd", vignette_name = "Analysis with AI", overwrite = "yes")
+fusen::inflate(flat_file = "dev/flat_ai_reporting.Rmd", vignette_name = "AI Analysis Architecture", overwrite = "yes")
 pkgdown::build_site()
 ```

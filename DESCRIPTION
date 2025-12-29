@@ -12,52 +12,29 @@ URL: https://matheus-hardt.github.io/unhcrreports,
     https://github.com/matheus-hardt/unhcrreports
 BugReports: https://github.com/matheus-hardt/unhcrreports/issues
 Imports: 
-    circlize,
     countrycode,
     dplyr,
     ellmer,
-    extrafont,
-    forcats,
-    ggalluvial,
-    ggforce,
     ggplot2,
-    ggrepel,
-    ggtext,
-    graphics,
-    grDevices,
     here,
-    Hmisc,
     jsonlite,
-    lubridate,
-    mapsf,
-    patchwork,
     purrr,
     quarto,
     refugees,
-    rnaturalearth,
-    scales,
-    sf,
     skimr,
     stats,
     stringi,
     stringr,
-    sysfonts,
-    tidyr,
-    tidyselect,
-    treemapify,
-    unhcrthemes,
-    utils,
-    viridis,
-    WDI
+    unhcrviz,
+    utils
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
-VignetteBuilder: 
-    knitr
+    testthat (>= 3.0.0),
+    unhcrthemes
+VignetteBuilder: knitr
 Remotes: 
-    Edouard-Legoupil/unhcrdatapackage,
-    unhcr-dataviz/unhcrtemplate
+    matheus-hardt/unhcrviz
 Config/fusen/version: 0.7.2
 Config/testthat/edition: 3
 Encoding: UTF-8

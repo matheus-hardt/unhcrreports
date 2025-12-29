@@ -2,14 +2,9 @@ pandoc: 3.6.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  ai-powered-reports: ai-powered-reports.html
-  ai-reporting-and-rendering-functions: ai-reporting-and-rendering-functions.html
-  analysis-with-ai: analysis-with-ai.html
-  country-report-visualizations: country-report-visualizations.html
-  generate-reports: generate-reports.html
-  how-to-generate-report: how-to-generate-report.html
-  regional-report-visualizations: regional-report-visualizations.html
-last_built: 2025-12-17T21:09Z
+  ai-analysis-architecture: ai-analysis-architecture.html
+  get-started: get-started.html
+last_built: 2025-12-29T14:11Z
 urls:
   reference: https://matheus-hardt.github.io/unhcrreports/reference
   article: https://matheus-hardt.github.io/unhcrreports/articles

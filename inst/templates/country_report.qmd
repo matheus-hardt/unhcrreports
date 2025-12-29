@@ -22,7 +22,8 @@ library(ggplot2)
 library(dplyr)
 library(ellmer)
 
-library(unhcrreports) 
+library(unhcrreports)
+library(unhcrviz) 
 
 # Fix font issue on Windows
 update_geom_defaults("text", list(family = "sans"))
@@ -145,9 +146,18 @@ story_dest <- generate_plot_story(
   max_tokens = 200
 )
 
+p_migrant <- unhcrviz::plot_ctr_disp_migrant(year = params$year,
+                               country_asylum_iso3c = params$country_iso3)
+story_migrant <- generate_plot_story(
+  p_migrant,
+  provider = params$gp_provider,
+  model = params$gp_model,
+  max_tokens = 200
+)
+
 # Section Summary: Geography
 summary_geo <- generate_section_summary(
-  stories = c(story_map, story_origin, story_hist, story_dest),
+  stories = c(story_map, story_origin, story_hist, story_dest, story_migrant),
   section_name = "Geography & Movements",
   provider = params$gp_provider,
   model = params$gp_model
@@ -224,9 +234,18 @@ story_sol <- generate_plot_story(p_sol,
   model = params$gp_model,
   max_tokens = 200)
 
+p_sol_rec <- unhcrviz::plot_ctr_solution_recognition(
+  year = params$year,
+  country_asylum_iso3c = params$country_iso3
+)
+story_sol_rec <- generate_plot_story(p_sol_rec, 
+  provider = params$gp_provider,
+  model = params$gp_model,
+  max_tokens = 200)
+
 # Section Summary: Solutions
 summary_sol <- generate_section_summary(
-  stories = c(story_sol),
+  stories = c(story_sol, story_sol_rec),
   section_name = "Solutions",
   provider = params$gp_provider,
   model = params$gp_model
@@ -346,6 +365,17 @@ p_hist
 p_dest
 ```
 
+```
+
+> **AI Insight**: `r story_migrant`
+
+```{r migrant}
+#| fig.width: 10
+#| fig.height: 6
+#| warning: false
+p_migrant
+```
+
 # Asylum System
 
 `r summary_asylum`
@@ -403,5 +433,13 @@ p_rec_origin
 #| fig.width: 6
 #| fig.height: 6
 p_sol
+```
+
+> **AI Insight**: `r story_sol_rec`
+
+```{r solutions-rec}
+#| fig.width: 8
+#| fig.height: 6
+p_sol_rec
 ```
 

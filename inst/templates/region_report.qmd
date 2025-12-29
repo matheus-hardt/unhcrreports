@@ -20,7 +20,8 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dev = "svg
 library(ggplot2)
 library(dplyr)
 library(ellmer)
-library(unhcrreports) 
+library(unhcrreports)
+library(unhcrviz) 
 
 # Fix font issue on Windows
 update_geom_defaults("text", list(family = "sans"))
