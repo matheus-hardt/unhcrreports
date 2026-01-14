@@ -98,15 +98,7 @@ slugify(strings)
 
 ### Generate Section Summary
 
-``` r
-# generate_section_summary()
-```
-
 ### Generate Report Summary
-
-``` r
-# generate_report_summary()
-```
 
 ------------------------------------------------------------------------
 

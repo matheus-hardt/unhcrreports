@@ -7,8 +7,8 @@
 >
 > **Graphics Source**: The standardized charts and maps used in these
 > reports are built upon the
-> [`unhcrviz`](https://github.com/matheus-hardt/unhcrviz) package, which
-> provides a high-level API over `unhcrthemes`.
+> [`unhcrviz`](https://github.com/Edouard-Legoupil/unhcrviz) package,
+> which provides a high-level API over `unhcrthemes`.
 
 `unhcrreports` automates the production of analytical reports (Country
 and Regional) by: 1. **Retrieving Data**: Fetching the latest official
