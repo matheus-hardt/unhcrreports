@@ -123,7 +123,7 @@ slugify(strings)
   
   
 ```{r example-generate_section_summary}
-# generate_section_summary()
+
 ```
 
   
@@ -133,7 +133,7 @@ slugify(strings)
   
   
 ```{r example-generate_report_summary}
-# generate_report_summary()
+
 ```
 
   

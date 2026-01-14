@@ -11,7 +11,12 @@
 #' @importFrom stringi stri_enc_toutf8
 #' @export
 #' @examples
-#' strings <- c("Café au Lait", "Niño Español", "Data_Science_Project", "--test--string--")
+#' strings <- c(
+#'   "Café au Lait",
+#'   "Niño Español",
+#'   "Data_Science_Project",
+#'   "--test--string--"
+#' )
 #' slugify(strings)
 slugify <- function(x) {
   x |>
@@ -30,7 +35,7 @@ slugify <- function(x) {
     stringr::str_replace_all("[ç]", "c") |>
     stringr::str_replace_all("[ýÿ]", "y") |>
     stringr::str_replace_all("[ž]", "z") |>
-    # Remove all non-alphanumeric characters except spaces, underscores, AND hyphens
+    # Remove all non-alphanumeric characters except spaces, underscores, hyphens
     stringr::str_replace_all("[^a-z0-9\\s_-]", "") |>
     # Replace spaces and underscores with hyphens
     stringr::str_replace_all("[\\s_]+", "-") |>

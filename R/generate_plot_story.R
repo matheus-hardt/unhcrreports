@@ -4,7 +4,8 @@
 #' Generate Humanitarian Data Story from ggplot
 #'
 #' This function takes a ggplot2 object and generates a storytelling narrative.
-#' It now uses a modular architecture (extract_structure, profile_data, generate_description).
+#' It now uses a modular architecture (extract_structure,
+#' profile_data, generate_description).
 #'
 #' @param plot A `ggplot` object.
 #' @param max_tokens Max tokens for description.
@@ -27,7 +28,12 @@
 #'
 #' generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
 #'
-#' story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
+#' story <- generate_plot_story(
+#'   p,
+#'   provider = "azure",
+#'   model = "gpt-4.1-mini",
+#'   max_tokens = 300
+#' )
 #' # To use as subtitle:
 #' p + ggplot2::labs(subtitle = story)
 generate_plot_story <- function(plot,
@@ -35,19 +41,28 @@ generate_plot_story <- function(plot,
                                 provider = NULL,
                                 model = NULL,
                                 clean_response = TRUE) {
-                                  
+
   if (is.null(plot) || !inherits(plot, "ggplot")) {
-    return(list(short_desc = "Invalid input", long_desc = "Plot is NULL or not a ggplot object."))
+    return(list(
+      short_desc = "Invalid input",
+      long_desc = "Plot is NULL or not a ggplot object."
+    ))
   }
-  
+
   # Phase 1: Structure
   structure <- extract_structure(plot)
-  
+
   # Phase 2: Profile
   stats <- profile_data(plot)
-  
+
   # Phase 3: Semantic Generation
-  description <- generate_description(structure, stats, provider, model, max_tokens)
-  
-  return(description)
+  description <- generate_description(
+    structure,
+    stats,
+    provider,
+    model,
+    max_tokens
+  )
+
+  description
 }

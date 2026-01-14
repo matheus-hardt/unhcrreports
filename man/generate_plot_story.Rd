@@ -28,7 +28,8 @@ A list containing \verb{$short_desc} and \verb{$long_desc}.
 }
 \description{
 This function takes a ggplot2 object and generates a storytelling narrative.
-It now uses a modular architecture (extract_structure, profile_data, generate_description).
+It now uses a modular architecture (extract_structure,
+profile_data, generate_description).
 }
 \examples{
 library(ggplot2)
@@ -43,7 +44,12 @@ p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
 
 generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
 
-story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
+story <- generate_plot_story(
+  p,
+  provider = "azure",
+  model = "gpt-4.1-mini",
+  max_tokens = 300
+)
 # To use as subtitle:
 p + ggplot2::labs(subtitle = story)
 }

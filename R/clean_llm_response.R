@@ -10,15 +10,20 @@
 #' @return Cleaned character string
 #' @export
 #' @examples
-#' response <- "<think>
-#' First, I'm a humanitarian data visualization expert. My role includes extracting insights
-#' from visualizations, creating accessible narratives, highlighting patterns relevant to aid
-#' efforts, using clear language with emotional resonance.
-#' Aligning with constraints: Use plain language, be concise and impactful. Don't rehash
-#' every detail; build narrative depth around 2 key insights maximum in under 30 tokens.
-#' </think>
-#' This visualization tracks a relationship potentially critical for humanitarian logistics:
-#' higher fuel consumption versus increased weight. 车辆设计"
+#' response <- paste(
+#'   "<think>",
+#'   "First, I'm a humanitarian data visualization expert. My role includes",
+#'   "extracting insights from visualizations, creating accessible narratives,",
+#'   "highlighting patterns relevant to aid efforts, using clear language with",
+#'   "emotional resonance.",
+#'   "Aligning with constraints: Use plain language, be concise and impactful.",
+#'   "Don't rehash every detail; build narrative depth around 2 key insights",
+#'   "maximum in under 30 tokens.",
+#'   "</think>",
+#'   "This visualization tracks a relationship potentially critical for",
+#'   "humanitarian logistics: higher fuel consumption versus increased weight.",
+#'   "车辆设计"
+#' )
 #' clean_llm_response(response)
 clean_llm_response <- function(response, keep_punctuation = TRUE) {
   if (!is.character(response)) {
@@ -52,10 +57,30 @@ clean_llm_response <- function(response, keep_punctuation = TRUE) {
   response <- gsub("[^\x20-\x7E]", "", response)
 
   # Remove common LLM artifacts and introductory phrases
-  response <- gsub("^(Sure|Certainly|Okay|Here|First).*?(:|\\.)\\s*", "", response, ignore.case = TRUE)
-  response <- gsub("^(As an AI|I am an AI|I'm a).*?\\.\\s*", "", response, ignore.case = TRUE)
-  response <- gsub("^(My role includes|This includes).*?\\.\\s*", "", response, ignore.case = TRUE)
-  response <- gsub("^(Aligning with constraints).*?\\.\\s*", "", response, ignore.case = TRUE)
+  response <- gsub(
+    "^(Sure|Certainly|Okay|Here|First).*?(:|\\.)\\s*",
+    "",
+    response,
+    ignore.case = TRUE
+  )
+  response <- gsub(
+    "^(As an AI|I am an AI|I'm a).*?\\.\\s*",
+    "",
+    response,
+    ignore.case = TRUE
+  )
+  response <- gsub(
+    "^(My role includes|This includes).*?\\.\\s*",
+    "",
+    response,
+    ignore.case = TRUE
+  )
+  response <- gsub(
+    "^(Aligning with constraints).*?\\.\\s*",
+    "",
+    response,
+    ignore.case = TRUE
+  )
 
   # Remove markdown formatting
   response <- gsub("\\*\\*|\\*|__|_", "", response)
@@ -72,5 +97,5 @@ clean_llm_response <- function(response, keep_punctuation = TRUE) {
     return("Unable to generate story from this visualization.")
   }
 
-  return(response)
+  response
 }

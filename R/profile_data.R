@@ -8,9 +8,10 @@
 #'
 #' @details
 #' It performs two main tasks:
-#' 1. **Distribution Analysis**: Uses `skimr::skim()` to summarize variables mapped in the plot.
-#' 2. **Correlation Check**: For scatterplots (`geom_point`), it calculates Pearson correlations
-#'    to help the AI identify relationships.
+#' 1. **Distribution Analysis**: Uses `skimr::skim()` to summarize variables
+#'    mapped in the plot.
+#' 2. **Correlation Check**: For scatterplots (`geom_point`), it calculates
+#'    Pearson correlations to help the AI identify relationships.
 #'
 #' @param p A `ggplot` object.
 #' @return A list containing:
@@ -20,45 +21,66 @@
 #' @importFrom stats cor
 #' @export
 profile_data <- function(p) {
-  if (is.null(p) || is.null(p$data)) return(NULL)
+  if (is.null(p)) return(NULL)
+
+  # Handle waiver data (when data is in layers, not global)
+  if (inherits(p$data, "waiver")) {
+    # Try to find data in the first layer with a data frame
+    found_data <- FALSE
+    for (layer in p$layers) {
+      if (!inherits(layer$data, "waiver") && is.data.frame(layer$data)) {
+        df <- layer$data
+        found_data <- TRUE
+        break
+      }
+    }
+    if (!found_data) {
+       return(list(
+        distributions = skimr::skim(data.frame(Message = "No data found in plot object")),
+        correlations = list()
+      ))
+    }
+  } else {
+    df <- p$data
+  }
   
-  df <- p$data
-  
+  if (is.null(df)) return(NULL)
+
   # Distribution analysis using skimr
   # We focus on variables actually mapped in aes
   mapped_vars <- unique(unlist(purrr::map(p$mapping, all.vars)))
   mapped_vars <- mapped_vars[mapped_vars %in% names(df)]
-  
+
   if (length(mapped_vars) > 0) {
     df_mapped <- df[mapped_vars]
   } else {
     df_mapped <- df
   }
-  
+
   # Capture skimr output
   dist_summary <- skimr::skim(df_mapped)
-  
+
   # Correlation check for Scatterplots
   correlations <- list()
   has_points <- any(sapply(p$layers, function(l) inherits(l$geom, "GeomPoint")))
-  
+
   if (has_points && "x" %in% names(p$mapping) && "y" %in% names(p$mapping)) {
     x_vars <- all.vars(p$mapping$x)
     y_vars <- all.vars(p$mapping$y)
-    
+
     if (length(x_vars) == 1 && length(y_vars) == 1) {
       x_var <- x_vars
       y_var <- y_vars
-      
+
       # Check if they exist in data and are numeric
-      if (x_var %in% names(df) && y_var %in% names(df) && 
-          is.numeric(df[[x_var]]) && is.numeric(df[[y_var]])) {
+      if (x_var %in% names(df) && y_var %in% names(df) &&
+            is.numeric(df[[x_var]]) && is.numeric(df[[y_var]])) {
         cor_val <- stats::cor(df[[x_var]], df[[y_var]], use = "complete.obs")
         correlations[[paste(x_var, "vs", y_var)]] = cor_val
       }
     }
   }
-  
+
   list(
     distributions = dist_summary,
     correlations = correlations

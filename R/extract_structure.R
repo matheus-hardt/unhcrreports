@@ -18,10 +18,10 @@
 #' @export
 extract_structure <- function(p) {
   if (is.null(p)) return(NULL)
-  
+
   # Force layout build to get trained ranges
   built <- ggplot2::ggplot_build(p)
-  
+
   # Extract trained axis ranges (handling facets)
   layout_ranges <- built$layout$panel_params |>
     purrr::map(function(panel) {
@@ -30,17 +30,17 @@ extract_structure <- function(p) {
         y_range = panel$y.range
       )
     })
-  
+
   # Decode legends using get_guide_data (available in ggplot2 >= 3.5.0)
   guides_map <- tryCatch({
     ggplot2::get_guide_data(p)
   }, error = function(e) {
     NULL
   })
-  
+
   # Basic geoms
   geoms <- purrr::map_chr(p$layers, ~ class(.x$geom)[1])
-  
+
   list(
     labels = p$labels,
     ranges = layout_ranges,

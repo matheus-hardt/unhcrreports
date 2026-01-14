@@ -4,7 +4,8 @@
 #'
 #' Aggregates section summaries into a final executive summary.
 #'
-#' @param section_summaries A named list or character vector of section summaries.
+#' @param section_summaries A named list or character vector of
+#' section summaries.
 #' @param country_name Name of the country.
 #' @param year Year of the report.
 #' @param provider Optional provider.
@@ -18,41 +19,57 @@
 #' sections <- list("Population" = "Summary...", "Asylum" = "Summary...")
 #' report_summary <- generate_report_summary(sections, "Colombia", 2022)
 #' }
-#' # generate_report_summary()
+#'
 generate_report_summary <- function(section_summaries,
                                     country_name,
                                     year,
                                     provider = NULL,
                                     model = NULL,
                                     max_tokens = 400) {
-  valid_summaries <- section_summaries[!is.na(section_summaries) &
-    !grepl("AI summary.*skipped", section_summaries)]
+  valid_summaries <- section_summaries[
+    !is.na(section_summaries) &
+      !grepl("AI summary.*skipped", section_summaries)
+  ]
 
   if (length(valid_summaries) == 0) {
     return("No AI executive summary available.")
   }
 
-  combined_text <- paste(names(valid_summaries), ":\n", valid_summaries, collapse = "\n\n")
+  combined_text <- paste(
+    names(valid_summaries),
+    ":\n",
+    valid_summaries,
+    collapse = "\n\n"
+  )
 
   system_prompt <- paste0(
     "You are the UNHCR High Commissioner's speechwriter and lead strategist. ",
-    "You are summarizing the entire data report for an executive audience (donors, press, member states).\n\n",
+    "You are summarizing the entire data report for an executive audience ",
+    "(donors, press, member states).\n\n",
     "### OBJECTIVE:\n",
-    "Produce a 'Key Trends' executive summary that highlights the most critical statistics and their humanitarian implications.\n\n",
+    "Produce a 'Key Trends' executive summary that highlights the most ",
+    "critical statistics and their humanitarian implications.\n\n",
     "### STYLE GUIDE:\n",
-    "- **Urgency:** Convey the scale of the emergency (e.g., 'A world in turmoil', 'Record highs').\n",
-    "- **Responsibility:** Highlight the contribution of host countries (e.g., 'Low- and middle-income countries continue to host the majority...').\n",
-    "- **Solutions:** Mention resettlement, returns, or pathways if data is present, but be realistic about the gaps.\n",
-    "- **Format:** Start with a powerful opening statement. Follow with 3-4 distinct paragraphs covering the main themes (Displacement, Solutions, Funding/Gaps)."
+    "- **Urgency:** Convey the scale of the emergency ",
+    "(e.g., 'A world in turmoil', 'Record highs').\n",
+    "- **Responsibility:** Highlight the contribution of host countries ",
+    "(e.g., 'Low- and middle-income countries continue to host the ",
+    "majority...').\n",
+    "- **Solutions:** Mention resettlement, returns, or pathways if data is ",
+    "present, but be realistic about the gaps.\n",
+    "- **Format:** Start with a powerful opening statement. Follow with 3-4 ",
+    "distinct paragraphs covering the main themes ",
+    "(Displacement, Solutions, Funding/Gaps)."
   )
 
   prompt <- paste0(
     "Country/Context: ", country_name, "\n",
     "Year: ", year, "\n\n",
     "Section Summaries:\n", combined_text, "\n\n",
-    "TASK: Draft the Executive Summary (approx ", max_tokens, " tokens) for this report. ",
-    "Synthesize the provided section summaries into a high-level overview. ",
-    "Highlight the total figures and the primary drivers of change."
+    "TASK: Draft the Executive Summary (approx ", max_tokens,
+    " tokens) for this report. Synthesize the provided section summaries ",
+    "into a high-level overview. Highlight the total figures and the ",
+    "primary drivers of change."
   )
 
   # Auto-detect provider if not specified
@@ -83,10 +100,22 @@ generate_report_summary <- function(section_summaries,
   chat <- tryCatch(
     {
       switch(provider,
-        openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
-        gemini = ellmer::chat_google_gemini(system_prompt = system_prompt, model = model),
-        anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
-        ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
+        openai = ellmer::chat_openai(
+          model = model,
+          system_prompt = system_prompt
+        ),
+        gemini = ellmer::chat_google_gemini(
+          system_prompt = system_prompt,
+          model = model
+        ),
+        anthropic = ellmer::chat_anthropic(
+          model = model,
+          system_prompt = system_prompt
+        ),
+        ollama = ellmer::chat_ollama(
+          model = model,
+          system_prompt = system_prompt
+        ),
         stop("Invalid provider")
       )
     },
@@ -106,5 +135,5 @@ generate_report_summary <- function(section_summaries,
     }
   )
 
-  return(response)
+  response
 }

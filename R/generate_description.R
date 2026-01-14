@@ -14,12 +14,17 @@
 #' @return A list containing:
 #'   \item{short_desc}{A concise, WCAG-compliant alt text string.}
 #'   \item{long_desc}{A detailed analytical description of the visualization.}
-#' @importFrom ellmer chat_openai chat_google_gemini chat_anthropic chat_ollama chat_azure_openai
+#' @importFrom ellmer chat_openai chat_google_gemini chat_anthropic
+#' @importFrom ellmer chat_ollama chat_azure_openai
 #' @importFrom utils capture.output
 #' @importFrom jsonlite fromJSON
 #' @export
-generate_description <- function(structure, stats, provider = NULL, model = NULL, max_tokens = 500) {
-  
+generate_description <- function(structure,
+                                 stats,
+                                 provider = NULL,
+                                 model = NULL,
+                                 max_tokens = 500) {
+
   # Construct Context
   context_str <- paste0(
     "PLOT METADATA:\n",
@@ -28,34 +33,49 @@ generate_description <- function(structure, stats, provider = NULL, model = NULL
     "Geoms: ", paste(unique(structure$geoms), collapse = ", "), "\n",
     "X Label: ", structure$labels$x, "\n",
     "Y Label: ", structure$labels$y, "\n\n",
-    
+
     "STATISTICAL PROFILE:\n",
-    capture.output(print(stats$distributions)) |> paste(collapse = "\n"), "\n",
-    "Correlations: ", paste(names(stats$correlations), unlist(stats$correlations), sep=": ", collapse = ", "), "\n"
+    "STATISTICAL PROFILE:\n",
+    paste(capture.output(print(stats$distributions)), collapse = "\n"), "\n",
+    "Correlations: ",
+    paste(names(stats$correlations), unlist(stats$correlations),
+          sep = ": ", collapse = ", "),
+    "\n"
   )
-  
+
   system_prompt <- paste0(
     "You are an expert accessibility consultant and data analyst for UNHCR. ",
     "Your task is to generate two outputs for a given data visualization:\n",
-    "1. 'short_desc': A WCAG-compliant alt text following the formula '* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
-    "2. 'long_desc': A detailed statistical analysis and context description.\n",
-    "Return the result as a strict JSON object with keys 'short_desc' and 'long_desc'."
+    "1. 'short_desc': A WCAG-compliant alt text following the formula ",
+    "'* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
+    "2. 'long_desc': A detailed statistical analysis and context ",
+    "description.\n",
+    "Return the result as a strict JSON object with keys 'short_desc' ",
+    "and 'long_desc'."
   )
-  
+
   prompt <- paste0(
     "Context:\n", context_str, "\n\n",
-    "Task: Generate the JSON object containing short_desc and long_desc based on the provided context."
+    "Task: Generate the JSON object containing short_desc and long_desc ",
+    "based on the provided context."
   )
-  
-  # Logic to select provider (duplicated from generate_plot_story for now to adhere to modularity)
+
+  # Logic to select provider
+  # (duplicated from generate_plot_story for now to adhere to modularity)
   if (is.null(provider)) {
-     if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_))) provider <- "azure"
-     else if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) provider <- "openai"
-     else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) provider <- "gemini"
-     else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) provider <- "anthropic"
-     else stop("No supported API key found.")
+    if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_))) {
+      provider <- "azure"
+    } else if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
+      provider <- "openai"
+    } else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
+      provider <- "gemini"
+    } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
+      provider <- "anthropic"
+    } else {
+      stop("No supported API key found.")
+    }
   }
-  
+
   provider <- tolower(provider)
   if (is.null(model)) {
     model <- switch(provider,
@@ -67,28 +87,49 @@ generate_description <- function(structure, stats, provider = NULL, model = NULL
       stop("Invalid provider")
     )
   }
-  
+
   chat <- switch(provider,
-    openai = ellmer::chat_openai(model = model, system_prompt = system_prompt, type = "json_object"),
+    openai = ellmer::chat_openai(
+      model = model,
+      system_prompt = system_prompt,
+      type = "json_object"
+    ),
     azure = {
-       azure_key <- Sys.getenv("AZURE_OPENAI_API_KEY")
-       azure_endpoint <- Sys.getenv("AZURE_OPENAI_ENDPOINT")
-       azure_version <- Sys.getenv("AZURE_OPENAI_API_VERSION")
-       ellmer::chat_azure_openai(system_prompt = system_prompt, model = model, 
-                                 api_version = azure_version, endpoint = azure_endpoint, api_key = azure_key, type = "json_object")
+      azure_key <- Sys.getenv("AZURE_OPENAI_API_KEY")
+      azure_endpoint <- Sys.getenv("AZURE_OPENAI_ENDPOINT")
+      azure_version <- Sys.getenv("AZURE_OPENAI_API_VERSION")
+      ellmer::chat_azure_openai(
+        system_prompt = system_prompt,
+        model = model,
+        api_version = azure_version,
+        endpoint = azure_endpoint,
+        api_key = azure_key,
+        type = "json_object"
+      )
     },
-    gemini = ellmer::chat_google_gemini(model = model, system_prompt = system_prompt, api_key = Sys.getenv("GEMINI_API_KEY")),
-    anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
+    gemini = ellmer::chat_google_gemini(
+      model = model,
+      system_prompt = system_prompt,
+      api_key = Sys.getenv("GEMINI_API_KEY")
+    ),
+    anthropic = ellmer::chat_anthropic(
+      model = model,
+      system_prompt = system_prompt
+    ),
     ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
     stop("Invalid provider")
   )
-  
-  response <- chat$chat(prompt)
-  
+
+  response <- tryCatch({
+    chat$chat(prompt)
+  }, error = function(e) {
+    paste("Error invoking AI provider:", e$message)
+  })
+
   # Parse JSON
   # Clean potential markdown code blocks if the model insists on adding them
   cleaned_json <- gsub("^```json\\s*|\\s*```$", "", response)
-  
+
   tryCatch({
     jsonlite::fromJSON(cleaned_json)
   }, error = function(e) {

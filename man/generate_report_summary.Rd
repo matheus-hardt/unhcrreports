@@ -14,7 +14,8 @@ generate_report_summary(
 )
 }
 \arguments{
-\item{section_summaries}{A named list or character vector of section summaries.}
+\item{section_summaries}{A named list or character vector of
+section summaries.}
 
 \item{country_name}{Name of the country.}
 
@@ -37,5 +38,5 @@ Aggregates section summaries into a final executive summary.
 sections <- list("Population" = "Summary...", "Asylum" = "Summary...")
 report_summary <- generate_report_summary(sections, "Colombia", 2022)
 }
-# generate_report_summary()
+
 }

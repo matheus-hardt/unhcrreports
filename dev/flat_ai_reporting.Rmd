@@ -20,11 +20,8 @@ knitr::opts_chunk$set(
   comment = "#>",
   message = FALSE,
   warning = FALSE,
-  # fig.retina = 2,
   fig.width = 8,
   fig.asp = 0.718,
-  # fig.align = "center",
-  # dev = "ragg_png",
   out.width = "90%"
 )
 unlink(".RData")
@@ -33,12 +30,6 @@ library(ggplot2)
 library(tidyverse)
 library(scales)
 library(unhcrthemes)
-# library(unhcrdatapackage)
-# library(extrafont)
-# font_import()
-# loadfonts()
-# font_install('fontcm')
-# usethis::use_package("unhcrtemplate", type = "Suggests")
 ```
 
 ```{r development-load}
@@ -93,10 +84,30 @@ clean_llm_response <- function(response, keep_punctuation = TRUE) {
   response <- gsub("[^\x20-\x7E]", "", response)
 
   # Remove common LLM artifacts and introductory phrases
-  response <- gsub("^(Sure|Certainly|Okay|Here|First).*?(:|\\.)\\s*", "", response, ignore.case = TRUE)
-  response <- gsub("^(As an AI|I am an AI|I'm a).*?\\.\\s*", "", response, ignore.case = TRUE)
-  response <- gsub("^(My role includes|This includes).*?\\.\\s*", "", response, ignore.case = TRUE)
-  response <- gsub("^(Aligning with constraints).*?\\.\\s*", "", response, ignore.case = TRUE)
+  response <- gsub(
+    "^(Sure|Certainly|Okay|Here|First).*?(:|\\.)\\s*",
+    "",
+    response,
+    ignore.case = TRUE
+  )
+  response <- gsub(
+    "^(As an AI|I am an AI|I'm a).*?\\.\\s*",
+    "",
+    response,
+    ignore.case = TRUE
+  )
+  response <- gsub(
+    "^(My role includes|This includes).*?\\.\\s*",
+    "",
+    response,
+    ignore.case = TRUE
+  )
+  response <- gsub(
+    "^(Aligning with constraints).*?\\.\\s*",
+    "",
+    response,
+    ignore.case = TRUE
+  )
 
   # Remove markdown formatting
   response <- gsub("\\*\\*|\\*|__|_", "", response)
@@ -113,29 +124,34 @@ clean_llm_response <- function(response, keep_punctuation = TRUE) {
     return("Unable to generate story from this visualization.")
   }
 
-  return(response)
+  response
 }
 ```
-  
+
 ```{r example-clean_llm_response}
-response <- "<think>
-First, I'm a humanitarian data visualization expert. My role includes extracting insights
-from visualizations, creating accessible narratives, highlighting patterns relevant to aid
-efforts, using clear language with emotional resonance.
-Aligning with constraints: Use plain language, be concise and impactful. Don't rehash
-every detail; build narrative depth around 2 key insights maximum in under 30 tokens.
-</think>
-This visualization tracks a relationship potentially critical for humanitarian logistics:
-higher fuel consumption versus increased weight. 车辆设计"
+response <- paste(
+  "<think>",
+  "First, I'm a humanitarian data visualization expert. My role includes",
+  "extracting insights from visualizations, creating accessible narratives,",
+  "highlighting patterns relevant to aid efforts, using clear language with",
+  "emotional resonance.",
+  "Aligning with constraints: Use plain language, be concise and impactful.",
+  "Don't rehash every detail; build narrative depth around 2 key insights",
+  "maximum in under 30 tokens.",
+  "</think>",
+  "This visualization tracks a relationship potentially critical for",
+  "humanitarian logistics: higher fuel consumption versus increased weight.",
+  "车辆设计"
+)
 clean_llm_response(response)
 ```
-  
+
 ```{r tests-clean_llm_response}
 test_that("clean_llm_response works", {
   expect_true(inherits(clean_llm_response, "function"))
 })
 ```
-  
+
 
 
 # Three-Tier Architecture for AI Reporting
@@ -172,10 +188,10 @@ The AI reporting toolkit uses a modular architecture to analyze ggplot2 objects 
 #' @export
 extract_structure <- function(p) {
   if (is.null(p)) return(NULL)
-  
+
   # Force layout build to get trained ranges
   built <- ggplot2::ggplot_build(p)
-  
+
   # Extract trained axis ranges (handling facets)
   layout_ranges <- built$layout$panel_params |>
     purrr::map(function(panel) {
@@ -184,17 +200,17 @@ extract_structure <- function(p) {
         y_range = panel$y.range
       )
     })
-  
+
   # Decode legends using get_guide_data (available in ggplot2 >= 3.5.0)
   guides_map <- tryCatch({
     ggplot2::get_guide_data(p)
   }, error = function(e) {
     NULL
   })
-  
+
   # Basic geoms
   geoms <- purrr::map_chr(p$layers, ~ class(.x$geom)[1])
-  
+
   list(
     labels = p$labels,
     ranges = layout_ranges,
@@ -216,9 +232,10 @@ extract_structure <- function(p) {
 #'
 #' @details
 #' It performs two main tasks:
-#' 1. **Distribution Analysis**: Uses `skimr::skim()` to summarize variables mapped in the plot.
-#' 2. **Correlation Check**: For scatterplots (`geom_point`), it calculates Pearson correlations
-#'    to help the AI identify relationships.
+#' 1. **Distribution Analysis**: Uses `skimr::skim()` to summarize variables
+#'    mapped in the plot.
+#' 2. **Correlation Check**: For scatterplots (`geom_point`), it calculates
+#'    Pearson correlations to help the AI identify relationships.
 #'
 #' @param p A `ggplot` object.
 #' @return A list containing:
@@ -228,45 +245,66 @@ extract_structure <- function(p) {
 #' @importFrom stats cor
 #' @export
 profile_data <- function(p) {
-  if (is.null(p) || is.null(p$data)) return(NULL)
+  if (is.null(p)) return(NULL)
+
+  # Handle waiver data (when data is in layers, not global)
+  if (inherits(p$data, "waiver")) {
+    # Try to find data in the first layer with a data frame
+    found_data <- FALSE
+    for (layer in p$layers) {
+      if (!inherits(layer$data, "waiver") && is.data.frame(layer$data)) {
+        df <- layer$data
+        found_data <- TRUE
+        break
+      }
+    }
+    if (!found_data) {
+       return(list(
+        distributions = skimr::skim(data.frame(Message = "No data found in plot object")),
+        correlations = list()
+      ))
+    }
+  } else {
+    df <- p$data
+  }
   
-  df <- p$data
-  
+  if (is.null(df)) return(NULL)
+
   # Distribution analysis using skimr
   # We focus on variables actually mapped in aes
   mapped_vars <- unique(unlist(purrr::map(p$mapping, all.vars)))
   mapped_vars <- mapped_vars[mapped_vars %in% names(df)]
-  
+
   if (length(mapped_vars) > 0) {
     df_mapped <- df[mapped_vars]
   } else {
     df_mapped <- df
   }
-  
+
   # Capture skimr output
   dist_summary <- skimr::skim(df_mapped)
-  
+
   # Correlation check for Scatterplots
   correlations <- list()
   has_points <- any(sapply(p$layers, function(l) inherits(l$geom, "GeomPoint")))
-  
+
   if (has_points && "x" %in% names(p$mapping) && "y" %in% names(p$mapping)) {
     x_vars <- all.vars(p$mapping$x)
     y_vars <- all.vars(p$mapping$y)
-    
+
     if (length(x_vars) == 1 && length(y_vars) == 1) {
       x_var <- x_vars
       y_var <- y_vars
-      
+
       # Check if they exist in data and are numeric
-      if (x_var %in% names(df) && y_var %in% names(df) && 
-          is.numeric(df[[x_var]]) && is.numeric(df[[y_var]])) {
+      if (x_var %in% names(df) && y_var %in% names(df) &&
+            is.numeric(df[[x_var]]) && is.numeric(df[[y_var]])) {
         cor_val <- stats::cor(df[[x_var]], df[[y_var]], use = "complete.obs")
         correlations[[paste(x_var, "vs", y_var)]] = cor_val
       }
     }
   }
-  
+
   list(
     distributions = dist_summary,
     correlations = correlations
@@ -291,12 +329,17 @@ profile_data <- function(p) {
 #' @return A list containing:
 #'   \item{short_desc}{A concise, WCAG-compliant alt text string.}
 #'   \item{long_desc}{A detailed analytical description of the visualization.}
-#' @importFrom ellmer chat_openai chat_google_gemini chat_anthropic chat_ollama chat_azure_openai
+#' @importFrom ellmer chat_openai chat_google_gemini chat_anthropic
+#' @importFrom ellmer chat_ollama chat_azure_openai
 #' @importFrom utils capture.output
 #' @importFrom jsonlite fromJSON
 #' @export
-generate_description <- function(structure, stats, provider = NULL, model = NULL, max_tokens = 500) {
-  
+generate_description <- function(structure,
+                                 stats,
+                                 provider = NULL,
+                                 model = NULL,
+                                 max_tokens = 500) {
+
   # Construct Context
   context_str <- paste0(
     "PLOT METADATA:\n",
@@ -305,34 +348,49 @@ generate_description <- function(structure, stats, provider = NULL, model = NULL
     "Geoms: ", paste(unique(structure$geoms), collapse = ", "), "\n",
     "X Label: ", structure$labels$x, "\n",
     "Y Label: ", structure$labels$y, "\n\n",
-    
+
     "STATISTICAL PROFILE:\n",
-    capture.output(print(stats$distributions)) |> paste(collapse = "\n"), "\n",
-    "Correlations: ", paste(names(stats$correlations), unlist(stats$correlations), sep=": ", collapse = ", "), "\n"
+    "STATISTICAL PROFILE:\n",
+    paste(capture.output(print(stats$distributions)), collapse = "\n"), "\n",
+    "Correlations: ",
+    paste(names(stats$correlations), unlist(stats$correlations),
+          sep = ": ", collapse = ", "),
+    "\n"
   )
-  
+
   system_prompt <- paste0(
     "You are an expert accessibility consultant and data analyst for UNHCR. ",
     "Your task is to generate two outputs for a given data visualization:\n",
-    "1. 'short_desc': A WCAG-compliant alt text following the formula '* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
-    "2. 'long_desc': A detailed statistical analysis and context description.\n",
-    "Return the result as a strict JSON object with keys 'short_desc' and 'long_desc'."
+    "1. 'short_desc': A WCAG-compliant alt text following the formula ",
+    "'* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
+    "2. 'long_desc': A detailed statistical analysis and context ",
+    "description.\n",
+    "Return the result as a strict JSON object with keys 'short_desc' ",
+    "and 'long_desc'."
   )
-  
+
   prompt <- paste0(
     "Context:\n", context_str, "\n\n",
-    "Task: Generate the JSON object containing short_desc and long_desc based on the provided context."
+    "Task: Generate the JSON object containing short_desc and long_desc ",
+    "based on the provided context."
   )
-  
-  # Logic to select provider (duplicated from generate_plot_story for now to adhere to modularity)
+
+  # Logic to select provider
+  # (duplicated from generate_plot_story for now to adhere to modularity)
   if (is.null(provider)) {
-     if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_))) provider <- "azure"
-     else if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) provider <- "openai"
-     else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) provider <- "gemini"
-     else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) provider <- "anthropic"
-     else stop("No supported API key found.")
+    if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_))) {
+      provider <- "azure"
+    } else if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
+      provider <- "openai"
+    } else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
+      provider <- "gemini"
+    } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
+      provider <- "anthropic"
+    } else {
+      stop("No supported API key found.")
+    }
   }
-  
+
   provider <- tolower(provider)
   if (is.null(model)) {
     model <- switch(provider,
@@ -344,28 +402,49 @@ generate_description <- function(structure, stats, provider = NULL, model = NULL
       stop("Invalid provider")
     )
   }
-  
+
   chat <- switch(provider,
-    openai = ellmer::chat_openai(model = model, system_prompt = system_prompt, type = "json_object"),
+    openai = ellmer::chat_openai(
+      model = model,
+      system_prompt = system_prompt,
+      type = "json_object"
+    ),
     azure = {
-       azure_key <- Sys.getenv("AZURE_OPENAI_API_KEY")
-       azure_endpoint <- Sys.getenv("AZURE_OPENAI_ENDPOINT")
-       azure_version <- Sys.getenv("AZURE_OPENAI_API_VERSION")
-       ellmer::chat_azure_openai(system_prompt = system_prompt, model = model, 
-                                 api_version = azure_version, endpoint = azure_endpoint, api_key = azure_key, type = "json_object")
+      azure_key <- Sys.getenv("AZURE_OPENAI_API_KEY")
+      azure_endpoint <- Sys.getenv("AZURE_OPENAI_ENDPOINT")
+      azure_version <- Sys.getenv("AZURE_OPENAI_API_VERSION")
+      ellmer::chat_azure_openai(
+        system_prompt = system_prompt,
+        model = model,
+        api_version = azure_version,
+        endpoint = azure_endpoint,
+        api_key = azure_key,
+        type = "json_object"
+      )
     },
-    gemini = ellmer::chat_google_gemini(model = model, system_prompt = system_prompt, api_key = Sys.getenv("GEMINI_API_KEY")),
-    anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
+    gemini = ellmer::chat_google_gemini(
+      model = model,
+      system_prompt = system_prompt,
+      api_key = Sys.getenv("GEMINI_API_KEY")
+    ),
+    anthropic = ellmer::chat_anthropic(
+      model = model,
+      system_prompt = system_prompt
+    ),
     ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
     stop("Invalid provider")
   )
-  
-  response <- chat$chat(prompt)
-  
+
+  response <- tryCatch({
+    chat$chat(prompt)
+  }, error = function(e) {
+    paste("Error invoking AI provider:", e$message)
+  })
+
   # Parse JSON
   # Clean potential markdown code blocks if the model insists on adding them
   cleaned_json <- gsub("^```json\\s*|\\s*```$", "", response)
-  
+
   tryCatch({
     jsonlite::fromJSON(cleaned_json)
   }, error = function(e) {
@@ -382,7 +461,8 @@ generate_description <- function(structure, stats, provider = NULL, model = NULL
 #' Generate Humanitarian Data Story from ggplot
 #'
 #' This function takes a ggplot2 object and generates a storytelling narrative.
-#' It now uses a modular architecture (extract_structure, profile_data, generate_description).
+#' It now uses a modular architecture (extract_structure,
+#' profile_data, generate_description).
 #'
 #' @param plot A `ggplot` object.
 #' @param max_tokens Max tokens for description.
@@ -397,25 +477,34 @@ generate_plot_story <- function(plot,
                                 provider = NULL,
                                 model = NULL,
                                 clean_response = TRUE) {
-                                  
+
   if (is.null(plot) || !inherits(plot, "ggplot")) {
-    return(list(short_desc = "Invalid input", long_desc = "Plot is NULL or not a ggplot object."))
+    return(list(
+      short_desc = "Invalid input",
+      long_desc = "Plot is NULL or not a ggplot object."
+    ))
   }
-  
+
   # Phase 1: Structure
   structure <- extract_structure(plot)
-  
+
   # Phase 2: Profile
   stats <- profile_data(plot)
-  
+
   # Phase 3: Semantic Generation
-  description <- generate_description(structure, stats, provider, model, max_tokens)
-  
-  return(description)
+  description <- generate_description(
+    structure,
+    stats,
+    provider,
+    model,
+    max_tokens
+  )
+
+  description
 }
 ```
 ```
-  
+
 ```{r example-generate_plot_story, eval=FALSE}
 library(ggplot2)
 p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
@@ -429,11 +518,16 @@ p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
 
 generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
 
-story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
+story <- generate_plot_story(
+  p,
+  provider = "azure",
+  model = "gpt-4.1-mini",
+  max_tokens = 300
+)
 # To use as subtitle:
 p + ggplot2::labs(subtitle = story)
 ```
-  
+
 ```{r tests-generate_plot_story}
 test_that("generate_plot_story works", {
   expect_true(inherits(generate_plot_story, "function"))
@@ -447,7 +541,7 @@ test_that("generate_plot_story works", {
 
 # Report Rendering
 
- 
+
 ## slugify
 
 ```{r function-slugify}
@@ -478,7 +572,7 @@ slugify <- function(x) {
     stringr::str_replace_all("[ç]", "c") |>
     stringr::str_replace_all("[ýÿ]", "y") |>
     stringr::str_replace_all("[ž]", "z") |>
-    # Remove all non-alphanumeric characters except spaces, underscores, AND hyphens
+    # Remove all non-alphanumeric characters except spaces, underscores, hyphens
     stringr::str_replace_all("[^a-z0-9\\s_-]", "") |>
     # Replace spaces and underscores with hyphens
     stringr::str_replace_all("[\\s_]+", "-") |>
@@ -488,31 +582,38 @@ slugify <- function(x) {
     stringr::str_remove_all("^-|-$")
 }
 ```
-  
+
 ```{r example-slugify}
-strings <- c("Café au Lait", "Niño Español", "Data_Science_Project", "--test--string--")
+strings <- c(
+  "Café au Lait",
+  "Niño Español",
+  "Data_Science_Project",
+  "--test--string--"
+)
 slugify(strings)
 ```
-  
+
 ```{r tests-slugify}
 test_that("slugify works", {
   expect_true(inherits(slugify, "function"))
 })
 ```
-  
-  
-  
+
+
+
 ## Generate Section Summary
-   
-  
+
+
 ```{r function-generate_section_summary}
 #' Generate Section Summary from Plot Stories
 #'
 #' Aggregates individual plot stories into a cohesive section summary.
 #'
-#' @param stories A character vector of stories generated from plots within the section.
+#' @param stories A character vector of stories generated from plots
+#' within the section.
 #' @param section_name The title of the section (e.g., "Population Overview").
-#' @param provider Optional provider (openai, gemini, anthropic). Auto-detected if NULL.
+#' @param provider Optional provider (openai, gemini, anthropic).
+#' Auto-detected if NULL.
 #' @param model Optional model name.
 #' @param max_tokens Max tokens for the summary.
 #'
@@ -528,19 +629,22 @@ generate_section_summary <- function(stories,
                                      provider = NULL,
                                      model = NULL,
                                      max_tokens = 400) {
+  # Filter valid stories
+  valid_stories <- stories[!sapply(stories, is.null)]
+
   if (length(valid_stories) == 0) {
     return(paste0("No AI insights available for ", section_name, "."))
   }
-  
+
   # Handle list objects (if passed from new generate_plot_story)
   # Iterate and extract $long_desc
   story_texts <- sapply(valid_stories, function(s) {
     if (is.list(s) && !is.null(s$long_desc)) {
-      return(s$long_desc)
+      s$long_desc
     } else if (is.character(s)) {
-      return(s)
+      s
     } else {
-      return("")
+      ""
     }
   })
   story_texts <- story_texts[story_texts != ""]
@@ -549,19 +653,27 @@ generate_section_summary <- function(stories,
 
   system_prompt <- paste0(
     "You are the Lead Editor for the UNHCR Global Report. ",
-    "Your task is to synthesize multiple data insights into a cohesive narrative section that reads exactly like a chapter from the 'Global Trends' or 'Mid-Year Trends' report.\n\n",
+    "Your task is to synthesize multiple data insights into a cohesive ",
+    "narrative section that reads exactly like a chapter from the ",
+    "'Global Trends' or 'Mid-Year Trends' report.\n\n",
     "### WRITING INSTRUCTIONS:\n",
-    "- **Synthesis:** Do not just list the insights. Weave them together into a story of displacement, protection, or solutions.\n",
-    "- **Context:** Connect specific data points to broader global themes (e.g., the impact of the Sudan crisis, the war in Ukraine, climate shocks).\n",
-    "- **Language:** Use phrases like 'Behind these stark numbers...', 'The data reveals...', 'This constitutes a rise of...'.\n",
-    "- **Focus:** Prioritize the magnitude of displacement, the burden on host communities, and the gap between needs and funding.\n"
+    "- **Synthesis:** Do not just list the insights. Weave them together ",
+    "into a story of displacement, protection, or solutions.\n",
+    "- **Context:** Connect specific data points to broader global themes ",
+    "(e.g., the impact of the Sudan crisis, the war in Ukraine, ",
+    "climate shocks).\n",
+    "- **Language:** Use phrases like 'Behind these stark numbers...', ",
+    "'The data reveals...', 'This constitutes a rise of...'.\n",
+    "- **Focus:** Prioritize the magnitude of displacement, the burden on ",
+    "host communities, and the gap between needs and funding.\n"
   )
 
   prompt <- paste0(
     "Section Topic: ", section_name, "\n\n",
     "Input Data Narratives:\n", combined_text, "\n\n",
-    "TASK: Write a cohesive section summary (approx ", max_tokens, " tokens) for this topic. ",
-    "Ensure the tone is formal, humanitarian, and data-driven. Avoid bullet points; use prose."
+    "TASK: Write a cohesive section summary (approx ", max_tokens,
+    " tokens) for this topic. Ensure the tone is formal, humanitarian, ",
+    "and data-driven. Avoid bullet points; use prose."
   )
 
   # Auto-detect provider if not specified
@@ -592,10 +704,22 @@ generate_section_summary <- function(stories,
   chat <- tryCatch(
     {
       switch(provider,
-        openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
-        gemini = ellmer::chat_google_gemini(system_prompt = system_prompt, model = model),
-        anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
-        ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
+        openai = ellmer::chat_openai(
+          model = model,
+          system_prompt = system_prompt
+        ),
+        gemini = ellmer::chat_google_gemini(
+          system_prompt = system_prompt,
+          model = model
+        ),
+        anthropic = ellmer::chat_anthropic(
+          model = model,
+          system_prompt = system_prompt
+        ),
+        ollama = ellmer::chat_ollama(
+          model = model,
+          system_prompt = system_prompt
+        ),
         stop("Invalid provider")
       )
     },
@@ -615,29 +739,30 @@ generate_section_summary <- function(stories,
     }
   )
 
-  return(response)
+  response
 }
 ```
-  
+
 ```{r example-generate_section_summary}
-# generate_section_summary()
+
 ```
-  
+
 ```{r tests-generate_section_summary}
 test_that("generate_section_summary works", {
   expect_true(inherits(generate_section_summary, "function"))
 })
 ```
- 
+
 ## Generate Report Summary
-    
-  
+
+
 ```{r function-generate_report_summary}
 #' Generate Report Executive Summary
 #'
 #' Aggregates section summaries into a final executive summary.
 #'
-#' @param section_summaries A named list or character vector of section summaries.
+#' @param section_summaries A named list or character vector of
+#' section summaries.
 #' @param country_name Name of the country.
 #' @param year Year of the report.
 #' @param provider Optional provider.
@@ -657,34 +782,50 @@ generate_report_summary <- function(section_summaries,
                                     provider = NULL,
                                     model = NULL,
                                     max_tokens = 400) {
-  valid_summaries <- section_summaries[!is.na(section_summaries) &
-    !grepl("AI summary.*skipped", section_summaries)]
+  valid_summaries <- section_summaries[
+    !is.na(section_summaries) &
+      !grepl("AI summary.*skipped", section_summaries)
+  ]
 
   if (length(valid_summaries) == 0) {
     return("No AI executive summary available.")
   }
 
-  combined_text <- paste(names(valid_summaries), ":\n", valid_summaries, collapse = "\n\n")
+  combined_text <- paste(
+    names(valid_summaries),
+    ":\n",
+    valid_summaries,
+    collapse = "\n\n"
+  )
 
   system_prompt <- paste0(
     "You are the UNHCR High Commissioner's speechwriter and lead strategist. ",
-    "You are summarizing the entire data report for an executive audience (donors, press, member states).\n\n",
+    "You are summarizing the entire data report for an executive audience ",
+    "(donors, press, member states).\n\n",
     "### OBJECTIVE:\n",
-    "Produce a 'Key Trends' executive summary that highlights the most critical statistics and their humanitarian implications.\n\n",
+    "Produce a 'Key Trends' executive summary that highlights the most ",
+    "critical statistics and their humanitarian implications.\n\n",
     "### STYLE GUIDE:\n",
-    "- **Urgency:** Convey the scale of the emergency (e.g., 'A world in turmoil', 'Record highs').\n",
-    "- **Responsibility:** Highlight the contribution of host countries (e.g., 'Low- and middle-income countries continue to host the majority...').\n",
-    "- **Solutions:** Mention resettlement, returns, or pathways if data is present, but be realistic about the gaps.\n",
-    "- **Format:** Start with a powerful opening statement. Follow with 3-4 distinct paragraphs covering the main themes (Displacement, Solutions, Funding/Gaps)."
+    "- **Urgency:** Convey the scale of the emergency ",
+    "(e.g., 'A world in turmoil', 'Record highs').\n",
+    "- **Responsibility:** Highlight the contribution of host countries ",
+    "(e.g., 'Low- and middle-income countries continue to host the ",
+    "majority...').\n",
+    "- **Solutions:** Mention resettlement, returns, or pathways if data is ",
+    "present, but be realistic about the gaps.\n",
+    "- **Format:** Start with a powerful opening statement. Follow with 3-4 ",
+    "distinct paragraphs covering the main themes ",
+    "(Displacement, Solutions, Funding/Gaps)."
   )
 
   prompt <- paste0(
     "Country/Context: ", country_name, "\n",
     "Year: ", year, "\n\n",
     "Section Summaries:\n", combined_text, "\n\n",
-    "TASK: Draft the Executive Summary (approx ", max_tokens, " tokens) for this report. ",
-    "Synthesize the provided section summaries into a high-level overview. ",
-    "Highlight the total figures and the primary drivers of change."
+    "TASK: Draft the Executive Summary (approx ", max_tokens,
+    " tokens) for this report. Synthesize the provided section summaries ",
+    "into a high-level overview. Highlight the total figures and the ",
+    "primary drivers of change."
   )
 
   # Auto-detect provider if not specified
@@ -715,10 +856,22 @@ generate_report_summary <- function(section_summaries,
   chat <- tryCatch(
     {
       switch(provider,
-        openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
-        gemini = ellmer::chat_google_gemini(system_prompt = system_prompt, model = model),
-        anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
-        ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
+        openai = ellmer::chat_openai(
+          model = model,
+          system_prompt = system_prompt
+        ),
+        gemini = ellmer::chat_google_gemini(
+          system_prompt = system_prompt,
+          model = model
+        ),
+        anthropic = ellmer::chat_anthropic(
+          model = model,
+          system_prompt = system_prompt
+        ),
+        ollama = ellmer::chat_ollama(
+          model = model,
+          system_prompt = system_prompt
+        ),
         stop("Invalid provider")
       )
     },
@@ -738,21 +891,21 @@ generate_report_summary <- function(section_summaries,
     }
   )
 
-  return(response)
+  response
 }
 ```
-  
+
 ```{r example-generate_report_summary}
-# generate_report_summary()
+
 ```
-  
+
 ```{r tests-generate_report_summary}
 test_that("generate_report_summary works", {
   expect_true(inherits(generate_report_summary, "function"))
 })
 ```
-      
-          
+
+
 
 ---
 
@@ -775,9 +928,10 @@ These are only included in the present flat template file, their content will no
 # Keep eval=FALSE to avoid infinite loop in case you hit the knit button
 # Execute in the console directly
 
-# remotes::install_github("thinkr-open/checkhelper")
-# checkhelper::print_globals()
-# tools::showNonASCIIfile("dev/flat_ai_reporting.Rmd")
-fusen::inflate(flat_file = "dev/flat_ai_reporting.Rmd", vignette_name = "AI Analysis Architecture", overwrite = "yes")
+fusen::inflate(
+  flat_file = "dev/flat_ai_reporting.Rmd",
+  vignette_name = "AI Analysis Architecture",
+  overwrite = "yes"
+)
 pkgdown::build_site()
 ```

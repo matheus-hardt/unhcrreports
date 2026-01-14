@@ -22,8 +22,9 @@ context for the AI.
 \details{
 It performs two main tasks:
 \enumerate{
-\item \strong{Distribution Analysis}: Uses \code{skimr::skim()} to summarize variables mapped in the plot.
-\item \strong{Correlation Check}: For scatterplots (\code{geom_point}), it calculates Pearson correlations
-to help the AI identify relationships.
+\item \strong{Distribution Analysis}: Uses \code{skimr::skim()} to summarize variables
+mapped in the plot.
+\item \strong{Correlation Check}: For scatterplots (\code{geom_point}), it calculates
+Pearson correlations to help the AI identify relationships.
 }
 }

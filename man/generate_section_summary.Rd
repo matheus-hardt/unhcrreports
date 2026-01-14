@@ -13,11 +13,13 @@ generate_section_summary(
 )
 }
 \arguments{
-\item{stories}{A character vector of stories generated from plots within the section.}
+\item{stories}{A character vector of stories generated from plots
+within the section.}
 
 \item{section_name}{The title of the section (e.g., "Population Overview").}
 
-\item{provider}{Optional provider (openai, gemini, anthropic). Auto-detected if NULL.}
+\item{provider}{Optional provider (openai, gemini, anthropic).
+Auto-detected if NULL.}
 
 \item{model}{Optional model name.}
 
@@ -34,5 +36,5 @@ Aggregates individual plot stories into a cohesive section summary.
 stories <- c("Story 1...", "Story 2...")
 summary <- generate_section_summary(stories, "Population")
 }
-# generate_section_summary()
+
 }
