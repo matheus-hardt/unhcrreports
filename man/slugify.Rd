@@ -16,6 +16,11 @@ slugified string
 Convert string to slug
 }
 \examples{
-strings <- c("Café au Lait", "Niño Español", "Data_Science_Project", "--test--string--")
+strings <- c(
+  "Café au Lait",
+  "Niño Español",
+  "Data_Science_Project",
+  "--test--string--"
+)
 slugify(strings)
 }

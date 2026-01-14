@@ -10,18 +10,20 @@ format:
     theme: cosmo
 params:
   country_iso3: "BRA"
+  name: "Brazil"
   year: 2024
   gp_provider: "azure"
   gp_model: "gpt-4.1-mini"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dev = "svg", out.width = "100%")
 library(ggplot2)
 library(dplyr)
 library(ellmer)
-library(unhcrdatapackage)
-library(unhcrreports) 
+
+library(unhcrreports)
+library(unhcrviz) 
 
 # Fix font issue on Windows
 update_geom_defaults("text", list(family = "sans"))
@@ -29,6 +31,15 @@ update_geom_defaults("label", list(family = "sans"))
 theme_set(theme_gray(base_family = "sans"))
 
 
+```
+
+```{r debug_info, echo=TRUE}
+message("DEBUG INFO START")
+print(sessionInfo())
+message("unhcrviz version: ", packageVersion("unhcrviz"))
+message("Args for plot_ctr_location:")
+print(args(unhcrviz::plot_ctr_location))
+message("DEBUG INFO END")
 ```
 
 ```{r setup_data, include=FALSE}
@@ -106,7 +117,8 @@ summary_pop <- generate_section_summary(
 
 # 3. Geography & Movements
 p_map <- plot_ctr_location(year = params$year,
-                           country_asylum_iso3c = params$country_iso3)
+                           country_origin_iso3c = params$country_iso3,
+                           pop_type = c("REF", "ASY", "IDP", "OIP", "STA", "OOC"))
 story_map <- generate_plot_story(
   p_map,
   provider = params$gp_provider,
@@ -144,9 +156,18 @@ story_dest <- generate_plot_story(
   max_tokens = 200
 )
 
+p_migrant <- unhcrviz::plot_ctr_disp_migrant(year = params$year,
+                               country_asylum_iso3c = params$country_iso3)
+story_migrant <- generate_plot_story(
+  p_migrant,
+  provider = params$gp_provider,
+  model = params$gp_model,
+  max_tokens = 200
+)
+
 # Section Summary: Geography
 summary_geo <- generate_section_summary(
-  stories = c(story_map, story_origin, story_hist, story_dest),
+  stories = c(story_map, story_origin, story_hist, story_dest, story_migrant),
   section_name = "Geography & Movements",
   provider = params$gp_provider,
   model = params$gp_model
@@ -223,9 +244,18 @@ story_sol <- generate_plot_story(p_sol,
   model = params$gp_model,
   max_tokens = 200)
 
+p_sol_rec <- unhcrviz::plot_ctr_solution_recognition(
+  year = params$year,
+  country_asylum_iso3c = params$country_iso3
+)
+story_sol_rec <- generate_plot_story(p_sol_rec, 
+  provider = params$gp_provider,
+  model = params$gp_model,
+  max_tokens = 200)
+
 # Section Summary: Solutions
 summary_sol <- generate_section_summary(
-  stories = c(story_sol),
+  stories = c(story_sol, story_sol_rec),
   section_name = "Solutions",
   provider = params$gp_provider,
   model = params$gp_model
@@ -239,7 +269,7 @@ summary_report <- generate_report_summary(
     "Asylum System" = summary_asylum,
     "Solutions" = summary_sol
   ),
-  country_name = params$country_iso3,
+  country_name = params$name,
   year = params$year,
   provider = params$gp_provider,
   model = params$gp_model
@@ -251,8 +281,8 @@ summary_report <- generate_report_summary(
 `r summary_report`
 
 ```{r key-figures}
-#| fig.width: 10
-#| fig.height: 4
+#| fig.width: 6
+#| fig.height: 2.4
 p_key
 ```
 
@@ -262,145 +292,164 @@ p_key
 
 ## Demographics
 
-```{r treemap}
-#| fig.width: 10
-#| fig.height: 6
-p_tree
-```
-
 > **AI Insight**: `r story_tree`
 
-```{r pyramid}
-#| fig.width: 10
-#| fig.height: 8
-p_pyramid
+```{r treemap}
+#| fig.width: 6
+#| fig.height: 3.6
+p_tree
 ```
 
 > **AI Insight**: `r story_pyramid`
 
-## Trends Over Time
-
-```{r trends}
-#| fig.width: 10
-#| fig.height: 6
-p_trend
+```{r pyramid}
+#| fig.width: 6
+#| fig.height: 4.8
+p_pyramid
 ```
+
+## Trends Over Time
 
 > **AI Insight**: `r story_trend`
 
-```{r diff-pop}
-#| fig.width: 10
-#| fig.height: 6
-p_diff
+```{r trends}
+#| fig.width: 6
+#| fig.height: 7
+p_trend
 ```
 
 > **AI Insight**: `r story_diff`
 
-```{r pop-perc}
-#| fig.width: 10
+```{r diff-pop}
+#| fig.width: 6
 #| fig.height: 6
-p_perc
+p_diff
 ```
 
 > **AI Insight**: `r story_perc`
+
+```{r pop-perc}
+#| fig.width: 6
+#| fig.height: 7
+p_perc
+```
 
 # Geography & Movements
 
 `r summary_geo`
 
+> **AI Insight**: `r story_map`
+
 ```{r map}
-#| fig.width: 10
-#| fig.height: 8
+#| fig.width: 6
+#| fig.height: 4.8
 p_map
 ```
 
-> **AI Insight**: `r story_map`
-
 ## Origin of Displaced Populations
-
-```{r origin}
-#| fig.width: 10
-#| fig.height: 8
-p_origin
-```
 
 > **AI Insight**: `r story_origin`
 
-```{r origin-history}
-#| fig.width: 10
+```{r origin}
+#| fig.width: 6
 #| fig.height: 6
-p_hist
+p_origin
 ```
 
 > **AI Insight**: `r story_hist`
 
+```{r origin-history}
+#| fig.width: 6
+#| fig.height: 6
+p_hist
+```
+
 ## Destination
 
+> **AI Insight**: `r story_dest`
+
 ```{r destination}
-#| fig.width: 10
+#| fig.width: 6
 #| fig.height: 6
 # Note: This plot shows where people FROM the country go (Outflow)
 p_dest
 ```
 
-> **AI Insight**: `r story_dest`
+```
+
+> **AI Insight**: `r story_migrant`
+
+```{r migrant}
+#| fig.width: 10
+#| fig.height: 6
+#| warning: false
+p_migrant
+```
 
 # Asylum System
 
 `r summary_asylum`
 
+> **AI Insight**: `r story_asylum`
+
 ```{r asylum}
-#| fig.width: 10
+#| fig.width: 6
 #| fig.height: 6
 p_asylum
 ```
 
-> **AI Insight**: `r story_asylum`
-
-```{r process}
-#| fig.width: 10
-#| fig.height: 8
-p_process
-```
-
 > **AI Insight**: `r story_process`
 
-```{r processing-time}
-#| fig.width: 10
-#| fig.height: 6
-p_time
+```{r process}
+#| fig.width: 6
+#| fig.height: 4.8
+p_process
 ```
 
 > **AI Insight**: `r story_time`
 
-## Recognition Rates
-
-```{r recognition}
-#| fig.width: 10
-#| fig.height: 8
-p_rec
+```{r processing-time}
+#| fig.width: 6
+#| fig.height: 6
+p_time
 ```
+
+## Recognition Rates
 
 > **AI Insight**: `r story_rec`
 
-```{r origin-recognition}
-#| fig.width: 10
-#| fig.height: 8
-# Note: This plot shows recognition rates for nationals FROM the country (Outflow)
-p_rec_origin
+```{r recognition}
+#| fig.width: 6
+#| fig.height: 6
+p_rec
 ```
 
 > **AI Insight**: `r story_rec_origin`
+
+```{r origin-recognition}
+#| fig.width: 6
+#| fig.height: 6
+# Note: This plot shows recognition rates for nationals FROM the country (Outflow)
+p_rec_origin
+```
 
 # Solutions
 
 `r summary_sol`
 
+> **AI Insight**: `r story_sol`
+
 ```{r solutions}
-#| fig.width: 10
+#| fig.width: 6
 #| fig.height: 6
 p_sol
 ```
 
-> **AI Insight**: `r story_sol`
+> **AI Insight**: `r story_sol_rec`
+
+```{r solutions-rec}
+#| fig.width: 8
+#| fig.height: 6
+p_sol_rec
+```
 

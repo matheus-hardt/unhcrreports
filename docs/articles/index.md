@@ -1,8 +1,11 @@
 # Articles
 
-### All vignettes
+### Get Started
 
-- [AI Powered
-  Reports](https://matheus-hardt.github.io/unhcrreports/articles/ai-powered-reports.md):
-- [Analysis with
-  AI](https://matheus-hardt.github.io/unhcrreports/articles/analysis-with-ai.md):
+- [Get
+  Started](https://matheus-hardt.github.io/unhcrreports/articles/get-started.md):
+
+### Technical Details
+
+- [AI Analysis
+  Architecture](https://matheus-hardt.github.io/unhcrreports/articles/ai-analysis-architecture.md):

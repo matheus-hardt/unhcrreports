@@ -3,5 +3,43 @@ template:
   package: unhcrtemplate
   bootstrap: 5
   params:
-    logo: man/figures/logo.png
+    logo: man/figures/logo.svg
 
+reference:
+  - title: "Main Functions"
+    desc: >
+      Primary functions for generating reports.
+    contents:
+      - generate_report
+
+  - title: "AI Analysis Architecture"
+    desc: >
+      Functions that power the AI-generated narratives.
+    contents:
+      - generate_plot_story
+      - generate_section_summary
+      - generate_report_summary
+      - generate_description
+      - clean_llm_response
+      - extract_structure
+      - profile_data
+      - slugify
+
+articles:
+  - title: "Get Started"
+    navbar: Get Started
+    contents:
+      - get-started
+  - title: "Technical Details"
+    contents:
+      - ai-analysis-architecture
+
+home:
+  sidebar:
+    structure:
+      - links
+      - license
+      - community
+      - citation
+      - authors
+      - dev

@@ -1,15 +1,15 @@
 # Generate Humanitarian Data Story from ggplot
 
 This function takes a ggplot2 object and generates a storytelling
-narrative focused on humanitarian insights. It uses the {ellmer} package
-to call a large or small language model from a supported provider.
+narrative. It now uses a modular architecture (extract_structure,
+profile_data, generate_description).
 
 ## Usage
 
 ``` r
 generate_plot_story(
   plot,
-  max_tokens = 30,
+  max_tokens = 300,
   provider = NULL,
   model = NULL,
   clean_response = TRUE
@@ -20,71 +20,47 @@ generate_plot_story(
 
 - plot:
 
-  A `ggplot` object from ggplot2.
+  A `ggplot` object.
 
 - max_tokens:
 
-  Maximum number of tokens (approximate) for the narrative (default =
-  30).
+  Max tokens for description.
 
 - provider:
 
-  Optional character string specifying the provider. Options include:
-  `"openai"`, `"gemini"`, `"anthropic"`, `"ollama"`, `"azure"`. If
-  `NULL`, auto-detect from environment keys.
+  LLM provider.
 
 - model:
 
-  Optional character string specifying the model name. For Azure, this
-  is typically the deployment name. If `NULL`, a default model for the
-  chosen provider will be used.
+  LLM model.
 
 - clean_response:
 
-  Logical. Whether to clean the response by removing thinking tags and
-  other artifacts (default = TRUE).
+  Deprecated. Response is now structured JSON.
 
 ## Value
 
-A character string containing a storytelling narrative focused on
-humanitarian data.
-
-## Details
-
-If you do not have API keys or need to work offline, simply get ollama
-and look at top reasoning models - https://ollama.com/search?c=thinking
-
-Setup:
-
-1.  Install {ellmer}: `install.packages("ellmer")`
-
-2.  Set your API key in your environment. For Azure OpenAI, use the
-    standard OpenAI key variable:
-    `Sys.setenv(OPENAI_API_KEY = "<YOUR_AZURE_OPENAI_KEY>")`
-
-3.  When using Azure, set `provider = "azure"` and provide the env
-    variables
-    `Sys.setenv(AZURE_OPENAI_ENDPOINT = "<YOUR_AZURE_ENDPOINT>")`
-    `Sys.setenv(AZURE_OPENAI_API_VERSION = "<YOUR_AZURE_OPENAI_API_VERSION>")`
-    The best place to set this is in .Renviron, which you can easily
-    edit by calling
-    [`usethis::edit_r_environ()`](https://usethis.r-lib.org/reference/edit.html)
+A list containing `$short_desc` and `$long_desc`.
 
 ## Examples
 
 ``` r
 library(ggplot2)
 p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
-   geom_point() +
-    unhcrthemes::theme_unhcr(grid = "Y", axis = "X", axis_title = FALSE) +
-   labs(title = "Vehicle Efficiency",
-        subtitle = "Fuel consumption vs weight",
-        caption = "Source: mtcars dataset")
+  geom_point() +
+  unhcrthemes::theme_unhcr(grid = "Y", axis = "X", axis_title = FALSE) +
+  labs(
+    title = "Vehicle Efficiency",
+    subtitle = "Fuel consumption vs weight",
+    caption = "Source: mtcars dataset"
+  )
 
 generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
-#> [1] "Heavier displaced persons vehicles consume more fuel relative to their lighter counterparts. Points like (5.42,10.4), representing significant weight increase with a sharp drop in MPG, are visually prominent and costly for aid operations. Even moderately heavier average weights shown here consistently result in lower fuel efficiency levels across the data points. Efficiency improvements through lightweight vehicle choices offer clear operational advantages during displacement emergencies, reducing both fuel use costs and environmental impact."
+#> Error in ellmer::chat_ollama(model = model, system_prompt = system_prompt): Can't find locally running ollama.
 
 story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
+#> Error in ellmer::chat_azure_openai(system_prompt = system_prompt, model = model,     api_version = azure_version, endpoint = azure_endpoint, api_key = azure_key,     type = "json_object"): unused argument (type = "json_object")
 # To use as subtitle:
 p + ggplot2::labs(subtitle = story)
+#> Error: object 'story' not found
 ```

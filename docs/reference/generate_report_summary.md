@@ -52,5 +52,5 @@ if (FALSE) { # \dontrun{
 sections <- list("Population" = "Summary...", "Asylum" = "Summary...")
 report_summary <- generate_report_summary(sections, "Colombia", 2022)
 } # }
-#generate_report_summary()
+# generate_report_summary()
 ```

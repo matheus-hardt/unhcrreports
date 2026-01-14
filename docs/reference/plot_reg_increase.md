@@ -63,7 +63,7 @@ plot_reg_increase(
   year = 2021,
   lag = 5,
   topn = 5,
-  region = "Asia",
+  region = "Asia and the Pacific",
   pop_type = c("REF", "ASY", "OIP")
 )
 #> Warning: There was 1 warning in `dplyr::mutate()`.
@@ -71,7 +71,4 @@ plot_reg_increase(
 #>   "unhcr.region")`.
 #> Caused by warning:
 #> ! Some values were not matched unambiguously: UNK
-#> Error in dplyr::mutate(tidyr::spread(dplyr::mutate(dplyr::mutate(dplyr::summarise(dplyr::group_by(dplyr::filter(dplyr::mutate(tidyr::pivot_longer(dplyr::filter(dplyr::mutate(dplyr::filter(refugees::population,     year == baseline | year == thisyear), unhcr_region = countrycode::countrycode(coa_iso,     "iso3c", "unhcr.region")), unhcr_region == region), cols = c(refugees,     asylum_seekers, idps, oip, stateless, ooc, hst), names_to = "population_type",     values_to = "value"), population_type_label = dplyr::case_when(population_type ==     "refugees" ~ "REF", population_type == "asylum_seekers" ~     "ASY", population_type == "idps" ~ "IDP", population_type ==     "oip" ~ "OIP", population_type == "stateless" ~ "STA", population_type ==     "ooc" ~ "OOC", population_type == "hst" ~ "HCO", TRUE ~ "Other")),     population_type_label %in% pop_type), coa_name, year), value = sum(value,     na.rm = TRUE), .groups = "drop"), coa_name = stringr::str_replace(coa_name,     "Democratic Republic of the Congo", "DRC")), year = paste0("year_",     year)), year, value), gap = .data[[paste0("year_", thisyear)]] -     .data[[paste0("year_", baseline)]]): ℹ In argument: `gap = .data[["year_2021"]] - .data[["year_2016"]]`.
-#> Caused by error in `.data[["year_2021"]]`:
-#> ! Column `year_2021` not found in `.data`.
 ```

@@ -42,3 +42,14 @@ plot_ctr_solution(
 ## Value
 
 a ggplot2 object
+
+## Examples
+
+``` r
+plot_ctr_solution(
+  year = 2021,
+  country_asylum_iso3c = "UGA",
+  lag = 10,
+  sol_type = c("NAT", "RST", "RET", "RDP")
+)
+```

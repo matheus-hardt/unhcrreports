@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Playground: Humanitarian Country Report 5</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="playground_country_report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="playground_country_report_files/libs/quarto-html/quarto.js"></script>
+<script src="playground_country_report_files/libs/quarto-html/popper.min.js"></script>
+<script src="playground_country_report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="playground_country_report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="playground_country_report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="playground_country_report_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="playground_country_report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="playground_country_report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="playground_country_report_files/libs/bootstrap/bootstrap-1bc8a17f135ab3d594c857e9f48e611b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Playground: Humanitarian Country Report 5</h1>
+<p class="subtitle lead">Manual Testing of Plots</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Testing Report for: "</span>, params<span class="sc">$</span>name, <span class="st">" ("</span>, params<span class="sc">$</span>country_iso3, <span class="st">") - "</span>, params<span class="sc">$</span>year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="executive-summary" class="level1">
+<h1>Executive Summary</h1>
+<p><strong>EXECUTIVE SUMMARY: KEY TRENDS – BRAZIL 2024</strong></p>
+<p><strong>A Sanctuary Under Pressure</strong> The 2024 data paints a stark picture of a region in turmoil and a nation standing as a critical, yet strained, bulwark of protection. Brazil now hosts a population of concern reaching approximately <strong>796,000 individuals</strong>—a figure that reflects the compounding effects of deep regional instability. This is not a transient emergency, but a rapidly expanding structural reality. In the last year alone, the largest specific population group swelled by over <strong>101,000 people</strong>, driving the total for this cohort to nearly 464,000. This dramatic acceleration underscores the indispensable role of middle-income host countries in absorbing the shockwaves of global displacement.</p>
+<p><strong>Displacement Dynamics and Demographic Demands</strong> Brazil’s displacement crisis is defined by extreme concentration and specific demographic pressures. The influx is heavily skewed toward a single nationality, with broader displacement figures from the primary source country—Venezuela—reaching peaks of nearly 680,000. Crucially, the data reveals a population dominated by working-age adults (18–59), rather than the child-heavy demographics of acute camps. This profile signals an urgent need to shift from pure humanitarian aid to economic inclusion and labor market access. Concurrently, Brazil faces a dual mobility challenge: acting as a sanctuary for neighbors while witnessing a targeted outflow of over 326,000 of its own citizens to the Global North, driven by complex socioeconomic factors.</p>
+<p><strong>Systemic Resilience Amidst Volatility</strong> The Brazilian state has undertaken a massive administrative effort to manage these flows. In 2024, the asylum system processed a staggering <strong>452,000 administrative decisions</strong> to address historic backlogs. However, protection gaps remain. While volume is high, the median refugee recognition rate hovers at just 1.85% for many nationalities, indicating a complex environment of mixed movements where the asylum system is being used as the primary channel for regularization. This places an extraordinary burden on national infrastructure to distinguish between those in need of international protection and those driven by economic desperation.</p>
+<p><strong>The Solutions Gap</strong> The most alarming trend in this report is the total collapse of cross-border durable solutions. While Brazil granted refugee status to nearly 77,200 individuals during the recent surge, <strong>recorded solutions—such as voluntary repatriation and resettlement—have flatlined at zero</strong> for five consecutive years. We are witnessing a “ribbon of need” that expands dramatically while the avenue for solutions remains dormant. This imbalance is unsustainable. The data makes it clear: without a renewed international commitment to responsibility-sharing and third-country resettlement, Brazil is being left to manage a protracted integration crisis single-handedly.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>p_key</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/key-figures-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="population-overview" class="level1">
+<h1>Population Overview</h1>
+<p><strong>Population Overview: Brazil</strong></p>
+<p>Behind the stark numbers of Brazil’s 2024 displacement data lies a rapidly evolving protection landscape characterized by sharp acceleration in arrivals and a high concentration of specific needs. As of 2024, the total population of concern in Brazil has reached approximately 796,000 individuals, a figure that reflects the compounding effects of regional instability. The data reveals a significant expansion in the scope of displacement; between 2023 and 2024 alone, the largest specific population group swelled by approximately 101,000 people—rising from roughly 363,000 to over 464,000. This constitutes a dramatic rise that underscores the deepening reliance on Brazil’s asylum and protection systems.</p>
+<p>The demographic profile of this population suggests a displacement crisis centered on working-age adults rather than the child-heavy demographics often seen in acute emergency camps. Comprehensive gender and age analysis indicates a distribution heavily skewed toward the 18–59 age bracket, which accounts for the vast majority of those displaced. Within this primary cohort, 23.3 per cent are male and 22.3 per cent are female, indicating a relatively balanced gender ratio despite a slight overall male prevalence. Conversely, the proportion of children and elderly individuals remains significantly lower. This age structure points to a population with urgent needs for economic inclusion and labor market access, placing distinct demands on host communities and integration services.</p>
+<p>Statistically, the population distribution is defined by extreme concentration rather than diversity. The data displays a massive skew where 58 per cent of the total population falls into a single legal category, while recognized refugees are similarly dominated by one specific country of origin. This single nationality accounts for 141,269 refugees, a massive outlier compared to a median of just 2,618 for other nationalities. Furthermore, longitudinal analysis from 2019 to 2024 highlights a concerning lack of durable solutions; categories such as ‘returned refugees’ and ‘returned IDPs’ consistently register near-zero values. This persistence of high displacement numbers, paired with the absence of returns, signals that displacement in Brazil is becoming increasingly protracted, requiring sustained international support to bridge the widening gap between immediate humanitarian needs and long-term integration solutions.</p>
+<section id="demographics" class="level2">
+<h2 class="anchored" data-anchor-id="demographics">Demographics</h2>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: A treemap titled ‘Population of Concern in Brazil’ visualizes the demographic breakdown of 796,000 individuals across 7 distinct population types as of 2024. The chart uses nested rectangles sized proportionally to the number of individuals in each category.</p>
+</blockquote>
+<p>The data reveals an extreme concentration of the population within a few specific legal statuses. The distribution is heavily skewed, characterized by one massive category containing 464,395 individuals (approximately 58% of the total). A secondary large group makes up the bulk of the remainder (inferred near 165,000 based on the 75th percentile), while the remaining groups are negligible in size.</p>
+<p>Statistically, the disparity is highlighted by the difference between the mean population per group (113,716) and the median (496). This indicates that 5 out of the 7 population types have very low counts, with some categories (such as returned refugees or returned IDPs) potentially registering near zero.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>p_tree</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/treemap-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: This population pyramid visualizes the demographic breakdown of 754,946 individuals in Brazil as of 2024, including Refugees, Asylum Seekers, IDPs, and other groups of concern. Data completeness is high, with 100% gender disaggregation available. The chart displays data across 6 age groups. Statistical analysis indicates a distribution heavily skewed towards one primary age bracket (inferred as adults 18-59 based on typical displacement demographics and maximum values), which contains the highest proportion of the population: 23.3% are males in this bracket and 22.3% are females. Overall, the population leans slightly male, with an average bracket proportion of 8.52% for males compared to 8.15% for females. The remaining age groups (children and likely elderly) show significantly lower proportions, with minimum values dropping to just under 1% for the smallest cohorts.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>p_pyramid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/pyramid-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="trends-over-time" class="level2">
+<h2 class="anchored" data-anchor-id="trends-over-time">Trends Over Time</h2>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: A column chart displaying the number of people under UNHCR’s mandate in Brazil, categorized by population type, covering the period from 2019 to 2024. The chart includes text labels indicating specific values. The statistical profile identifies six unique population types, with data recorded for each year. The distribution of values is highly skewed; while the median population count per group is 16,670, the mean is approximately 89,657, driven by high outliers. The maximum recorded value for a single category is 464,395, whereas categories such as ‘returned refugees’ and ‘returned IDPs’ consistently reflect zero values. The high standard deviation (approx. 120,962) suggests that the total population figures are heavily influenced by a specific subset of the population types, rather than being evenly distributed.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p_trend</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/trends-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: A bar chart compares the number of people across six different population groups in Brazil between the years 2023 and 2024. The chart utilizes bars to represent magnitude and text labels for specific values. The statistical data reveals a clear upward trend in population numbers during this period. The average population count per group increased from approximately 111,159 in 2023 to 132,669 in 2024. The maximum population size recorded for a single group rose substantially from roughly 363,000 to over 464,000, representing an absolute growth of approximately 101,000 people. This indicates a significant expansion in the populations of concern or mapped demographics within Brazil over the one-year timeframe.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>p_diff</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/diff-pop-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: This horizontal bar chart titled ‘Brazil: Refugees | 2024’ depicts the number of refugees from the top 9 countries of origin residing in Brazil. The X-axis displays the number of people, while the Y-axis lists the specific countries. The statistical profile reveals a highly skewed distribution: the maximum value is 141,269 individuals, representing a massive outlier compared to the median value of 2,618. This indicates that the vast majority of refugees in this dataset come from a single nation, while the remaining countries (which include Cuba, Lebanon, and Mali among others) contribute significantly smaller populations, with the 75th percentile reaching only roughly 7,000. Icons or flags (GeomPointSVG) likely accompany the bars to visually identify the specific nations.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>p_perc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/pop-perc-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="geography-movements" class="level1">
+<h1>Geography &amp; Movements</h1>
+<p><strong>Regional Dynamics: Brazil as Sanctuary and Source</strong></p>
+<p>Brazil’s role within the Latin American displacement architecture is increasingly defined by its dual capacity as a critical sanctuary for regional neighbors and a growing point of departure for its own citizens. Behind the stark numbers lies a complex mobility ecosystem where the pressure on host communities intersects with the urgent search for safety abroad. The 2024 data reveals a landscape characterized by extreme concentration, indicating that displacement drivers are channelling populations into specific, high-volume corridors rather than dispersing them globally.</p>
+<p>As a host nation, Brazil continues to absorb the shockwaves of regional instability. The evolution of forcibly displaced populations from 2019 through 2025 highlights a persistent upward trajectory in arrivals, dominated by the Venezuelan crisis. While flows from Cuba and Haiti represent distinct, ongoing humanitarian challenges, the statistical profile of displacement into Brazil is heavily right-skewed. The data indicates that while the median population from most countries of origin stands at approximately 2,600, the primary source country accounts for over 141,000 refugees alone, with broader displacement figures from this single nationality reaching peaks of nearly 680,000. This massive outlier underscores the disproportionate responsibility borne by Brazilian infrastructure and social services, which are managing a volume of need far exceeding historical baselines.</p>
+<p>Conversely, the movement of Brazilians seeking international protection exhibits a similarly polarized pattern. This constitutes a significant rise in extra-regional movement, yet the dispersion remains remarkably narrow. Analysis of destination countries reveals that out of 241 potential geographic entities, the overwhelming majority of displaced Brazilians are clustered in a single host nation. The disparity is acute: while the median number of Brazilians in most asylum countries is negligible—often fewer than 40 individuals—the primary destination hosts a staggering 326,868 people.</p>
+<p>This extreme concentration suggests that specific socioeconomic pull factors and established migration networks are driving movement toward a singular hub in the Global North, rather than a broad global scattering. Ultimately, these figures paint a picture of a nation at a crossroads, simultaneously managing the heavy burden of hosting one of the world’s largest displacement crises while witnessing a targeted, high-volume outflow of its own population. This duality emphasizes the critical gap between escalating humanitarian needs and the resources required to stabilize populations in the region.</p>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: A world map titled ‘Where are people from Brazil?’ visualizes the destination countries for Refugees, Asylum-seekers, Internally displaced persons, and others of concern to UNHCR originating from Brazil as of 2024. The visualization highlights a distinct lack of global dispersion; out of 241 geographic entities listed, data is missing for 211, meaning only 30 countries are identified as destinations. Among these 30 locations, the distribution is extremely right-skewed. The number of displaced individuals ranges from 5 to a maximum of 73,127. With a median value of only 38 and a 75th percentile of 322, the data indicates that while Brazil is a source country, the vast majority of people seeking protection are concentrated in one specific country (the outlier at ~73k), while other destination nations host negligible numbers.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>p_map</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/map-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="origin-of-displaced-populations" class="level2">
+<h2 class="anchored" data-anchor-id="origin-of-displaced-populations">Origin of Displaced Populations</h2>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: This horizontal bar chart depicts the number of refugees in Brazil for the year 2024, categorized by the top 9 countries of origin and an aggregated ‘Others’ group. The x-axis represents the number of people, while the y-axis lists the countries. The statistical profile reveals an extremely right-skewed distribution. The maximum value is 141,269 individuals, which is a massive outlier compared to the median value of 2,618 and the 75th percentile of 7,011. This disparity is highlighted by a high standard deviation of 49,722 relative to a mean of 25,708. The data indicates that while there is one primary source of refugees significantly driving the numbers, the remaining major countries of origin contribute comparatively smaller populations, ranging down to a minimum of 423.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>p_origin</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/origin-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: The chart is an alluvial diagram titled ‘Brazil: Evolution of Forcibly Displaced Population Origin,’ visualizing the flow and volume of displaced populations over time from 2019 to 2025. The Y-axis represents the number of people (in thousands), while the flows track four specific origin categories: Cuba, Haiti, Venezuela, and ‘Others.’</p>
+</blockquote>
+<p>Statistically, the dataset contains 28 observations evenly distributed across the four origin groups over the seven-year period. The population counts exhibit high variability and a strong right skew: the median value is approximately 57,712, while the mean is much higher at 146,182. The maximum recorded value is 680,145, with a standard deviation of 192,467. This disparity suggests that one origin group—Venezuela—dominates the dataset, representing the largest stream in the alluvial flow, while Cuba, Haiti, and the ‘Others’ category maintain significantly smaller, though distinct, population volumes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>p_hist</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/origin-history-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="destination" class="level2">
+<h2 class="anchored" data-anchor-id="destination">Destination</h2>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: This bar chart ranks the ten primary countries of asylum for forcibly displaced populations originating from Brazil in 2024. The data is highly right-skewed, characterized by a massive disparity between the top destination and the remaining countries. The maximum value is 326,868 displaced individuals, which is an extreme outlier compared to the median value of 7,390 and the 75th percentile of 13,909. Consequently, the mean (41,523) is significantly pulled upward by this single maximum value. The distribution suggests that while displacement from Brazil reaches various nations, the overwhelming majority of this specific population group is concentrated in a single host country.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: This plot shows where people FROM the country go (Outflow)</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>p_dest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/destination-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<pre><code>
+&gt; **AI Insight**: The visualization utilizes a text geometry ('GeomText') to display a single data point. The underlying dataset consists of exactly one row and two numeric columns ('x' and 'y'), where both values are fixed at 1.0. With a standard deviation of 'NA' and no variation in values, this graphic does not display a statistical distribution, correlation, or trend. It functions primarily as a static text label, a placeholder, or a singular annotation element within a broader layout.
+
+::: {.cell}
+
+```{.r .cell-code}
+p_migrant</code></pre>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/migrant-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+<p>:::</p>
+</section>
+</section>
+<section id="asylum-system" class="level1">
+<h1>Asylum System</h1>
+<p><strong>Asylum Systems and Protection Capacity: The Brazilian Context</strong></p>
+<p>The operational landscape in the Americas remains characterized by significant volatility and rapidly shifting displacement patterns, a trend keenly observed within Brazil’s national asylum system. Data spanning 2019 through projections for 2025 reveals a system under immense pressure, where application and decision volumes have fluctuated dramatically. While the baseline activity suggests moderate inflows, the system has been punctuated by years of extreme influx, with processing volumes surging to highs of over 202,000 cases in a single year. This volatility places an extraordinary burden on administrative infrastructure, necessitating robust forecasting and resource allocation to manage the persistent time lag between initial registration and final decision—a gap that projections indicate will remain a critical challenge through 2026.</p>
+<p>Behind these stark numbers lies a massive administrative undertaking to address the backlog. In 2024 alone, Brazil processed over 452,000 administrative decisions, a volume that testifies to the scale of the response. However, the flow of these decisions is far from uniform; the data indicates a highly skewed distribution dominated by a few major demographic pathways. This suggests that the asylum system is largely absorbed by specific, large-scale population movements—likely requiring simplified or prima facie processing modalities—while numerous smaller caseloads vie for the remainder of the adjudication capacity.</p>
+<p>Despite the historic volume of decisions, the data reveals a complex protection environment where high processing numbers do not uniformly translate to refugee recognition. Among the top ten countries of origin in 2024, the recognition landscape was marked by deep disparities. While the mean recognition rate stood at approximately 13.9 percent, the median was significantly lower at just 1.85 percent. This divergence underscores that for the vast majority of nationalities, the threshold for international protection remains high, even as the system processes a dominant caseload of nearly 235,000 decisions for a single nationality.</p>
+<p>Concurrently, the global trends highlight the dual nature of displacement, with Brazilian nationals themselves seeking protection abroad. Analysis of decisions in top destination countries for 2024 shows a similar pattern of high volume but conservative outcomes. While one primary destination processed nearly 34,000 cases, the median refugee recognition rate for Brazilians remained at 6.03 percent. Even when accounting for complementary protection, the data suggests that these movements are often driven by complex factors that frequently fall outside the scope of the 1951 Convention, reinforcing the need for comprehensive regional solutions that address the root causes of mixed movements.</p>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: The visualization represents a bar chart titled ‘Asylum Applications &amp; Decisions | Brazil 2019 - 2024’, categorizing data by three distinct asylum stages. Although the title specifies 2024, the statistical data indicates the timeline extends from 2019 through 2025. The dataset consists of 21 observations (3 stages across 7 years). The data reveals significant volatility in the volume of applications or decisions: the values range from a minimum of 3,115 to a substantial maximum of 202,845. The distribution is heavily right-skewed, evidenced by a median (27,828) that is much lower than the mean (42,633) and a high standard deviation (44,445). This suggests a baseline of moderate activity punctuated by specific years of extreme influx or processing volume.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>p_asylum</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/asylum-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: A parallel sets diagram titled ‘Refugee Status Determination Decisions’ visualizes the outcome of 452,062 administrative decisions in Brazil during 2024. The chart maps the relationships between 3 distinct categorical dimensions (likely representing stages such as population group and decision type) across 13 unique labels. The visualization utilizes flow width to represent volume, revealing a highly skewed distribution; the maximum single flow count is 145,548, which is significantly higher than the mean of approximately 14,127. This statistical profile suggests the data is dominated by a few major pathways—implying specific large demographic groups receiving uniform decisions—while numerous smaller flows comprise the remainder of the caseload.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>p_process</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/process-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: This visualization assesses the efficiency of Brazil’s asylum processing system by comparing cumulative applications against cumulative decisions from 2020 through projections to 2026. The chart utilizes an area plot to show the growing volume of cases, with the vertical axis representing the cumulative total (ranging from approx. 28,000 to a maximum of 418,606). The key analytical component is the horizontal distance between the ‘Registration’ curve and the ‘Decision’ curve, marked by segments and text labels. This gap visually represents the time lag (processing time) in days. The inclusion of data up to 2026 suggests the visualization incorporates forecasting to estimate future processing times and backlog reduction targets.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>p_time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/processing-time-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="recognition-rates" class="level2">
+<h2 class="anchored" data-anchor-id="recognition-rates">Recognition Rates</h2>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: This bar chart illustrates the Refugee Recognition Rate for the top 10 countries of origin in Brazil for the year 2024. The data is ordered by the total number of decisions made (TotalDecided), regardless of the outcome.</p>
+</blockquote>
+<p>Statistical analysis reveals a highly skewed distribution in recognition outcomes: - <strong>High Variability:</strong> The recognition rates range drastically from a minimum of 0.02% to a maximum of 61.9%. - <strong>Central Tendency:</strong> While the mean recognition rate is approximately 13.9%, the median is significantly lower at 1.85%. This indicates that for the majority of these top 10 countries, the likelihood of being recognized as a refugee is very low, with the mean being pulled up by one or two countries with high recognition rates. - <strong>Volume of Decisions:</strong> The caseload volume (TotalDecided) is also highly unequal, ranging from approximately 5,800 to nearly 235,000 decisions. The standard deviation for total decisions (70,152) is nearly double the mean, suggesting one dominant country of origin accounts for a massive portion of the processed applications.</p>
+<p>Overall, the chart highlights that high decision volumes do not necessarily correlate with high recognition rates in the 2024 Brazilian context.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>p_rec</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/recognition-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: The visualization depicts the refugee recognition rates for nationals from Brazil in 2024, focusing on the top 10 countries of asylum determined by the total volume of decisions.</p>
+</blockquote>
+<p>Statistical highlights include:</p>
+<ol type="1">
+<li><p><strong>Volume of Decisions</strong>: There is a massive disparity in decision volume among the top 10. The country with the highest volume processed 33,941 cases, which is an outlier compared to the median of 2,520 and the minimum of 548. This indicates that one specific country processes the vast majority of Brazilian asylum claims.</p></li>
+<li><p><strong>Recognition Rates</strong>: The Refugee Recognition Rate is relatively low overall. The mean rate is 8.24%, with a median of 6.03%. The rates range from a low of 1.09% to a high of 26.4%.</p></li>
+<li><p><strong>Total Recognition</strong>: When accounting for complementary protection (Total Recognition Rate), the maximum recognition rate observed increases to 36.4%, with a mean of 10.3%.</p></li>
+<li><p><strong>Distribution</strong>: The data shows a right-skewed distribution for decision volumes, while recognition rates remain conservative across most major destinations.</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: This plot shows recognition rates for nationals FROM the country (Outflow)</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>p_rec_origin</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/origin-recognition-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="solutions" class="level1">
+<h1>Solutions</h1>
+<p><strong>Durable Solutions</strong></p>
+<p>The pursuit of durable solutions—voluntary repatriation, local integration, and resettlement—remains the definitive challenge of the global displacement crisis. While legal recognition provides immediate safety, it is the attainment of a durable solution that allows refugees to rebuild their lives with certainty. In the context of the Americas, specifically Brazil, the data reveals a stark and widening chasm between the granting of asylum and the realization of formal solutions for the reporting period spanning 2019 to 2025.</p>
+<p>Brazil has demonstrated a continued, albeit volatile, commitment to providing international protection. The data indicates that refugee recognition rates have fluctuated significantly, responding to regional displacement shocks. Following a period of relative stability between 2019 and 2020, where recognitions hovered above 21,000 annually, and a subsequent contraction in the post-pandemic years of 2021 and 2022, the protection landscape witnessed a dramatic shift. In 2023, the data shows an unprecedented outlier spike, with recognitions soaring to nearly 77,200. This figure represents a massive administrative undertaking and underscores the critical role Brazil plays as a host country in the region.</p>
+<p>However, behind these stark numbers regarding legal status lies a concerning disconnect regarding long-term outcomes. While thousands are recognized, the statistical profile for cross-border solutions is virtually non-existent. Throughout the entire six-year analysis, the mean value for recorded solutions stands at a negligible 7.5, with the median firmly at zero. The only perceptible activity occurred in 2019, with a mere 30 solutions recorded; for every subsequent year, including the period of the 2023 recognition surge, formal solution figures flatlined at zero.</p>
+<p>This disparity creates a profound protection gap. The visual evidence illustrates a ribbon of need that expands dramatically while the line representing solutions remains dormant. Consequently, the burden falls disproportionately on local host communities to facilitate de facto integration in the absence of formal support mechanisms or resettlement opportunities. The total absence of recorded solutions from 2020 through 2025, juxtaposed against the tens of thousands of individuals granted refugee status, highlights not only a crisis of displacement but a crisis of resolution. Without a renewed commitment to responsibility-sharing and a substantial increase in resettlement quotas or supported repatriation efforts, the gap between the right to asylum and the right to a solution will continue to leave vulnerable populations in a state of protracted uncertainty.</p>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: A bar chart displays the trends in solutions for forcibly displaced people across borders in Brazil as of 2024. The analysis is based on a limited dataset of 4 observations, representing four distinct time points (Years). The statistical profile reveals an extremely low level of recorded solutions. The values range from a minimum of 0 to a maximum of 30, with a mean of 7.5 and a standard deviation of 15. The median value and the 25th percentile are both 0, indicating that for the majority of the observed periods, no solutions were recorded. The histogram confirms a distribution where most years show zero activity, with a single outlier reaching the maximum value of 30, suggesting that formal solutions for this specific population in Brazil have been negligible or rarely reported in the selected timeframe.</p>
+</blockquote>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>p_sol</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/solutions-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<blockquote class="blockquote">
+<p><strong>AI Insight</strong>: A line and ribbon chart illustrates the significant disparity between refugee recognitions (indicated in blue) and available solutions (indicated in green) in Brazil over the period from 2019 to 2025.</p>
+</blockquote>
+<p><strong>Overview:</strong> The visual demonstrates that while thousands of refugees are recognized annually, the number of recorded solutions is virtually non-existent, creating a substantial gap between legal recognition and durable outcomes.</p>
+<p><strong>Statistical Analysis:</strong> * <strong>Recognitions:</strong> The trend is highly erratic. * <strong>2019–2020:</strong> Figures were relatively high, rising from 21,538 to 26,257. * <strong>2021–2022:</strong> There was a sharp decline, dropping to 3,115 in 2021 and 5,809 in 2022. * <strong>2023:</strong> The data shows a dramatic outlier spike, reaching a peak of 77,184 recognitions. * <strong>2024–2025:</strong> Numbers receded to 13,643 in 2024 and 4,575 in 2025. * <strong>Solutions:</strong> The data for solutions is extremely sparse. The only recorded value is 30 solutions in 2019. For all subsequent years (2020–2025), the data is missing or recorded as zero, resulting in a flat baseline that contrasts sharply with the volume of recognitions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>p_sol_rec</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="playground_country_report_files/figure-html/solutions-rec-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

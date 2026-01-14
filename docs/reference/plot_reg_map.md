@@ -54,7 +54,7 @@ a base plot
 ``` r
 plot_reg_map(
   year = 2022,
-  region = "Asia",
+  region = "Asia and the Pacific",
   topn = 5,
   pop_type = c("REF", "ASY", "OIP"),
   projection = "Mercator",
@@ -65,8 +65,16 @@ plot_reg_map(
 #>   "unhcr.region")`.
 #> Caused by warning:
 #> ! Some values were not matched unambiguously: UNK
-#> Warning: no non-missing arguments to min; returning Inf
-#> Error in approx(cum, xx, xout = (1:g) * (nnm/g), method = "constant",     rule = 2, f = 1): zero non-NA points
+#> Warning: There was 1 warning in `stopifnot()`.
+#> ℹ In argument: `unhcr_region = countrycode::countrycode(iso_a3, "iso3c",
+#>   "unhcr.region")`.
+#> Caused by warning:
+#> ! Some values were not matched unambiguously: -99, ATF, FLK, TWN
+#> Warning: GDAL Message 1: +init=epsg:XXXX syntax is deprecated. It might return a CRS with a non-EPSG compliant axis order.
+#> 'bg', 'fg', 'tab', 'pos', 'inner', 'line', 'cex' and 'font' are deprecated arguments.
+#> 6 'NA' values are not plotted on the map.
+#> 4 '0' values are not plotted on the map.
+
 
 
 # plot_reg_map(  year = 2022,

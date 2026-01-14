@@ -4,9 +4,11 @@
 #'
 #' Aggregates individual plot stories into a cohesive section summary.
 #'
-#' @param stories A character vector of stories generated from plots within the section.
+#' @param stories A character vector of stories generated from plots
+#' within the section.
 #' @param section_name The title of the section (e.g., "Population Overview").
-#' @param provider Optional provider (openai, gemini, anthropic). Auto-detected if NULL.
+#' @param provider Optional provider (openai, gemini, anthropic).
+#' Auto-detected if NULL.
 #' @param model Optional model name.
 #' @param max_tokens Max tokens for the summary.
 #'
@@ -17,40 +19,59 @@
 #' stories <- c("Story 1...", "Story 2...")
 #' summary <- generate_section_summary(stories, "Population")
 #' }
-#' #generate_section_summary()
+#'
 generate_section_summary <- function(stories,
                                      section_name,
                                      provider = NULL,
                                      model = NULL,
                                      max_tokens = 400) {
-  # Graceful degradation if no stories or empty
-  valid_stories <- stories[!is.na(stories) &
-                             stories != "" & !grepl("AI narrative generation skipped", stories)]
-  
+  # Filter valid stories
+  valid_stories <- stories[!sapply(stories, is.null)]
+
   if (length(valid_stories) == 0) {
     return(paste0("No AI insights available for ", section_name, "."))
   }
-  
-  combined_text <- paste(valid_stories, collapse = "\n\n")
-  
+
+  # Handle list objects (if passed from new generate_plot_story)
+  # Iterate and extract $long_desc
+  story_texts <- sapply(valid_stories, function(s) {
+    if (is.list(s) && !is.null(s$long_desc)) {
+      s$long_desc
+    } else if (is.character(s)) {
+      s
+    } else {
+      ""
+    }
+  })
+  story_texts <- story_texts[story_texts != ""]
+
+  combined_text <- paste(story_texts, collapse = "\n\n")
+
   system_prompt <- paste0(
-    "You are an expert Protection Officer and Reporting Officer. ",
-    "Synthesize the provided plot narratives into a cohesive section summary for a humanitarian report. ",
-    "Focus on key trends, protection risks, and actionable insights."
+    "You are the Lead Editor for the UNHCR Global Report. ",
+    "Your task is to synthesize multiple data insights into a cohesive ",
+    "narrative section that reads exactly like a chapter from the ",
+    "'Global Trends' or 'Mid-Year Trends' report.\n\n",
+    "### WRITING INSTRUCTIONS:\n",
+    "- **Synthesis:** Do not just list the insights. Weave them together ",
+    "into a story of displacement, protection, or solutions.\n",
+    "- **Context:** Connect specific data points to broader global themes ",
+    "(e.g., the impact of the Sudan crisis, the war in Ukraine, ",
+    "climate shocks).\n",
+    "- **Language:** Use phrases like 'Behind these stark numbers...', ",
+    "'The data reveals...', 'This constitutes a rise of...'.\n",
+    "- **Focus:** Prioritize the magnitude of displacement, the burden on ",
+    "host communities, and the gap between needs and funding.\n"
   )
-  
+
   prompt <- paste0(
-    "Section: ",
-    section_name,
-    "\n\n",
-    "Plot Narratives:\n",
-    combined_text,
-    "\n\n",
-    "Write a concise summary of this section (approx ",
-    max_tokens,
-    " tokens)."
+    "Section Topic: ", section_name, "\n\n",
+    "Input Data Narratives:\n", combined_text, "\n\n",
+    "TASK: Write a cohesive section summary (approx ", max_tokens,
+    " tokens) for this topic. Ensure the tone is formal, humanitarian, ",
+    "and data-driven. Avoid bullet points; use prose."
   )
-  
+
   # Auto-detect provider if not specified
   if (is.null(provider)) {
     if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
@@ -63,12 +84,11 @@ generate_section_summary <- function(stories,
       return(paste0("AI summary for ", section_name, " skipped (no API key)."))
     }
   }
-  
+
   provider <- tolower(provider)
-  
+
   if (is.null(model)) {
-    model <- switch(
-      provider,
+    model <- switch(provider,
       openai = "gpt-4o-mini",
       gemini = "gemini-2.0-flash",
       anthropic = "claude-3-5-sonnet-latest",
@@ -76,28 +96,44 @@ generate_section_summary <- function(stories,
       return("AI summary skipped (invalid provider).")
     )
   }
-  
-  chat <- tryCatch({
-    switch(
-      provider,
-      openai = ellmer::chat_openai(model = model, system_prompt = system_prompt),
-      gemini = ellmer::chat_google_gemini(system_prompt = system_prompt, model = model),
-      anthropic = ellmer::chat_anthropic(model = model, system_prompt = system_prompt),
-      ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
-      stop("Invalid provider")
-    )
-  }, error = function(e)
-    NULL)
-  
+
+  chat <- tryCatch(
+    {
+      switch(provider,
+        openai = ellmer::chat_openai(
+          model = model,
+          system_prompt = system_prompt
+        ),
+        gemini = ellmer::chat_google_gemini(
+          system_prompt = system_prompt,
+          model = model
+        ),
+        anthropic = ellmer::chat_anthropic(
+          model = model,
+          system_prompt = system_prompt
+        ),
+        ollama = ellmer::chat_ollama(
+          model = model,
+          system_prompt = system_prompt
+        ),
+        stop("Invalid provider")
+      )
+    },
+    error = function(e) {
+      NULL
+    }
+  )
+
   if (is.null(chat)) {
     return("AI summary failed (chat init).")
   }
-  
+
   response <- tryCatch(
     chat$chat(prompt),
-    error = function(e)
+    error = function(e) {
       "AI summary failed (API error)."
+    }
   )
-  
-  return(response)
+
+  response
 }
