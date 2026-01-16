@@ -19,45 +19,71 @@
 #' @importFrom utils capture.output
 #' @importFrom jsonlite fromJSON
 #' @export
-generate_description <- function(structure,
-                                 stats,
-                                 provider = NULL,
-                                 model = NULL,
-                                 max_tokens = 500) {
-
+generate_description <- function(
+  structure,
+  stats,
+  provider = NULL,
+  model = NULL,
+  max_tokens = 500
+) {
   # Construct Context
   context_str <- paste0(
     "PLOT METADATA:\n",
-    "Title: ", structure$labels$title, "\n",
-    "Subtitle: ", structure$labels$subtitle, "\n",
-    "Geoms: ", paste(unique(structure$geoms), collapse = ", "), "\n",
-    "X Label: ", structure$labels$x, "\n",
-    "Y Label: ", structure$labels$y, "\n\n",
+    "Title: ",
+    structure$labels$title,
+    "\n",
+    "Subtitle: ",
+    structure$labels$subtitle,
+    "\n",
+    "Geoms: ",
+    paste(unique(structure$geoms), collapse = ", "),
+    "\n",
+    "X Label: ",
+    structure$labels$x,
+    "\n",
+    "Y Label: ",
+    structure$labels$y,
+    "\n\n",
 
     "STATISTICAL PROFILE:\n",
     "STATISTICAL PROFILE:\n",
-    paste(capture.output(print(stats$distributions)), collapse = "\n"), "\n",
+    paste(capture.output(print(stats$distributions)), collapse = "\n"),
+    "\n",
     "Correlations: ",
-    paste(names(stats$correlations), unlist(stats$correlations),
-          sep = ": ", collapse = ", "),
+    paste(
+      names(stats$correlations),
+      unlist(stats$correlations),
+      sep = ": ",
+      collapse = ", "
+    ),
     "\n"
   )
 
   system_prompt <- paste0(
-    "You are an expert accessibility consultant and data analyst for UNHCR. ",
-    "Your task is to generate two outputs for a given data visualization:\n",
-    "1. 'short_desc': A WCAG-compliant alt text following the formula ",
-    "'* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
-    "2. 'long_desc': A detailed statistical analysis and context ",
-    "description.\n",
-    "Return the result as a strict JSON object with keys 'short_desc' ",
-    "and 'long_desc'."
+    "You are a Senior Humanitarian Analyst and Communications Specialist for UNHCR. ",
+    "Your goal is to interpret data visualizations for a diverse audience (donors, journalists, public). ",
+    "Your task is to generate two outputs for a given data visualization:\n\n",
+
+    "1. 'short_desc': A concise, WCAG-compliant alt text for accessibility ",
+    "(e.g., '* [Chart Type] of [Variables], where [Trend/Key Insight]*').\n",
+
+    "2. 'long_desc': A substantive, narrative-driven insight (3-5 sentences). \n",
+    "   - **Guideline 1 (Substance):** Focus on the *meaning* of the data. Explain the humanitarian situation, the pressure on the system, or the trends in displacement. \n",
+    "   - **Guideline 2 (No Jargon):** DO NOT describe the chart's visual elements or statistical mechanics. ",
+    "     (e.g., Avoid phrases like 'The bar chart shows', 'The x-axis represents', 'right-skewed distribution', 'outliers', 'standard deviation').\n",
+    "   - **Guideline 3 (Evidence):** Use the provided statistical profile (sums, max values, trends) as *evidence* to support your story, but weave the numbers naturally into the narrative.\n",
+    "   - **Tone:** Professional, journalistic, and empathetic. Use active verbs (e.g., 'surged', 'collapsed', 'struggled').\n\n",
+
+    "Return the result as a strict JSON object with keys 'short_desc' and 'long_desc'."
   )
 
   prompt <- paste0(
-    "Context:\n", context_str, "\n\n",
-    "Task: Generate the JSON object containing short_desc and long_desc ",
-    "based on the provided context."
+    "Context:\n",
+    context_str,
+    "\n\n",
+    "Task: Analyze the metadata and statistical profile. \n",
+    "For 'long_desc': Synthesize these facts into a compelling paragraph that highlights the key humanitarian developments for this specific country/context. ",
+    "Tell the story of the people behind the numbers, not the story of the plot geometry."
   )
 
   # Logic to select provider
@@ -78,7 +104,8 @@ generate_description <- function(structure,
 
   provider <- tolower(provider)
   if (is.null(model)) {
-    model <- switch(provider,
+    model <- switch(
+      provider,
       openai = "gpt-4o-mini",
       gemini = "gemini-2.0-flash",
       anthropic = "claude-3-5-sonnet-latest",
@@ -88,7 +115,8 @@ generate_description <- function(structure,
     )
   }
 
-  chat <- switch(provider,
+  chat <- switch(
+    provider,
     openai = ellmer::chat_openai(
       model = model,
       system_prompt = system_prompt,
@@ -120,19 +148,25 @@ generate_description <- function(structure,
     stop("Invalid provider")
   )
 
-  response <- tryCatch({
-    chat$chat(prompt)
-  }, error = function(e) {
-    paste("Error invoking AI provider:", e$message)
-  })
+  response <- tryCatch(
+    {
+      chat$chat(prompt)
+    },
+    error = function(e) {
+      paste("Error invoking AI provider:", e$message)
+    }
+  )
 
   # Parse JSON
   # Clean potential markdown code blocks if the model insists on adding them
   cleaned_json <- gsub("^```json\\s*|\\s*```$", "", response)
 
-  tryCatch({
-    jsonlite::fromJSON(cleaned_json)
-  }, error = function(e) {
-    list(short_desc = "Error parsing JSON", long_desc = response)
-  })
+  tryCatch(
+    {
+      jsonlite::fromJSON(cleaned_json)
+    },
+    error = function(e) {
+      list(short_desc = "Error parsing JSON", long_desc = response)
+    }
+  )
 }
