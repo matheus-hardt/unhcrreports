@@ -60,30 +60,33 @@ generate_description <- function(
   )
 
   system_prompt <- paste0(
-    "You are a Senior Humanitarian Analyst and Communications Specialist for UNHCR. ",
-    "Your goal is to interpret data visualizations for a diverse audience (donors, journalists, public). ",
-    "Your task is to generate two outputs for a given data visualization:\n\n",
+    "You are a Senior Humanitarian Data Storyteller for UNHCR. ",
+    "Your goal is to influence decision-makers by turning data into a 'Cause and Effect' narrative.\n\n",
 
-    "1. 'short_desc': A concise, WCAG-compliant alt text for accessibility ",
-    "(e.g., '* [Chart Type] of [Variables], where [Trend/Key Insight]*').\n",
+    "Your task is to generate two outputs as a strict JSON object:\n\n",
 
-    "2. 'long_desc': A substantive, narrative-driven insight (3-5 sentences). \n",
-    "   - **Guideline 1 (Substance):** Focus on the *meaning* of the data. Explain the humanitarian situation, the pressure on the system, or the trends in displacement. \n",
-    "   - **Guideline 2 (No Jargon):** DO NOT describe the chart's visual elements or statistical mechanics. ",
-    "     (e.g., Avoid phrases like 'The bar chart shows', 'The x-axis represents', 'right-skewed distribution', 'outliers', 'standard deviation').\n",
-    "   - **Guideline 3 (Evidence):** Use the provided statistical profile (sums, max values, trends) as *evidence* to support your story, but weave the numbers naturally into the narrative.\n",
-    "   - **Tone:** Professional, journalistic, and empathetic. Use active verbs (e.g., 'surged', 'collapsed', 'struggled').\n\n",
+    "1. 'short_desc': A concise, WCAG-compliant alt text ",
+    "(e.g., '* [Chart Type] of [Variables] showing [Trend]*').\n",
 
-    "Return the result as a strict JSON object with keys 'short_desc' and 'long_desc'."
+    "2. 'long_desc': A powerful narrative (3-5 sentences) that follows this arc:\n",
+    "   - **The Setup (Context):** Briefly set the scene using the data (e.g., 'As regional instability deepens...').\n",
+    "   - **The Conflict (Insight):** Identify the tension or key shift. Connect the 'Cause' (the numbers) to the 'Effect' (the human impact). ",
+    "     *Example: 'The sudden surge in arrivals [Cause] has overwhelmed reception capacity [Effect].'*\n",
+    "   - **The Resolution (Implication):** Conclude with the 'So What?'—why does this matter for policy or action?\n\n",
+
+    "   **Constraints:**\n",
+    "   - Use strong, active verbs (e.g., 'accelerated', 'stalled', 'concentrated').\n",
+    "   - DO NOT describe the chart visuals (e.g., 'The x-axis shows', 'The bar chart displays').\n",
+    "   - Weave statistics naturally into the story; do not list them."
   )
 
   prompt <- paste0(
     "Context:\n",
     context_str,
     "\n\n",
-    "Task: Analyze the metadata and statistical profile. \n",
-    "For 'long_desc': Synthesize these facts into a compelling paragraph that highlights the key humanitarian developments for this specific country/context. ",
-    "Tell the story of the people behind the numbers, not the story of the plot geometry."
+    "Task: Interpret this data to inspire action. \n",
+    "Identify the 'Cause and Effect' relationship in the numbers. ",
+    "Tell the story of what is happening to the people represented in this dataset."
   )
 
   # Logic to select provider
