@@ -22,10 +22,6 @@ update_geom_defaults("label", list(family = "sans"))
 theme_set(theme_gray(base_family = "sans"))
 ```
 
-```{r debug-message}
-message("Testing Report for: ", params$name, " (", params$country_iso3, ") - ", params$year)
-```
-
 ```{r setup_data, include=FALSE}
 # --- Pre-calculate Plots (AI Stories Disabled) ---
 
@@ -110,15 +106,10 @@ p_dest <- plot_ctr_destination(
 )
 story_dest <- generate_plot_story(p_dest, provider = "gemini", model = "gemini-3-pro-preview")$long_desc
 
-p_migrant <- unhcrviz::plot_ctr_disp_migrant(
-  year = params$year,
-  country_asylum_iso3c = params$country_iso3
-)
-story_migrant <- generate_plot_story(p_migrant, provider = "gemini", model = "gemini-3-pro-preview")$long_desc
 
 # Section Summary: Geography
 summary_geo <- generate_section_summary(
-  stories = c(story_map, story_origin, story_hist, story_dest, story_migrant),
+  stories = c(story_map, story_origin, story_hist, story_dest),
   section_name = "Geography & Movements",
   provider = "gemini",
   model = "gemini-3-pro-preview"
@@ -211,6 +202,10 @@ summary_report <- generate_report_summary(
 ```{r key-figures}
 #| fig.width: 5
 #| fig.height: 8
+#| echo: false
+#| message: false
+#| warning: false
+
 p_key
 ```
 
@@ -225,6 +220,10 @@ p_key
 ```{r treemap}
 #| fig.width: 6
 #| fig.height: 4
+#| echo: false
+#| message: false
+#| warning: false
+
 p_tree
 ```
 
@@ -233,6 +232,10 @@ p_tree
 ```{r pyramid}
 #| fig.width: 6
 #| fig.height: 4.8
+#| echo: false
+#| message: false
+#| warning: false
+
 p_pyramid
 ```
 
@@ -243,6 +246,10 @@ p_pyramid
 ```{r trends}
 #| fig.width: 6
 #| fig.height: 7
+#| echo: false
+#| message: false
+#| warning: false
+
 p_trend
 ```
 
@@ -251,6 +258,10 @@ p_trend
 ```{r diff-pop}
 #| fig.width: 6
 #| fig.height: 6
+#| echo: false
+#| message: false
+#| warning: false
+
 p_diff
 ```
 
@@ -259,6 +270,10 @@ p_diff
 ```{r pop-perc}
 #| fig.width: 6
 #| fig.height: 7
+#| echo: false
+#| message: false
+#| warning: false
+
 p_perc
 ```
 
@@ -271,6 +286,10 @@ p_perc
 ```{r map}
 #| fig.width: 6
 #| fig.height: 4.8
+#| echo: false
+#| message: false
+#| warning: false
+
 p_map
 ```
 
@@ -281,6 +300,10 @@ p_map
 ```{r origin}
 #| fig.width: 6
 #| fig.height: 6
+#| echo: false
+#| message: false
+#| warning: false
+
 p_origin
 ```
 
@@ -289,6 +312,10 @@ p_origin
 ```{r origin-history}
 #| fig.width: 6
 #| fig.height: 6
+#| echo: false
+#| message: false
+#| warning: false
+
 p_hist
 ```
 
@@ -299,19 +326,11 @@ p_hist
 ```{r destination}
 #| fig.width: 6
 #| fig.height: 6
-# Note: This plot shows where people FROM the country go (Outflow)
-p_dest
-```
-
-```
-
-> **AI Insight**: `r story_migrant`
-
-```{r migrant}
-#| fig.width: 10
-#| fig.height: 6
+#| echo: false
+#| message: false
 #| warning: false
-p_migrant
+
+p_dest
 ```
 
 # Asylum System
@@ -323,6 +342,10 @@ p_migrant
 ```{r asylum}
 #| fig.width: 6
 #| fig.height: 6
+#| echo: false
+#| message: false
+#| warning: false
+
 p_asylum
 ```
 
@@ -331,6 +354,10 @@ p_asylum
 ```{r process}
 #| fig.width: 6
 #| fig.height: 4.8
+#| echo: false
+#| message: false
+#| warning: false
+
 p_process
 ```
 
@@ -339,6 +366,10 @@ p_process
 ```{r processing-time}
 #| fig.width: 6
 #| fig.height: 6
+#| echo: false
+#| message: false
+#| warning: false
+
 p_time
 ```
 
@@ -349,6 +380,10 @@ p_time
 ```{r recognition}
 #| fig.width: 6
 #| fig.height: 6
+#| echo: false
+#| message: false
+#| warning: false
+
 p_rec
 ```
 
@@ -357,7 +392,10 @@ p_rec
 ```{r origin-recognition}
 #| fig.width: 6
 #| fig.height: 6
-# Note: This plot shows recognition rates for nationals FROM the country (Outflow)
+#| echo: false
+#| message: false
+#| warning: false
+
 p_rec_origin
 ```
 
@@ -370,6 +408,10 @@ p_rec_origin
 ```{r solutions}
 #| fig.width: 6
 #| fig.height: 6
+#| echo: false
+#| message: false
+#| warning: false
+
 p_sol
 ```
 
@@ -378,5 +420,8 @@ p_sol
 ```{r solutions-rec}
 #| fig.width: 8
 #| fig.height: 6
+#| echo: false
+#| message: false
+#| warning: false
 p_sol_rec
 ```
