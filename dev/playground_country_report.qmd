@@ -1,7 +1,9 @@
 ---
 title: "Playground: Humanitarian Country Report 5"
 subtitle: "Manual Testing of Plots"
-output: html_document
+format:
+  html:
+    embed-resources: true
 params:
   country_iso3: "BRA"
   name: "Brazil"
