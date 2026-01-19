@@ -109,7 +109,7 @@ generate_report <- function(type = "country",
                             lag = 5,
                             name = NULL,
                             gp_provider = "gemini",
-                            gp_model = "gemini-3-pro") {
+                            gp_model = "gemini-3-pro-preview") {
   template_path <- system.file(paste0("templates/", type, "_report.qmd"),
     package = "unhcrreports"
   )

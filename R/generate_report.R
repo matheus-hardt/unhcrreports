@@ -143,15 +143,14 @@
 #'   "[Profile Report for region: Europe](../reports/Analysis-region-europe-2024-report.html)",
 #'   "[Profile Report for region: Middle East and North Africa](../reports/Analysis-region-middle-east-and-north-africa-2024-report.html)",
 #'   "[Profile Report for region: East and Horn of Africa](../reports/Analysis-region-east-and-horn-of-africa-2024-report.html)",
-#'   "[Profile Report for region: West and Central Africa](../reports/Analysis-region-west-and-central-africa-2024-report.html)",
-#'   "[Profile Report for region: NA](../reports/Analysis-region-NA-2024-report.html)"
+#'   "[Profile Report for region: West and Central Africa](../reports/Analysis-region-west-and-central-africa-2024-report.html)"
 #' )
 generate_report <- function(type = "country",
                             year = 2024,
                             lag = 5,
                             name = NULL,
                             gp_provider = "gemini",
-                            gp_model = "gemini-3-pro") {
+                            gp_model = "gemini-3-pro-preview") {
   template_path <- system.file(paste0("templates/", type, "_report.qmd"),
     package = "unhcrreports"
   )
