@@ -9,9 +9,10 @@ of countries, generating a report file for each.
 generate_report(
   type = "country",
   year = 2024,
+  lag = 5,
   name = NULL,
-  gp_provider = "azure",
-  gp_model = "gpt-4.1-mini"
+  gp_provider = "gemini",
+  gp_model = "gemini-3-pro"
 )
 ```
 
@@ -24,6 +25,10 @@ generate_report(
 - year:
 
   year
+
+- lag:
+
+  Number of years for trend analysis (default 5)
 
 - name:
 

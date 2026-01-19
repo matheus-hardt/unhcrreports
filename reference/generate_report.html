@@ -23,6 +23,7 @@ countries, generating a report file for each."><meta property="og:image" content
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Get Started</h6></li>
     <li><a class="dropdown-item" href="../articles/get-started.html">Get started</a></li>
+    <li><a class="dropdown-item" href="../articles/ai-powered-reports.html">AI Powered Reports</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/index.html">More articles...</a></li>
   </ul></li>
@@ -51,9 +52,10 @@ countries, generating a report file for each.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_report</span><span class="op">(</span></span>
 <span>  type <span class="op">=</span> <span class="st">"country"</span>,</span>
 <span>  year <span class="op">=</span> <span class="fl">2024</span>,</span>
+<span>  lag <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  name <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  gp_provider <span class="op">=</span> <span class="st">"azure"</span>,</span>
-<span>  gp_model <span class="op">=</span> <span class="st">"gpt-4.1-mini"</span></span>
+<span>  gp_provider <span class="op">=</span> <span class="st">"gemini"</span>,</span>
+<span>  gp_model <span class="op">=</span> <span class="st">"gemini-3-pro"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -67,6 +69,10 @@ countries, generating a report file for each.</p>
 
 <dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
 <dd><p>year</p></dd>
+
+
+<dt id="arg-lag">lag<a class="anchor" aria-label="anchor" href="#arg-lag"></a></dt>
+<dd><p>Number of years for trend analysis (default 5)</p></dd>
 
 
 <dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
