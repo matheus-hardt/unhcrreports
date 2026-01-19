@@ -12,6 +12,7 @@ params:
   country_iso3: "BRA"
   name: "Brazil"
   year: 2024
+  lag: 5
   gp_provider: "azure"
   gp_model: "gpt-4.1-mini"
 ---
@@ -48,7 +49,10 @@ message("DEBUG INFO END")
 
 # 1. Key Figures
 p_key <- plot_ctr_keyfig(year = params$year,
-                         country_asylum_iso3c = params$country_iso3)
+                         country_asylum_iso3c = params$country_iso3,
+                         population_type_font_size = 3,
+                         population_size_font_size = 4,
+                         icon_size = 22)
 # No story for key figures usually, or simple one
 story_key <- ""
 
@@ -75,6 +79,7 @@ story_pyramid <- generate_plot_story(
 )
 
 p_trend <- plot_ctr_population_type_per_year(year = params$year,
+                                             lag = params$lag,
                                              country_asylum_iso3c = params$country_iso3)
 story_trend <- generate_plot_story(
   p_trend,
@@ -86,7 +91,8 @@ story_trend <- generate_plot_story(
 p_diff <- plot_ctr_diff_in_pop_groups(
   year = params$year,
   country_asylum_iso3c = params$country_iso3,
-  pop_type = c("REF", "ASY", "IDP", "OIP", "STA", "OOC")
+  pop_type = c("REF", "ASY", "IDP", "OIP", "STA", "OOC"),
+  category_font_size = 1
 )
 story_diff <- generate_plot_story(
   p_diff,
@@ -156,18 +162,11 @@ story_dest <- generate_plot_story(
   max_tokens = 200
 )
 
-p_migrant <- unhcrviz::plot_ctr_disp_migrant(year = params$year,
-                               country_asylum_iso3c = params$country_iso3)
-story_migrant <- generate_plot_story(
-  p_migrant,
-  provider = params$gp_provider,
-  model = params$gp_model,
-  max_tokens = 200
-)
+
 
 # Section Summary: Geography
 summary_geo <- generate_section_summary(
-  stories = c(story_map, story_origin, story_hist, story_dest, story_migrant),
+  stories = c(story_map, story_origin, story_hist, story_dest),
   section_name = "Geography & Movements",
   provider = params$gp_provider,
   model = params$gp_model
@@ -175,7 +174,8 @@ summary_geo <- generate_section_summary(
 
 # 4. Asylum System
 p_asylum <- plot_ctr_asylum(year = params$year,
-                            country_asylum_iso3c = params$country_iso3)
+                            country_asylum_iso3c = params$country_iso3,
+                            lag = params$lag)
 story_asylum <- generate_plot_story(
   p_asylum,
   provider = params$gp_provider,
@@ -193,6 +193,7 @@ story_process <- generate_plot_story(
 )
 
 p_time <- plot_ctr_processing_time(year = params$year,
+                                   lag = params$lag,
                                    country_asylum_iso3c = params$country_iso3)
 story_time <- generate_plot_story(
   p_time,
@@ -237,7 +238,8 @@ summary_asylum <- generate_section_summary(
 p_sol <- plot_ctr_solution(
   year = params$year,
   country_asylum_iso3c = params$country_iso3,
-  sol_type = c("NAT", "RST", "RET", "RDP")
+  sol_type = c("NAT", "RST", "RET", "RDP"),
+  lag = params$lag
 )
 story_sol <- generate_plot_story(p_sol, 
   provider = params$gp_provider,
@@ -246,7 +248,8 @@ story_sol <- generate_plot_story(p_sol,
 
 p_sol_rec <- unhcrviz::plot_ctr_solution_recognition(
   year = params$year,
-  country_asylum_iso3c = params$country_iso3
+  country_asylum_iso3c = params$country_iso3,
+  lag = params$lag
 )
 story_sol_rec <- generate_plot_story(p_sol_rec, 
   provider = params$gp_provider,
@@ -375,16 +378,7 @@ p_hist
 p_dest
 ```
 
-```
 
-> **AI Insight**: `r story_migrant`
-
-```{r migrant}
-#| fig.width: 10
-#| fig.height: 6
-#| warning: false
-p_migrant
-```
 
 # Asylum System
 

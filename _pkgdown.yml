@@ -30,6 +30,7 @@ articles:
     navbar: Get Started
     contents:
       - get-started
+      - ai-powered-reports
   - title: "Technical Details"
     contents:
       - ai-analysis-architecture

@@ -1,0 +1,18 @@
+---
+title: "AI Powered Reports"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AI Powered Reports}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This page lists all the AI-generated country reports.
+
+# Country Reports
+
+The following reports have been generated:
+
+- [Profile Report for country: BRA](../reports/Analysis-country-bra-2024-report.html)
+- [Profile Report for country: SYR](../reports/Analysis-country-syr-2024-report.html)
+

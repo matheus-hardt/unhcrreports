@@ -8,6 +8,7 @@
 #' @param type either donor recipient or destination.
 #' @param name name of  donor recipient or destination if NULL batch process them
 #' @param year year
+#' @param lag Number of years for trend analysis (default 5)
 #' @param gp_provider for instance "azure"
 #' @param gp_model for instance "gpt-4.1-mini"
 #'
@@ -147,9 +148,10 @@
 #' )
 generate_report <- function(type = "country",
                             year = 2024,
+                            lag = 5,
                             name = NULL,
-                            gp_provider = "azure",
-                            gp_model = "gpt-4.1-mini") {
+                            gp_provider = "gemini",
+                            gp_model = "gemini-3-pro") {
   template_path <- system.file(paste0("templates/", type, "_report.qmd"),
     package = "unhcrreports"
   )
@@ -207,6 +209,7 @@ generate_report <- function(type = "country",
         country_iso3 = this,
         name = country_full_name,
         year = year,
+        lag = lag,
         gp_provider = gp_provider,
         gp_model = gp_model
       )
