@@ -44,8 +44,8 @@ generate_report(
   type = "country", 
   name = "BRA", 
   year = 2024,
-  gp_provider = "openai", # or "azure", "gemini", "ollama"
-  gp_model = "gpt-4o-mini"
+  gp_provider = "gemini", # or "openai", "ollama", "azure"
+  gp_model = "gemini-3-pro-preview"
 )
 ```
 

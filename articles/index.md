@@ -3,7 +3,7 @@
 ### Get Started
 
 - [Get
-  started](https://matheus-hardt.github.io/unhcrreports/articles/get-started.md):
+  Started](https://matheus-hardt.github.io/unhcrreports/articles/get-started.md):
 - [AI Powered
   Reports](https://matheus-hardt.github.io/unhcrreports/articles/ai-powered-reports.md):
 
