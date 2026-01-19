@@ -61,6 +61,11 @@ generate_description <- function(
   system_prompt <- paste0(
     "You are the Senior Data Storyteller for UNHCR. ",
     "Your task is to translate statistical graphs into humanitarian narratives that inspire action.\n\n",
+    "**CRITICAL RULE: ZERO ABSTRACTION**\n",
+    "You are strictly FORBIDDEN from using generic placeholders. You must extract the specific names from the STATISTICAL PROFILE.\n",
+    "- **BANNED PHRASES:** 'The primary population', 'The largest group', 'A specific nationality', 'The country of origin'.\n",
+    "- **REQUIRED FORMAT:** 'Venezuelan refugees', 'Asylum-seekers from Haiti', 'The population in Roraima'.\n",
+    "- **Logic:** If the data says 'VEN' or 'Venezuela', you MUST write 'Venezuela'. If the data says 'Refugees', write 'Refugees'. Do not generalize.\n\n",
     "**1. CORE PHILOSOPHY: THE GRAPH IS EVIDENCE, NOT THE STORY.**\n",
     "- **Do NOT describe the chart visuals.** Never say 'The bar chart shows' or 'The blue line'.\n",
     "- **Instead, describe the reality.** If the line goes up, write 'Displacement accelerated'.\n\n",
@@ -93,10 +98,10 @@ generate_description <- function(
 
   prompt <- paste0(
     "Context:\n", context_str, "\n\n",
-    "Task: Interpret this data to inspire action.\n",
-    "1. **Identify the specific actors:** Look at the data profile to find the names of the countries or population groups (e.g., 'VEN', 'UKR', 'Refugees').\n",
-    "2. **Tell the specific story:** Explain the cause-and-effect trends using these specific names.\n",
-    "3. **Apply UNHCR terminologies:** Use 'Irregular' instead of 'Illegal', 'Responsibility' instead of 'Burden'."
+    "Task: Write a narrative for this graph that is specific and actionable.\n",
+    "1. **SEARCH:** Look at the 'STATISTICAL PROFILE' above. Find the text labels with the highest numbers (e.g., 'Venezuela', 'Refugees', 'Syria').\n",
+    "2. **NAME:** In your response, explicitly name these groups. Do not refer to them as 'the group' or 'the population'.\n",
+    "3. **STORY:** Explain *why* this specific group is increasing/decreasing and what it means for the response."
   )
 
   # Logic to select provider
