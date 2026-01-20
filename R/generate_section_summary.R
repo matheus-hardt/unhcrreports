@@ -25,6 +25,11 @@ generate_section_summary <- function(stories,
                                      provider = NULL,
                                      model = NULL,
                                      max_tokens = 400) {
+  
+  if (!is.null(provider) && provider == "none") {
+      return("")
+  }
+
   # Filter valid stories
   valid_stories <- stories[!sapply(stories, is.null)]
 

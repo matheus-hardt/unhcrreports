@@ -36,22 +36,27 @@ library(unhcrreports)
 # Using Language Models to build data stories
 
 ## clean_llm_response
-  
+
 ```{r example-clean_llm_response}
-response <- "<think>
-First, I'm a humanitarian data visualization expert. My role includes extracting insights
-from visualizations, creating accessible narratives, highlighting patterns relevant to aid
-efforts, using clear language with emotional resonance.
-Aligning with constraints: Use plain language, be concise and impactful. Don't rehash
-every detail; build narrative depth around 2 key insights maximum in under 30 tokens.
-</think>
-This visualization tracks a relationship potentially critical for humanitarian logistics:
-higher fuel consumption versus increased weight. 车辆设计"
+response <- paste(
+  "<think>",
+  "First, I'm a humanitarian data visualization expert. My role includes",
+  "extracting insights from visualizations, creating accessible narratives,",
+  "highlighting patterns relevant to aid efforts, using clear language with",
+  "emotional resonance.",
+  "Aligning with constraints: Use plain language, be concise and impactful.",
+  "Don't rehash every detail; build narrative depth around 2 key insights",
+  "maximum in under 30 tokens.",
+  "</think>",
+  "This visualization tracks a relationship potentially critical for",
+  "humanitarian logistics: higher fuel consumption versus increased weight.",
+  "车辆设计"
+)
 clean_llm_response(response)
 ```
 
-  
-  
+
+
 
 
 # Three-Tier Architecture for AI Reporting
@@ -76,7 +81,6 @@ The AI reporting toolkit uses a modular architecture to analyze ggplot2 objects 
 ## generate_plot_story
 
 ```
-  
 ```{r example-generate_plot_story}
 #| eval: no
 
@@ -92,12 +96,17 @@ p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
 
 generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
 
-story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
+story <- generate_plot_story(
+  p,
+  provider = "azure",
+  model = "gpt-4.1-mini",
+  max_tokens = 300
+)
 # To use as subtitle:
 p + ggplot2::labs(subtitle = story)
 ```
 
-  
+
 
 
 
@@ -106,39 +115,42 @@ p + ggplot2::labs(subtitle = story)
 
 # Report Rendering
 
- 
+
 ## slugify
-  
+
 ```{r example-slugify}
-strings <- c("Café au Lait", "Niño Español", "Data_Science_Project", "--test--string--")
+strings <- c(
+  "Café au Lait",
+  "Niño Español",
+  "Data_Science_Project",
+  "--test--string--"
+)
 slugify(strings)
 ```
 
-  
-  
-  
-  
+
+
+
+
 ## Generate Section Summary
-   
-  
-  
+
+
 ```{r example-generate_section_summary}
 
 ```
 
-  
- 
+
+
 ## Generate Report Summary
-    
-  
-  
+
+
 ```{r example-generate_report_summary}
 
 ```
 
-  
-      
-          
+
+
+
 
 ---
 
