@@ -13,9 +13,9 @@ This page lists all the AI-generated country reports.
 
 # Country Reports
 ## 2024
-- [Colombia](../reports/Analysis-country-col-2024-report.html)
-- [Congo - Kinshasa](../reports/Analysis-country-cod-2024-report.html)
-- [Ethiopia](../reports/Analysis-country-eth-2024-report.html)
-- [Sudan](../reports/Analysis-country-sdn-2024-report.html)
-- [Syria](../reports/Analysis-country-syr-2024-report.html)
+- <a href="../reports/Analysis-country-col-2024-report.html" target="_blank">Colombia</a>
+- <a href="../reports/Analysis-country-cod-2024-report.html" target="_blank">Congo - Kinshasa</a>
+- <a href="../reports/Analysis-country-eth-2024-report.html" target="_blank">Ethiopia</a>
+- <a href="../reports/Analysis-country-sdn-2024-report.html" target="_blank">Sudan</a>
+- <a href="../reports/Analysis-country-syr-2024-report.html" target="_blank">Syria</a>
 
