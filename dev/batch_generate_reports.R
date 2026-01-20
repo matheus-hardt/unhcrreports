@@ -1,54 +1,37 @@
 # dev/batch_generate_reports.R
-# Script to batch generate country reports and update the AI-Powered Reports index page
+# Script to batch generate reports and update the AI-Powered Reports index page
 
-library(unhcrreports)
+pkgload::load_all()
 library(here)
+library(dplyr)
+library(stringr)
+library(countrycode)
 
-# 1. Generate Reports
-# This will default to all countries with > 1M displaced if name is NULL,
-# or you can specify a list.
-# using a small list for testing initially or NULL for full batch.
-# For now, we will simulate or use the real function.
+# ==============================================================================
+# 1. Report Generation Configuration
+# ==============================================================================
 
-message("Starting batch generation of country reports...")
+# List of countries to generate reports for (ISO3 codes)
+# Modify this list as needed for specific batches
+countries_to_run <- c("SYR", "SDN", "COL", "COD", "ETH")
 
-# NOTE: Set name = NULL to run for all countries meting criteria.
-# We use a small subset here for testing the script structure without running for hours.
-# user instruction: "do not run the batch yet, just create the script"
-# So we will wrap the execution in a flag or comment it out / use a placeholder list
-countries_to_run <- c("BRA", "SYR")
-
-# 1. Generate Reports
-# Loop through countries with rate limiting
-
-# Rate Limits
+# Rate Limits Config
 RPM <- 25 # Requests per minute
-TPM <- 1000000 # Tokens per minute (implied check via RPM/delay)
 RPD <- 250 # Requests per day
+DELAY_SECONDS <- 60 # Conservative delay to respect rate limits and allow AI processing time
 
-# Estimated requests per report (conservative estimate: 15-20 calls per report)
-CALLS_PER_REPORT <- 20
+# ==============================================================================
+# 2. Batch Generation Loop
+# ==============================================================================
 
-# Max reports per day based on RPD
-MAX_REPORTS_DAY <- floor(RPD / CALLS_PER_REPORT)
+message("Starting batch generation process...")
+message("Batch Config: ", length(countries_to_run), " countries, Delay: ", DELAY_SECONDS, "s")
 
-# Delay calculation to respect RPM
-# If 25 requests fit in 60 seconds -> 2.4 seconds per request.
-# One report = 20 requests.
-# Minimum time per report to respect RPM = 20 * 2.4 = 48 seconds.
-# We add a buffer.
-DELAY_SECONDS <- 50
-
-message("Batch Config:")
-message("- Max Reports (Daily Limit): ", MAX_REPORTS_DAY)
-message("- Delay between reports: ", DELAY_SECONDS, " seconds")
-
-links <- c()
 reports_generated <- 0
 
 for (country in countries_to_run) {
-    if (reports_generated >= MAX_REPORTS_DAY) {
-        warning("Daily limit reached (approx ", RPD, " requests). Stopping batch.")
+    if (reports_generated >= floor(RPD / 20)) { # Approx 20 calls per report
+        warning("Daily limit reached. Stopping batch.")
         break
     }
 
@@ -56,19 +39,16 @@ for (country in countries_to_run) {
 
     tryCatch(
         {
-            # Generate single report
-            # Note: gp_provider and gp_model defaults are now set in the package function
-            # but we can explicit them here if needed.
-            # Using defaults from package (gemini/gemini-3-pro)
+            # Generate the report
+            # Using defaults: type="country", year=2024, include_ai=TRUE
             link <- generate_report(
                 type = "country",
                 name = country,
-                year = 2024
+                year = 2024,
+                include_ai = TRUE
             )
 
-            links <- c(links, link)
             reports_generated <- reports_generated + 1
-
             message("Generated: ", link)
         },
         error = function(e) {
@@ -76,39 +56,112 @@ for (country in countries_to_run) {
         }
     )
 
-    # Rate Limiting Delay
+    # Clean wait loop to show progress
     if (reports_generated < length(countries_to_run)) {
-        message("Waiting ", DELAY_SECONDS, "s to respect rate limits...")
+        message("Waiting ", DELAY_SECONDS, "s...")
         Sys.sleep(DELAY_SECONDS)
     }
 }
 
-# 2. Update Index Page (vignettes/ai-powered-reports.Rmd)
+# ==============================================================================
+# 3. Index Page Update (New Logic)
+# ==============================================================================
+message("\nUpdating Index Page (vignettes/ai-powered-reports.Rmd)...")
+
 index_file <- here::here("vignettes/ai-powered-reports.Rmd")
+reports_dir <- here::here("docs/reports")
 
-if (file.exists(index_file)) {
-    content <- readLines(index_file)
+if (file.exists(index_file) && dir.exists(reports_dir)) {
+    # 3.1 Scan for all generated reports
+    # Pattern matches: Analysis-{type}-{slug}-{year}-report.html
+    report_files <- list.files(reports_dir, pattern = "Analysis-(country|region)-.*-report\\.html$", full.names = FALSE)
 
-    # Find the marker
-    marker <- "# Country Reports"
-    marker_line <- grep(marker, content)
+    if (length(report_files) > 0) {
+        # 3.2 Parse filenames into a structured data frame
+        report_data <- data.frame(
+            filename = report_files,
+            stringsAsFactors = FALSE
+        ) %>%
+            mutate(
+                # Use regex to extract components
+                type = str_extract(filename, "(?<=Analysis-)[a-z]+"),
+                slug = str_extract(filename, "(?<=Analysis-[a-z]{7,7}-).*(?=-\\d{4}-report)"), # Assumes 'country' or 'region'
+                year = str_extract(filename, "\\d{4}"),
 
-    if (length(marker_line) > 0) {
-        # Keep content up to the marker
-        new_content <- c(
-            content[1:marker_line],
-            "",
-            "The following reports have been generated:",
-            "",
-            paste0("- ", links),
-            ""
-        )
+                # Derive Display Name
+                display_name = case_when(
+                    type == "country" ~ countrycode::countrycode(toupper(slug), origin = "iso3c", destination = "country.name"),
+                    type == "region" ~ tools::toTitleCase(gsub("-", " ", slug)),
+                    TRUE ~ slug
+                ),
 
-        writeLines(new_content, index_file)
-        message("Updated vignettes/ai-powered-reports.Rmd with ", length(links), " reports.")
+                # Fallback for unrecognized country codes
+                display_name = ifelse(is.na(display_name), slug, display_name)
+            ) %>%
+            arrange(type, desc(year), display_name)
+
+        # 3.3 Build Markdown Content
+        new_lines <- c()
+
+        # Separate by Type
+        for (rpt_type in c("country", "region")) {
+            type_label <- ifelse(rpt_type == "country", "Country Reports", "Regional Reports")
+            subset_data <- report_data %>% filter(type == rpt_type)
+
+            if (nrow(subset_data) > 0) {
+                new_lines <- c(new_lines, paste0("# ", type_label))
+
+                # Group by Year
+                years <- unique(subset_data$year)
+                for (y in sort(years, decreasing = TRUE)) {
+                    new_lines <- c(new_lines, paste0("## ", y))
+
+                    year_data <- subset_data %>% filter(year == y)
+                    for (i in 1:nrow(year_data)) {
+                        row <- year_data[i, ]
+                        # Create generic link text
+                        line <- paste0("- [", row$display_name, "](../reports/", row$filename, ")")
+                        new_lines <- c(new_lines, line)
+                    }
+                    new_lines <- c(new_lines, "") # Spacing
+                }
+            }
+        }
+
+        # 3.4 Inject into Vignette
+        content <- readLines(index_file)
+
+        # Find where to start inserting (Look for the first logical header or specific marker)
+        # We will assume everything after a specific intro line is auto-generated.
+        # Ideally, we look for "## Available Reports" or similar, or just "# Country Reports".
+        # Let's clean up everything after a known safe point.
+
+        # We'll use a fixed marker "<!-- AUTO-GENERATED-CONTENT-START -->" if it exists,
+        # or append it if not found.
+
+        marker <- "<!-- AUTO-GENERATED-CONTENT-START -->"
+        marker_idx <- grep(marker, content, fixed = TRUE)
+
+        if (length(marker_idx) > 0) {
+            # Keep pre-marker content
+            clean_content <- content[1:marker_idx]
+        } else {
+            # If marker not found, try to find the old header to replace it
+            old_header_idx <- grep("^# Country Reports", content)
+            if (length(old_header_idx) > 0) {
+                clean_content <- c(content[1:(old_header_idx[1] - 1)], marker)
+            } else {
+                # Just append to end if nothing found
+                clean_content <- c(content, "", marker)
+            }
+        }
+
+        final_content <- c(clean_content, "", new_lines)
+        writeLines(final_content, index_file)
+        message("Successfully updated index page with ", nrow(report_data), " reports.")
     } else {
-        warning("Could not find '# Country Reports' marker in ", index_file)
+        message("No report files found in docs/reports.")
     }
 } else {
-    warning("Index file not found: ", index_file)
+    warning("Index file or reports directory not found.")
 }

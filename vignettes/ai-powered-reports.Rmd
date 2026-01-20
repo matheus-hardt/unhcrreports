@@ -9,10 +9,13 @@ vignette: >
 
 This page lists all the AI-generated country reports.
 
+<!-- AUTO-GENERATED-CONTENT-START -->
+
 # Country Reports
-
-The following reports have been generated:
-
-- [Profile Report for country: BRA](../reports/Analysis-country-bra-2024-report.html)
-- [Profile Report for country: SYR](../reports/Analysis-country-syr-2024-report.html)
+## 2024
+- [Colombia](../reports/Analysis-country-col-2024-report.html)
+- [Congo - Kinshasa](../reports/Analysis-country-cod-2024-report.html)
+- [Ethiopia](../reports/Analysis-country-eth-2024-report.html)
+- [Sudan](../reports/Analysis-country-sdn-2024-report.html)
+- [Syria](../reports/Analysis-country-syr-2024-report.html)
 
