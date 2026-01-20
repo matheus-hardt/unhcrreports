@@ -21,17 +21,22 @@ statistics of the plot.
 ### clean_llm_response
 
 ``` r
-response <- "<think>
-First, I'm a humanitarian data visualization expert. My role includes extracting insights
-from visualizations, creating accessible narratives, highlighting patterns relevant to aid
-efforts, using clear language with emotional resonance.
-Aligning with constraints: Use plain language, be concise and impactful. Don't rehash
-every detail; build narrative depth around 2 key insights maximum in under 30 tokens.
-</think>
-This visualization tracks a relationship potentially critical for humanitarian logistics:
-higher fuel consumption versus increased weight. 车辆设计"
+response <- paste(
+  "<think>",
+  "First, I'm a humanitarian data visualization expert. My role includes",
+  "extracting insights from visualizations, creating accessible narratives,",
+  "highlighting patterns relevant to aid efforts, using clear language with",
+  "emotional resonance.",
+  "Aligning with constraints: Use plain language, be concise and impactful.",
+  "Don't rehash every detail; build narrative depth around 2 key insights",
+  "maximum in under 30 tokens.",
+  "</think>",
+  "This visualization tracks a relationship potentially critical for",
+  "humanitarian logistics: higher fuel consumption versus increased weight.",
+  "车辆设计"
+)
 clean_llm_response(response)
-#> [1] "This visualization tracks a relationship potentially critical for humanitarian logistics: higher fuel consumption versus increased weight."
+#> [1] "Unable to generate story from this visualization."
 ```
 
 ## Three-Tier Architecture for AI Reporting
@@ -66,8 +71,6 @@ of the plot.
 
 ### generate_plot_story
 
-      
-
     ``` r
     library(ggplot2)
     p <- ggplot(mtcars, aes(x = wt, y = mpg)) +
@@ -81,7 +84,12 @@ of the plot.
 
     generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
 
-    story <- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
+    story <- generate_plot_story(
+      p,
+      provider = "azure",
+      model = "gpt-4.1-mini",
+      max_tokens = 300
+    )
     # To use as subtitle:
     p + ggplot2::labs(subtitle = story)
 
@@ -90,7 +98,12 @@ of the plot.
 ### slugify
 
 ``` r
-strings <- c("Café au Lait", "Niño Español", "Data_Science_Project", "--test--string--")
+strings <- c(
+  "Café au Lait",
+  "Niño Español",
+  "Data_Science_Project",
+  "--test--string--"
+)
 slugify(strings)
 #> [1] "cafe-au-lait"         "nino-espanol"         "data-science-project"
 #> [4] "test-string"

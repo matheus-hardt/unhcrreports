@@ -104,17 +104,22 @@ structure and statistics of the plot.</p>
 <h3 id="clean_llm_response">clean_llm_response<a class="anchor" aria-label="anchor" href="#clean_llm_response"></a>
 </h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">response</span> <span class="op">&lt;-</span> <span class="st">"&lt;think&gt;</span></span>
-<span><span class="st">First, I'm a humanitarian data visualization expert. My role includes extracting insights</span></span>
-<span><span class="st">from visualizations, creating accessible narratives, highlighting patterns relevant to aid</span></span>
-<span><span class="st">efforts, using clear language with emotional resonance.</span></span>
-<span><span class="st">Aligning with constraints: Use plain language, be concise and impactful. Don't rehash</span></span>
-<span><span class="st">every detail; build narrative depth around 2 key insights maximum in under 30 tokens.</span></span>
-<span><span class="st">&lt;/think&gt;</span></span>
-<span><span class="st">This visualization tracks a relationship potentially critical for humanitarian logistics:</span></span>
-<span><span class="st">higher fuel consumption versus increased weight. 车辆设计"</span></span>
+<code class="sourceCode R"><span><span class="va">response</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
+<span>  <span class="st">"&lt;think&gt;"</span>,</span>
+<span>  <span class="st">"First, I'm a humanitarian data visualization expert. My role includes"</span>,</span>
+<span>  <span class="st">"extracting insights from visualizations, creating accessible narratives,"</span>,</span>
+<span>  <span class="st">"highlighting patterns relevant to aid efforts, using clear language with"</span>,</span>
+<span>  <span class="st">"emotional resonance."</span>,</span>
+<span>  <span class="st">"Aligning with constraints: Use plain language, be concise and impactful."</span>,</span>
+<span>  <span class="st">"Don't rehash every detail; build narrative depth around 2 key insights"</span>,</span>
+<span>  <span class="st">"maximum in under 30 tokens."</span>,</span>
+<span>  <span class="st">"&lt;/think&gt;"</span>,</span>
+<span>  <span class="st">"This visualization tracks a relationship potentially critical for"</span>,</span>
+<span>  <span class="st">"humanitarian logistics: higher fuel consumption versus increased weight."</span>,</span>
+<span>  <span class="st">"车辆设计"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/clean_llm_response.html">clean_llm_response</a></span><span class="op">(</span><span class="va">response</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "This visualization tracks a relationship potentially critical for humanitarian logistics: higher fuel consumption versus increased weight."</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "Unable to generate story from this visualization."</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -156,8 +161,7 @@ It returns a JSON object containing a WCAG-compliant short description
 <div class="section level3">
 <h3 id="generate_plot_story">generate_plot_story<a class="anchor" aria-label="anchor" href="#generate_plot_story"></a>
 </h3>
-<pre><code>  
-
+<pre><code>
 ``` r
 library(ggplot2)
 p &lt;- ggplot(mtcars, aes(x = wt, y = mpg)) +
@@ -171,7 +175,12 @@ p &lt;- ggplot(mtcars, aes(x = wt, y = mpg)) +
 
 generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
 
-story &lt;- generate_plot_story(p, provider = "azure", model = "gpt-4.1-mini", max_tokens = 300)
+story &lt;- generate_plot_story(
+  p,
+  provider = "azure",
+  model = "gpt-4.1-mini",
+  max_tokens = 300
+)
 # To use as subtitle:
 p + ggplot2::labs(subtitle = story)</code></pre>
 </div>
@@ -183,7 +192,12 @@ p + ggplot2::labs(subtitle = story)</code></pre>
 <h3 id="slugify">slugify<a class="anchor" aria-label="anchor" href="#slugify"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">strings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Café au Lait"</span>, <span class="st">"Niño Español"</span>, <span class="st">"Data_Science_Project"</span>, <span class="st">"--test--string--"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">strings</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Café au Lait"</span>,</span>
+<span>  <span class="st">"Niño Español"</span>,</span>
+<span>  <span class="st">"Data_Science_Project"</span>,</span>
+<span>  <span class="st">"--test--string--"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/slugify.html">slugify</a></span><span class="op">(</span><span class="va">strings</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "cafe-au-lait"         "nino-espanol"         "data-science-project"</span></span>
 <span><span class="co">#&gt; [4] "test-string"</span></span></code></pre></div>

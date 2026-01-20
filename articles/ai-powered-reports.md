@@ -4,9 +4,11 @@ This page lists all the AI-generated country reports.
 
 ## Country Reports
 
-The following reports have been generated:
+### 2024
 
-- [Profile Report for country:
-  BRA](https://matheus-hardt.github.io/unhcrreports/reports/Analysis-country-bra-2024-report.md)
-- [Profile Report for country:
-  SYR](https://matheus-hardt.github.io/unhcrreports/reports/Analysis-country-syr-2024-report.md)
+- [Colombia](https://matheus-hardt.github.io/unhcrreports/reports/Analysis-country-col-2024-report.md)
+- [Congo -
+  Kinshasa](https://matheus-hardt.github.io/unhcrreports/reports/Analysis-country-cod-2024-report.md)
+- [Ethiopia](https://matheus-hardt.github.io/unhcrreports/reports/Analysis-country-eth-2024-report.md)
+- [Sudan](https://matheus-hardt.github.io/unhcrreports/reports/Analysis-country-sdn-2024-report.md)
+- [Syria](https://matheus-hardt.github.io/unhcrreports/reports/Analysis-country-syr-2024-report.md)
