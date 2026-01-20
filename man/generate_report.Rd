@@ -10,7 +10,8 @@ generate_report(
   lag = 5,
   name = NULL,
   gp_provider = "gemini",
-  gp_model = "gemini-3-pro-preview"
+  gp_model = "gemini-3-pro-preview",
+  include_ai = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ generate_report(
 \item{gp_provider}{for instance "azure"}
 
 \item{gp_model}{for instance "gpt-4.1-mini"}
+
+\item{include_ai}{Logical, whether to include AI-generated content (default TRUE)}
 }
 \value{
 links to genrated reports.

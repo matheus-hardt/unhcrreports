@@ -11,6 +11,7 @@
 #' @param lag Number of years for trend analysis (default 5)
 #' @param gp_provider for instance "azure"
 #' @param gp_model for instance "gpt-4.1-mini"
+#' @param include_ai Logical, whether to include AI-generated content (default TRUE)
 #'
 #' @importFrom dplyr filter select pull
 #' @importFrom quarto quarto_render
@@ -150,7 +151,8 @@ generate_report <- function(type = "country",
                             lag = 5,
                             name = NULL,
                             gp_provider = "gemini",
-                            gp_model = "gemini-3-pro-preview") {
+                            gp_model = "gemini-3-pro-preview",
+                            include_ai = TRUE) {
   template_path <- system.file(paste0("templates/", type, "_report.qmd"),
     package = "unhcrreports"
   )
@@ -210,20 +212,23 @@ generate_report <- function(type = "country",
         year = year,
         lag = lag,
         gp_provider = gp_provider,
-        gp_model = gp_model
+        gp_model = gp_model,
+        include_ai = include_ai
       )
     } else if (type == "region") {
       params_list <- list(
         region = this,
         year = year,
         gp_provider = gp_provider,
-        gp_model = gp_model
+        gp_model = gp_model,
+        include_ai = include_ai
       )
     } else {
       params_list <- list(
         year = year,
         gp_provider = gp_provider,
-        gp_model = gp_model
+        gp_model = gp_model,
+        include_ai = include_ai
       )
     }
 
