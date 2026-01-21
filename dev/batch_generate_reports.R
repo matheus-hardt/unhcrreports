@@ -13,12 +13,12 @@ library(countrycode)
 
 # List of countries to generate reports for (ISO3 codes)
 # Modify this list as needed for specific batches
-countries_to_run <- c("SYR", "SDN", "COL", "COD", "ETH")
+countries_to_run <- c("MMR", "PAK", "SOM", "AFG", "USA", "NGA", "IRN", "DEU", "TUR", "SSD", "BGD", "BFA", "TCD", "PER", "CMR", "IRQ", "KEN", "HTI", "POL", "CIV", "NER", "LBN", "EGY", "MEX", "FRA", "BRA", "ESP", "THA", "JOR", "AZE", "GBR", "CHL", "VEN", "MOZ", "CAN", "HND", "ITA", "CAF", "MLI", "ECU", "SLV", "CZE")
 
 # Rate Limits Config
-RPM <- 25 # Requests per minute
-RPD <- 250 # Requests per day
-DELAY_SECONDS <- 60 # Conservative delay to respect rate limits and allow AI processing time
+RPM <- 150 # Requests per minute
+RPD <- 10000 # Requests per day
+DELAY_SECONDS <- 10 # 150 RPM -> ~8s delay. Using 10s safe margin.
 
 # ==============================================================================
 # 2. Batch Generation Loop
@@ -45,7 +45,8 @@ for (country in countries_to_run) {
                 type = "country",
                 name = country,
                 year = 2024,
-                include_ai = TRUE
+                include_ai = TRUE,
+                gp_model = "gemini-2.5-pro"
             )
 
             reports_generated <- reports_generated + 1

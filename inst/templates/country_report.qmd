@@ -44,7 +44,7 @@ print(args(unhcrviz::plot_ctr_location))
 message("DEBUG INFO END")
 ```
 
-```{r setup_data, include=FALSE}
+```{r setup_data, include=FALSE, message=TRUE}
 # --- Pre-calculate Plots and Stories ---
 
 
