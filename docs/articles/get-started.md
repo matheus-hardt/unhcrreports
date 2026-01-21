@@ -60,7 +60,8 @@ report_path <- generate_report(
   name = "BRA", 
   year = 2024,
   gp_provider = "openai", # or "azure", "ollama"
-  gp_model = "gpt-4o-mini"
+  gp_model = "gpt-4o-mini",
+  include_ai = TRUE # Set to FALSE to skip AI generation
 )
 ```
 
@@ -306,5 +307,3 @@ report_path <- generate_report(
   Africa](https://matheus-hardt.github.io/unhcrreports/reports/Analysis-region-east-and-horn-of-africa-2024-report.md)
 - [Profile Report for region: West and Central
   Africa](https://matheus-hardt.github.io/unhcrreports/reports/Analysis-region-west-and-central-africa-2024-report.md)
-- [Profile Report for region:
-  NA](https://matheus-hardt.github.io/unhcrreports/reports/Analysis-region-NA-2024-report.md)

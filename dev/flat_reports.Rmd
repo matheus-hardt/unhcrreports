@@ -55,7 +55,8 @@ report_path <- generate_report(
   name = "BRA", 
   year = 2024,
   gp_provider = "openai", # or "azure", "ollama"
-  gp_model = "gpt-4o-mini"
+  gp_model = "gpt-4o-mini",
+  include_ai = TRUE # Set to FALSE to skip AI generation
 )
 ```
 

@@ -9,9 +9,11 @@ of countries, generating a report file for each.
 generate_report(
   type = "country",
   year = 2024,
+  lag = 5,
   name = NULL,
-  gp_provider = "azure",
-  gp_model = "gpt-4.1-mini"
+  gp_provider = "gemini",
+  gp_model = "gemini-3-pro-preview",
+  include_ai = TRUE
 )
 ```
 
@@ -25,6 +27,10 @@ generate_report(
 
   year
 
+- lag:
+
+  Number of years for trend analysis (default 5)
+
 - name:
 
   name of donor recipient or destination if NULL batch process them
@@ -36,6 +42,10 @@ generate_report(
 - gp_model:
 
   for instance "gpt-4.1-mini"
+
+- include_ai:
+
+  Logical, whether to include AI-generated content (default TRUE)
 
 ## Value
 
@@ -165,7 +175,6 @@ linkregionalreport <- c(
   "[Profile Report for region: Europe](../reports/Analysis-region-europe-2024-report.html)",
   "[Profile Report for region: Middle East and North Africa](../reports/Analysis-region-middle-east-and-north-africa-2024-report.html)",
   "[Profile Report for region: East and Horn of Africa](../reports/Analysis-region-east-and-horn-of-africa-2024-report.html)",
-  "[Profile Report for region: West and Central Africa](../reports/Analysis-region-west-and-central-africa-2024-report.html)",
-  "[Profile Report for region: NA](../reports/Analysis-region-NA-2024-report.html)"
+  "[Profile Report for region: West and Central Africa](../reports/Analysis-region-west-and-central-africa-2024-report.html)"
 )
 ```

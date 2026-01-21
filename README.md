@@ -36,7 +36,8 @@ generate_report(
   name = "BRA", 
   year = 2024,
   gp_provider = "gemini", # or "openai", "ollama", "azure"
-  gp_model = "gemini-3-pro-preview"
+  gp_model = "gemini-3-pro-preview",
+  include_ai = TRUE # Set to FALSE to skip AI generation
 )
 ```
 
