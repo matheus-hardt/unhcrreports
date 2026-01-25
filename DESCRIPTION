@@ -3,6 +3,7 @@ Title: Automated Displacement Statictics Analysis
 Version: 0.0.0.9000
 Authors@R: c(
     person("Matheus", "Hardt", , "mathardt@gmail.com", role = c("aut", "cre")),
+    person("Edouard", "Legoupil", role = "ctb"),
     person(, "UNHCR", role = "cph")
   )
 Description: Generates automated humanitarian reports using UNHCR data,
