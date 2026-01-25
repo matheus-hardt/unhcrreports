@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: c(
     person("Matheus", "Hardt", , "mathardt@gmail.com", role = c("aut", "cre")),
     person("Edouard", "Legoupil", role = "ctb"),
-    person(, "UNHCR", role = "cph")
+    person("UNHCR", role = "cph", email = "stats@unhcr.org")
   )
 Description: Generates automated humanitarian reports using UNHCR data,
     ggplot2, and AI narratives.
