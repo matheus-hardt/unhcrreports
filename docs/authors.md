@@ -4,6 +4,8 @@
 
 - **Matheus Hardt**. Author, maintainer.
 
+- **Edouard Legoupil**. Contributor.
+
 - **UNHCR**. Copyright holder.
 
 ## Citation
