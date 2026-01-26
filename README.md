@@ -16,6 +16,10 @@
 
 3.  **Publishing**: Compiling everything into polished Quarto reports.
 
+While anyone can already ask a large language model to call the UNHCR API and assemble an ad‑hoc analysis, that approach remains fundamentally limited: every chat interaction produces a different framing, different emphases, and different analytical pathways. By contrast, using AI to generate narrative on top of a standardized set of charts and indicators introduces a level of methodological consistency that simple chat-based prompting cannot achieve. This framework ensures that every operation is analyzed through the same __structured lens__, enabling comparability across countries, time periods, and thematic areas. Instead of reinventing the analysis each time, the AI is anchored in a stable analytical model—reducing variance, improving coherence, and guaranteeing that key questions are always addressed.
+
+Just as importantly, this method produces narrative drafts that are __“human‑in‑the‑loop ready”__: analysts can immediately focus on refinement, nuance, and validation rather than on assembling first‑pass descriptive text. The result is a workflow where AI accelerates the routine narrative generation, while human experts retain control over interpretation, context, and judgment.
+
 ## Installation
 
 This package is built with the help of [{fusen}](https://thinkr-open.github.io/fusen/). You can install it from GitHub with:
