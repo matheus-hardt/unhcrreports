@@ -8,7 +8,7 @@
 > **Graphics Source**: The standardized charts and maps used in these reports are built upon the [`{unhcrviz}`](https://edouard-legoupil.github.io/unhcrviz/) package, which provides a high-level chart library API over [`{unhcrthemes}`](https://unhcr-dataviz.github.io/unhcrthemes/index.html).
 
 
-[`{unhcrreports}`](https://matheus-hardt.github.io/unhcrreports/) automates the production of analytical reports (Country and Regional) by:  
+[`{unhcrreports}`](https://matheus-hardt.github.io/unhcrreports/) automates the production of [analytical reports](https://matheus-hardt.github.io/unhcrreports/articles/ai-powered-reports.html) (Country and Regional) by:  
 
 1.  **Visualizing Trends**: Generating standardized plots.
 
