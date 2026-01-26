@@ -4,6 +4,8 @@
 
 - **Matheus Hardt**. Author, maintainer.
 
+- **Edouard Legoupil**. Contributor.
+
 - **UNHCR**. Copyright holder.
 
 ## Citation
@@ -11,14 +13,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/matheus-hardt/unhcrreports/blob/HEAD/DESCRIPTION)
 
-Hardt M (2025). *unhcrreports: Automated Displacement Statictics
+Hardt M (2026). *unhcrreports: Automated Displacement Statictics
 Analysis*. R package version 0.0.0.9000,
 <https://matheus-hardt.github.io/unhcrreports>.
 
     @Manual{,
       title = {unhcrreports: Automated Displacement Statictics Analysis},
       author = {Matheus Hardt},
-      year = {2025},
+      year = {2026},
       note = {R package version 0.0.0.9000},
       url = {https://matheus-hardt.github.io/unhcrreports},
     }

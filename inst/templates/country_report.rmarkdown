@@ -1,0 +1,602 @@
+---
+title: "`r params$name`: Country Report | `r params$year`"
+subtitle: "AI Generated Analysis based on [UNHCR Forced Displacement Statisitics](https://www.unhcr.org/refugee-statistics)."
+author: "Beware of data limitations and potential hallucinations! Thanks for reporting any [issues here](https://github.com/matheus-hardt/unhcrreports/issues/new) -- [View all Reports](../articles/ai-powered-reports.html)"
+format:
+  html:
+    toc: true
+    code-fold: true
+    self-contained: true
+    theme: cosmo
+params:
+  country_iso3: "BRA"
+  name: "Brazil"
+  year: 2024
+  lag: 5
+  gp_provider: "azure"
+  gp_model: "gpt-4.1-mini"
+  include_ai: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, dev = "svg", out.width = "100%")
+library(ggplot2)
+library(dplyr)
+library(ellmer)
+
+library(unhcrreports)
+library(unhcrviz) 
+
+# Fix font issue on Windows
+update_geom_defaults("text", list(family = "sans"))
+update_geom_defaults("label", list(family = "sans"))
+theme_set(theme_gray(base_family = "sans"))
+
+
+```
+
+```{r debug_info, echo=TRUE, include=FALSE}
+message("DEBUG INFO START")
+print(sessionInfo())
+message("unhcrviz version: ", packageVersion("unhcrviz"))
+message("Args for plot_ctr_location:")
+print(args(unhcrviz::plot_ctr_location))
+message("DEBUG INFO END")
+```
+
+```{r setup_data, include=FALSE, message=TRUE}
+# --- Pre-calculate Plots and Stories ---
+
+
+# 1. Key Figures
+p_key <- plot_ctr_keyfig(year = params$year,
+                         country_asylum_iso3c = params$country_iso3,
+                         population_type_font_size = 3,
+                         population_size_font_size = 4,
+                         icon_size = 22)
+# No story for key figures usually, or simple one
+story_key <- ""
+
+# 2. Population Overview
+p_tree <- plot_ctr_treemap(year = params$year,
+                           country_asylum_iso3c = params$country_iso3)
+story_tree <- if (params$include_ai) {
+  generate_plot_story(
+    p_tree,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_pyramid <- plot_ctr_pyramid(
+  year = params$year,
+  country_asylum_iso3c = params$country_iso3,
+  pop_type = c("REF", "ASY", "IDP", "OIP", "STA", "OOC")
+)
+story_pyramid <- if (params$include_ai) {
+  generate_plot_story(
+    p_pyramid,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_trend <- plot_ctr_population_type_per_year(year = params$year,
+                                             lag = params$lag,
+                                             country_asylum_iso3c = params$country_iso3)
+story_trend <- if (params$include_ai) {
+  generate_plot_story(
+    p_trend,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_diff <- plot_ctr_diff_in_pop_groups(
+  year = params$year,
+  country_asylum_iso3c = params$country_iso3,
+  pop_type = c("REF", "ASY", "IDP", "OIP", "STA", "OOC"),
+  category_font_size = 1
+)
+story_diff <- if (params$include_ai) {
+  generate_plot_story(
+    p_diff,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_perc <- plot_ctr_population_type_perc(
+  year = params$year,
+  country_asylum_iso3c = params$country_iso3,
+  pop_type = "REF"
+)
+story_perc <- if (params$include_ai) {
+  generate_plot_story(
+    p_perc,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+# Section Summary: Population
+summary_pop <- if (params$include_ai) {
+  generate_section_summary(
+    stories = c(story_tree, story_pyramid, story_trend, story_diff, story_perc),
+    section_name = "Population Overview",
+    provider = params$gp_provider,
+    model = params$gp_model
+  )
+} else {
+  ""
+}
+
+# 3. Geography & Movements
+p_map <- plot_ctr_location(year = params$year,
+                           country_origin_iso3c = params$country_iso3,
+                           pop_type = c("REF", "ASY", "IDP", "OIP", "STA", "OOC"))
+story_map <- if (params$include_ai) {
+  generate_plot_story(
+    p_map,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_origin <- plot_ctr_population_type_abs(
+  year = params$year,
+  country_asylum_iso3c = params$country_iso3,
+  pop_type = "REF"
+)
+story_origin <- if (params$include_ai) {
+  generate_plot_story(
+    p_origin,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_hist <- plot_ctr_origin_history(year = params$year,
+                                  country_asylum_iso3c = params$country_iso3)
+story_hist <- if (params$include_ai) {
+  generate_plot_story(
+    p_hist,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_dest <- plot_ctr_destination(year = params$year,
+                               country_origin_iso3c = params$country_iso3)
+story_dest <- if (params$include_ai) {
+  generate_plot_story(
+    p_dest,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+
+
+# Section Summary: Geography
+summary_geo <- if (params$include_ai) {
+  generate_section_summary(
+    stories = c(story_map, story_origin, story_hist, story_dest),
+    section_name = "Geography & Movements",
+    provider = params$gp_provider,
+    model = params$gp_model
+  )
+} else {
+  ""
+}
+
+# 4. Asylum System
+p_asylum <- plot_ctr_asylum(year = params$year,
+                            country_asylum_iso3c = params$country_iso3,
+                            lag = params$lag)
+story_asylum <- if (params$include_ai) {
+  generate_plot_story(
+    p_asylum,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_process <- plot_ctr_process(year = params$year,
+                              country_asylum_iso3c = params$country_iso3)
+story_process <- if (params$include_ai) {
+  generate_plot_story(
+    p_process,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_time <- plot_ctr_processing_time(year = params$year,
+                                   lag = params$lag,
+                                   country_asylum_iso3c = params$country_iso3)
+story_time <- if (params$include_ai) {
+  generate_plot_story(
+    p_time,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_rec <- plot_ctr_recognition(year = params$year,
+                              country_asylum_iso3c = params$country_iso3)
+story_rec <- if (params$include_ai) {
+  generate_plot_story(
+    p_rec,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+p_rec_origin <- plot_ctr_origin_recognition(year = params$year,
+                                            country_origin_iso3c = params$country_iso3)
+story_rec_origin <- if (params$include_ai) {
+  generate_plot_story(
+    p_rec_origin,
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200
+  )
+} else {
+  ""
+}
+
+# Section Summary: Asylum
+summary_asylum <- if (params$include_ai) {
+  generate_section_summary(
+    stories = c(
+      story_asylum,
+      story_process,
+      story_time,
+      story_rec,
+      story_rec_origin
+    ),
+    section_name = "Asylum System",
+    provider = params$gp_provider,
+    model = params$gp_model,
+  )
+} else {
+  ""
+}
+
+# 5. Solutions
+p_sol <- plot_ctr_solution(
+  year = params$year,
+  country_asylum_iso3c = params$country_iso3,
+  sol_type = c("NAT", "RST", "RET", "RDP"),
+  lag = params$lag
+)
+story_sol <- if (params$include_ai) {
+  generate_plot_story(p_sol, 
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200)
+} else {
+  ""
+}
+
+p_sol_rec <- unhcrviz::plot_ctr_solution_recognition(
+  year = params$year,
+  country_asylum_iso3c = params$country_iso3,
+  lag = params$lag
+)
+story_sol_rec <- if (params$include_ai) {
+  generate_plot_story(p_sol_rec, 
+    provider = params$gp_provider,
+    model = params$gp_model,
+    max_tokens = 200)
+} else {
+  ""
+}
+
+# Section Summary: Solutions
+summary_sol <- if (params$include_ai) {
+  generate_section_summary(
+    stories = c(story_sol, story_sol_rec),
+    section_name = "Solutions",
+    provider = params$gp_provider,
+    model = params$gp_model
+  )
+} else {
+  ""
+}
+
+# 6. Report Summary
+summary_report <- if (params$include_ai) {
+  generate_report_summary(
+    section_summaries = list(
+      "Population Overview" = summary_pop,
+      "Geography & Movements" = summary_geo,
+      "Asylum System" = summary_asylum,
+      "Solutions" = summary_sol
+    ),
+    country_name = params$name,
+    year = params$year,
+    provider = params$gp_provider,
+    model = params$gp_model
+  )
+} else {
+  ""
+}
+```
+
+
+
+# Executive Summary
+
+`r summary_report`
+
+
+
+```{r key-figures}
+#| fig.width: 6
+#| fig.height: 8.4
+p_key
+```
+
+
+
+# Population Overview
+
+`r summary_pop`
+
+## Demographics
+
+> **AI Insight**: `r story_tree`
+
+
+
+```{r treemap}
+#| fig.width: 6
+#| fig.height: 3.6
+p_tree
+```
+
+
+
+> **AI Insight**: `r story_pyramid`
+
+
+
+```{r pyramid}
+#| fig.width: 6
+#| fig.height: 4.8
+p_pyramid
+```
+
+
+
+## Trends Over Time
+
+> **AI Insight**: `r story_trend`
+
+
+
+```{r trends}
+#| fig.width: 6
+#| fig.height: 7
+p_trend
+```
+
+
+
+> **AI Insight**: `r story_diff`
+
+
+
+```{r diff-pop}
+#| fig.width: 6
+#| fig.height: 6
+p_diff
+```
+
+
+
+> **AI Insight**: `r story_perc`
+
+
+
+```{r pop-perc}
+#| fig.width: 6
+#| fig.height: 7
+p_perc
+```
+
+
+
+# Geography & Movements
+
+`r summary_geo`
+
+> **AI Insight**: `r story_map`
+
+
+
+```{r map}
+#| fig.width: 6
+#| fig.height: 4.8
+p_map
+```
+
+
+
+## Origin of Displaced Populations
+
+> **AI Insight**: `r story_origin`
+
+
+
+```{r origin}
+#| fig.width: 6
+#| fig.height: 6
+p_origin
+```
+
+
+
+> **AI Insight**: `r story_hist`
+
+
+
+```{r origin-history}
+#| fig.width: 6
+#| fig.height: 6
+p_hist
+```
+
+
+
+## Destination
+
+> **AI Insight**: `r story_dest`
+
+
+
+```{r destination}
+#| fig.width: 6
+#| fig.height: 6
+# Note: This plot shows where people FROM the country go (Outflow)
+p_dest
+```
+
+
+
+
+
+# Asylum System
+
+`r summary_asylum`
+
+> **AI Insight**: `r story_asylum`
+
+
+
+```{r asylum}
+#| fig.width: 6
+#| fig.height: 6
+p_asylum
+```
+
+
+
+> **AI Insight**: `r story_process`
+
+
+
+```{r process}
+#| fig.width: 6
+#| fig.height: 4.8
+p_process
+```
+
+
+
+> **AI Insight**: `r story_time`
+
+
+
+```{r processing-time}
+#| fig.width: 6
+#| fig.height: 6
+p_time
+```
+
+
+
+## Recognition Rates
+
+> **AI Insight**: `r story_rec`
+
+
+
+```{r recognition}
+#| fig.width: 6
+#| fig.height: 6
+p_rec
+```
+
+
+
+> **AI Insight**: `r story_rec_origin`
+
+
+
+```{r origin-recognition}
+#| fig.width: 6
+#| fig.height: 6
+# Note: This plot shows recognition rates for nationals FROM the country (Outflow)
+p_rec_origin
+```
+
+
+
+# Solutions
+
+`r summary_sol`
+
+> **AI Insight**: `r story_sol`
+
+
+
+```{r solutions}
+#| fig.width: 6
+#| fig.height: 6
+p_sol
+```
+
+
+
+> **AI Insight**: `r story_sol_rec`
+
+
+
+```{r solutions-rec}
+#| fig.width: 8
+#| fig.height: 6
+p_sol_rec
+```
+

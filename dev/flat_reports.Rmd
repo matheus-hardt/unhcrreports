@@ -55,7 +55,8 @@ report_path <- generate_report(
   name = "BRA", 
   year = 2024,
   gp_provider = "openai", # or "azure", "ollama"
-  gp_model = "gpt-4o-mini"
+  gp_model = "gpt-4o-mini",
+  include_ai = TRUE # Set to FALSE to skip AI generation
 )
 ```
 
@@ -91,8 +92,10 @@ pkgload::load_all(export_all = FALSE)
 #' @param type either donor recipient or destination.
 #' @param name name of  donor recipient or destination if NULL batch process them
 #' @param year year
+#' @param lag Number of years for trend analysis (default 5)
 #' @param gp_provider for instance "azure"
 #' @param gp_model for instance "gpt-4.1-mini"
+#' @param include_ai Logical, whether to include AI-generated content (default TRUE)
 #'
 #' @importFrom dplyr filter select pull
 #' @importFrom quarto quarto_render
@@ -105,9 +108,11 @@ pkgload::load_all(export_all = FALSE)
 #' @export
 generate_report <- function(type = "country",
                             year = 2024,
+                            lag = 5,
                             name = NULL,
-                            gp_provider = "azure",
-                            gp_model = "gpt-4.1-mini") {
+                            gp_provider = "gemini",
+                            gp_model = "gemini-3-pro-preview",
+                            include_ai = TRUE) {
   template_path <- system.file(paste0("templates/", type, "_report.qmd"),
     package = "unhcrreports"
   )
@@ -165,21 +170,25 @@ generate_report <- function(type = "country",
         country_iso3 = this,
         name = country_full_name,
         year = year,
+        lag = lag,
         gp_provider = gp_provider,
-        gp_model = gp_model
+        gp_model = gp_model,
+        include_ai = include_ai
       )
     } else if (type == "region") {
       params_list <- list(
         region = this,
         year = year,
         gp_provider = gp_provider,
-        gp_model = gp_model
+        gp_model = gp_model,
+        include_ai = include_ai
       )
     } else {
       params_list <- list(
         year = year,
         gp_provider = gp_provider,
-        gp_model = gp_model
+        gp_model = gp_model,
+        include_ai = include_ai
       )
     }
 
@@ -339,8 +348,7 @@ linkregionalreport <- c(
   "[Profile Report for region: Europe](../reports/Analysis-region-europe-2024-report.html)",
   "[Profile Report for region: Middle East and North Africa](../reports/Analysis-region-middle-east-and-north-africa-2024-report.html)",
   "[Profile Report for region: East and Horn of Africa](../reports/Analysis-region-east-and-horn-of-africa-2024-report.html)",
-  "[Profile Report for region: West and Central Africa](../reports/Analysis-region-west-and-central-africa-2024-report.html)",
-  "[Profile Report for region: NA](../reports/Analysis-region-NA-2024-report.html)"
+  "[Profile Report for region: West and Central Africa](../reports/Analysis-region-west-and-central-africa-2024-report.html)"
 )
 ```
 

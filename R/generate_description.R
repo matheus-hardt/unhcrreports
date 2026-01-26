@@ -19,45 +19,89 @@
 #' @importFrom utils capture.output
 #' @importFrom jsonlite fromJSON
 #' @export
-generate_description <- function(structure,
-                                 stats,
-                                 provider = NULL,
-                                 model = NULL,
-                                 max_tokens = 500) {
-
+generate_description <- function(
+  structure,
+  stats,
+  provider = NULL,
+  model = NULL,
+  max_tokens = 500
+) {
   # Construct Context
   context_str <- paste0(
     "PLOT METADATA:\n",
-    "Title: ", structure$labels$title, "\n",
-    "Subtitle: ", structure$labels$subtitle, "\n",
-    "Geoms: ", paste(unique(structure$geoms), collapse = ", "), "\n",
-    "X Label: ", structure$labels$x, "\n",
-    "Y Label: ", structure$labels$y, "\n\n",
-
+    "Title: ",
+    structure$labels$title,
+    "\n",
+    "Subtitle: ",
+    structure$labels$subtitle,
+    "\n",
+    "Geoms: ",
+    paste(unique(structure$geoms), collapse = ", "),
+    "\n",
+    "X Label: ",
+    structure$labels$x,
+    "\n",
+    "Y Label: ",
+    structure$labels$y,
+    "\n\n",
     "STATISTICAL PROFILE:\n",
     "STATISTICAL PROFILE:\n",
-    paste(capture.output(print(stats$distributions)), collapse = "\n"), "\n",
+    paste(capture.output(print(stats$distributions)), collapse = "\n"),
+    "\n",
     "Correlations: ",
-    paste(names(stats$correlations), unlist(stats$correlations),
-          sep = ": ", collapse = ", "),
+    paste(
+      names(stats$correlations),
+      unlist(stats$correlations),
+      sep = ": ",
+      collapse = ", "
+    ),
     "\n"
   )
 
   system_prompt <- paste0(
-    "You are an expert accessibility consultant and data analyst for UNHCR. ",
-    "Your task is to generate two outputs for a given data visualization:\n",
-    "1. 'short_desc': A WCAG-compliant alt text following the formula ",
-    "'* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
-    "2. 'long_desc': A detailed statistical analysis and context ",
-    "description.\n",
-    "Return the result as a strict JSON object with keys 'short_desc' ",
-    "and 'long_desc'."
+    "You are the Senior Data Storyteller for UNHCR. ",
+    "Your task is to translate statistical graphs into humanitarian narratives that inspire action.\n\n",
+    "**CRITICAL RULE: ZERO ABSTRACTION**\n",
+    "You are strictly FORBIDDEN from using generic placeholders. You must extract the specific names from the STATISTICAL PROFILE.\n",
+    "- **BANNED PHRASES:** 'The primary population', 'The largest group', 'A specific nationality', 'The country of origin'.\n",
+    "- **REQUIRED FORMAT:** 'Venezuelan refugees', 'Asylum-seekers from Haiti', 'The population in Roraima'.\n",
+    "- **Logic:** If the data says 'VEN' or 'Venezuela', you MUST write 'Venezuela'. If the data says 'Refugees', write 'Refugees'. Do not generalize.\n\n",
+    "**1. CORE PHILOSOPHY: THE GRAPH IS EVIDENCE, NOT THE STORY.**\n",
+    "- **Do NOT describe the chart visuals.** Never say 'The bar chart shows' or 'The blue line'.\n",
+    "- **Instead, describe the reality.** If the line goes up, write 'Displacement accelerated'.\n\n",
+    "**2. DATA SPECIFICITY (NO ABSTRACTIONS)**\n",
+    "- **Naming Rule:** Never use placeholders like 'the largest population group', 'the primary country', or 'a specific nationality'.\n",
+    "- **Correction:** You MUST explicitly name the group found in the data (e.g., instead of 'the largest group surged', write 'Venezuelan refugees surged').\n",
+    "- **Precision:** If the data distinguishes between 'Refugees' and 'Asylum-Seekers', use the specific term. Do not generalize to 'people'.\n\n",
+    "**3. INSTITUTIONAL VOICE (UNHCR STYLE)**\n",
+    "- **Tone:** Authoritative, Neutral (on conflict), Protection-Centric, and Action-Oriented.\n",
+    "- **Semantics:** 'Illegal' -> 'Irregular'. 'Swarm' -> 'Large-scale movement'. 'Burden' -> 'Responsibility'.\n",
+    "- **Privacy:** Suppress any counts < 5 (write 'a small number').\n\n",
+    "**4. ANALYTICAL HEURISTICS (INTERPRETING THE VISUALS)**\n",
+    "- **Stable:** Change < 5% -> Describe as 'Remained relatively stable'.\n",
+    "- **Significant:** Change > 10% -> Describe as 'Marked rise' or 'Significant increase'.\n",
+    "- **Surge:** Change > 20% or sudden spike -> Describe as 'Surge' or 'Rapid escalation'.\n",
+    "- **Concentration:** If top 3 groups > 50% -> State: 'Displacement is highly concentrated among [Name of Group 1] and [Name of Group 2]'.\n",
+    "- **The Gap:** If there is a difference between Needs and Funding, frame it as a 'Protection Gap'.\n\n",
+    "**5. NARRATIVE STRUCTURE (JSON OUTPUT)**\n",
+    "Generate a strict JSON object with two keys:\n",
+    "  * 'short_desc': WCAG-compliant alt text ('* [Chart Type] of [Variables] showing [Trend]*').\n",
+    "  * 'long_desc': A 3-5 sentence narrative following this Story Arc:\n",
+    "     (A) **The Headline (The Human Impact):** Start with the 'So What'. (e.g., 'Escalating instability has driven record displacement...').\n",
+    "     (B) **The Evidence (Specific Names & Numbers):** Support the headline with specifics. **You must name the actors.** \n",
+    "        *BAD:* 'The main group increased by 50%.'\n",
+    "        *GOOD:* 'The number of **Venezuelan asylum-seekers** rose by 50% to [Number], straining reception capacity.'\n",
+    "     (C) **The Context (The Driver):** Briefly mention the root cause if implied (conflict, policy).\n",
+    "     (D) **The Call (The Implication):** Conclude with the need for support or the consequence of inaction."
   )
+
 
   prompt <- paste0(
     "Context:\n", context_str, "\n\n",
-    "Task: Generate the JSON object containing short_desc and long_desc ",
-    "based on the provided context."
+    "Task: Write a narrative for this graph that is specific and actionable.\n",
+    "1. **SEARCH:** Look at the 'STATISTICAL PROFILE' above. Find the text labels with the highest numbers (e.g., 'Venezuela', 'Refugees', 'Syria').\n",
+    "2. **NAME:** In your response, explicitly name these groups. Do not refer to them as 'the group' or 'the population'.\n",
+    "3. **STORY:** Explain *why* this specific group is increasing/decreasing and what it means for the response."
   )
 
   # Logic to select provider
@@ -120,19 +164,25 @@ generate_description <- function(structure,
     stop("Invalid provider")
   )
 
-  response <- tryCatch({
-    chat$chat(prompt)
-  }, error = function(e) {
-    paste("Error invoking AI provider:", e$message)
-  })
+  response <- tryCatch(
+    {
+      chat$chat(prompt)
+    },
+    error = function(e) {
+      paste("Error invoking AI provider:", e$message)
+    }
+  )
 
   # Parse JSON
   # Clean potential markdown code blocks if the model insists on adding them
   cleaned_json <- gsub("^```json\\s*|\\s*```$", "", response)
 
-  tryCatch({
-    jsonlite::fromJSON(cleaned_json)
-  }, error = function(e) {
-    list(short_desc = "Error parsing JSON", long_desc = response)
-  })
+  tryCatch(
+    {
+      jsonlite::fromJSON(cleaned_json)
+    },
+    error = function(e) {
+      list(short_desc = "Error parsing JSON", long_desc = response)
+    }
+  )
 }

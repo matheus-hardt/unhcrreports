@@ -7,9 +7,11 @@
 generate_report(
   type = "country",
   year = 2024,
+  lag = 5,
   name = NULL,
-  gp_provider = "azure",
-  gp_model = "gpt-4.1-mini"
+  gp_provider = "gemini",
+  gp_model = "gemini-3-pro-preview",
+  include_ai = TRUE
 )
 }
 \arguments{
@@ -17,11 +19,15 @@ generate_report(
 
 \item{year}{year}
 
+\item{lag}{Number of years for trend analysis (default 5)}
+
 \item{name}{name of  donor recipient or destination if NULL batch process them}
 
 \item{gp_provider}{for instance "azure"}
 
 \item{gp_model}{for instance "gpt-4.1-mini"}
+
+\item{include_ai}{Logical, whether to include AI-generated content (default TRUE)}
 }
 \value{
 links to genrated reports.
@@ -152,7 +158,6 @@ linkregionalreport <- c(
   "[Profile Report for region: Europe](../reports/Analysis-region-europe-2024-report.html)",
   "[Profile Report for region: Middle East and North Africa](../reports/Analysis-region-middle-east-and-north-africa-2024-report.html)",
   "[Profile Report for region: East and Horn of Africa](../reports/Analysis-region-east-and-horn-of-africa-2024-report.html)",
-  "[Profile Report for region: West and Central Africa](../reports/Analysis-region-west-and-central-africa-2024-report.html)",
-  "[Profile Report for region: NA](../reports/Analysis-region-NA-2024-report.html)"
+  "[Profile Report for region: West and Central Africa](../reports/Analysis-region-west-and-central-africa-2024-report.html)"
 )
 }

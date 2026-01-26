@@ -26,6 +26,11 @@ generate_report_summary <- function(section_summaries,
                                     provider = NULL,
                                     model = NULL,
                                     max_tokens = 400) {
+  
+  if (!is.null(provider) && provider == "none") {
+      return("")
+  }
+
   valid_summaries <- section_summaries[
     !is.na(section_summaries) &
       !grepl("AI summary.*skipped", section_summaries)

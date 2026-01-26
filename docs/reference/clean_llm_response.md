@@ -26,15 +26,20 @@ Cleaned character string
 ## Examples
 
 ``` r
-response <- "<think>
-First, I'm a humanitarian data visualization expert. My role includes extracting insights
-from visualizations, creating accessible narratives, highlighting patterns relevant to aid
-efforts, using clear language with emotional resonance.
-Aligning with constraints: Use plain language, be concise and impactful. Don't rehash
-every detail; build narrative depth around 2 key insights maximum in under 30 tokens.
-</think>
-This visualization tracks a relationship potentially critical for humanitarian logistics:
-higher fuel consumption versus increased weight. 车辆设计"
+response <- paste(
+  "<think>",
+  "First, I'm a humanitarian data visualization expert. My role includes",
+  "extracting insights from visualizations, creating accessible narratives,",
+  "highlighting patterns relevant to aid efforts, using clear language with",
+  "emotional resonance.",
+  "Aligning with constraints: Use plain language, be concise and impactful.",
+  "Don't rehash every detail; build narrative depth around 2 key insights",
+  "maximum in under 30 tokens.",
+  "</think>",
+  "This visualization tracks a relationship potentially critical for",
+  "humanitarian logistics: higher fuel consumption versus increased weight.",
+  "车辆设计"
+)
 clean_llm_response(response)
-#> [1] "This visualization tracks a relationship potentially critical for humanitarian logistics: higher fuel consumption versus increased weight."
+#> [1] "Unable to generate story from this visualization."
 ```

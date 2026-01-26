@@ -12,6 +12,7 @@ params:
   year: 2024
   gp_provider: "openai"
   gp_model: "gpt-4o-mini"
+  include_ai: true
   package_path: NULL
 ---
 
@@ -40,43 +41,69 @@ if (!is.null(params$package_path)) {
 
 # 1. Population Overview
 p_tree <- plot_reg_treemap(year = params$year, region = params$region)
-story_tree <- generate_plot_story(p_tree, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
-# story_tree <- "AI text generation disabled."
+story_tree <- if (params$include_ai) {
+  generate_plot_story(p_tree, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+} else {
+  ""
+}
 
 p_trend <- plot_reg_population_type_per_year(year = params$year, region = params$region)
-story_trend <- generate_plot_story(p_trend, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
-# story_trend <- "AI text generation disabled."
+story_trend <- if (params$include_ai) {
+  generate_plot_story(p_trend, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+} else {
+  ""
+}
 
 p_abs <- plot_reg_population_type_abs(year = params$year, region = params$region, pop_type = "REF")
-story_abs <- generate_plot_story(p_abs, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
-# story_abs <- "AI text generation disabled."
+story_abs <- if (params$include_ai) {
+  generate_plot_story(p_abs, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+} else {
+  ""
+}
 
 p_share <- plot_reg_share(year = params$year, region = params$region, pop_type = "REF")
-story_share <- generate_plot_story(p_share, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
-# story_share <- "AI text generation disabled."
+story_share <- if (params$include_ai) {
+  generate_plot_story(p_share, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+} else {
+  ""
+}
 
 p_increase <- plot_reg_increase(year = params$year, region = params$region, pop_type = c("REF", "ASY", "OIP"))
-story_increase <- generate_plot_story(p_increase, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
-# story_increase <- "AI text generation disabled."
+story_increase <- if (params$include_ai) {
+  generate_plot_story(p_increase, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+} else {
+  ""
+}
 
 p_decrease <- plot_reg_decrease(year = params$year, region = params$region, pop_type = c("REF", "ASY", "OIP"))
-story_decrease <- generate_plot_story(p_decrease, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
-# story_decrease <- "AI text generation disabled."
+story_decrease <- if (params$include_ai) {
+  generate_plot_story(p_decrease, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+} else {
+  ""
+}
 
 # Section Summary: Population
-summary_pop <- generate_section_summary(
-  stories = c(story_tree, story_trend, story_abs, story_share, story_increase, story_decrease),
-  section_name = "Population Overview",
-  provider = params$gp_provider,
-  model = params$gp_model
-)
+summary_pop <- if (params$include_ai) {
+  generate_section_summary(
+    stories = c(story_tree, story_trend, story_abs, story_share, story_increase, story_decrease),
+    section_name = "Population Overview",
+    provider = params$gp_provider,
+    model = params$gp_model
+  )
+} else {
+  ""
+}
 # summary_pop <- "AI text generation disabled."
 
 # 2. Geography & Movements
+# 2. Geography & Movements
 p_map <- plot_reg_map(year = params$year, region = params$region)
 # Map plots might be tricky for AI to interpret from data if it's complex sf data, but we try
-story_map <- generate_plot_story(p_map, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
-# story_map <- "AI text generation disabled."
+story_map <- if (params$include_ai) {
+  generate_plot_story(p_map, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+} else {
+  ""
+}
 
 p_od <- plot_reg_origin_dest(year = params$year, region = params$region)
 # Chord diagrams return NULL usually as they plot directly, so we might skip story or handle differently
@@ -84,59 +111,87 @@ p_od <- plot_reg_origin_dest(year = params$year, region = params$region)
 story_od <- "" 
 
 p_prop <- plot_reg_prop_origin(year = params$year, region = params$region)
-story_prop <- generate_plot_story(p_prop, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
-# story_prop <- "AI text generation disabled."
+story_prop <- if (params$include_ai) {
+  generate_plot_story(p_prop, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+} else {
+  ""
+}
 
 # Section Summary: Geography
-summary_geo <- generate_section_summary(
-  stories = c(story_map, story_prop),
-  section_name = "Geography & Movements",
-  provider = params$gp_provider,
-  model = params$gp_model
-)
+summary_geo <- if (params$include_ai) {
+  generate_section_summary(
+    stories = c(story_map, story_prop),
+    section_name = "Geography & Movements",
+    provider = params$gp_provider,
+    model = params$gp_model
+  )
+} else {
+  ""
+}
 # summary_geo <- "AI text generation disabled."
 
 # 3. Asylum System
 p_rsd <- plot_reg_rsd(year = params$year, region = params$region, measure = "Recognized")
-story_rsd <- generate_plot_story(p_rsd, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+story_rsd <- if (params$include_ai) {
+  generate_plot_story(p_rsd, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+} else {
+  ""
+}
 # story_rsd <- "AI text generation disabled."
 
 # Section Summary: Asylum
-summary_asylum <- generate_section_summary(
-  stories = c(story_rsd),
-  section_name = "Asylum System",
-  provider = params$gp_provider,
-  model = params$gp_model
-)
+summary_asylum <- if (params$include_ai) {
+  generate_section_summary(
+    stories = c(story_rsd),
+    section_name = "Asylum System",
+    provider = params$gp_provider,
+    model = params$gp_model
+  )
+} else {
+  ""
+}
 # summary_asylum <- "AI text generation disabled."
 
 # 4. Solutions
+# 4. Solutions
 p_sol <- plot_reg_solution(year = params$year, region = params$region)
-story_sol <- generate_plot_story(p_sol, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+story_sol <- if (params$include_ai) {
+  generate_plot_story(p_sol, provider = params$gp_provider, model = params$gp_model, max_tokens = 200)
+} else {
+  ""
+}
 # story_sol <- "AI text generation disabled."
 
 # Section Summary: Solutions
-summary_sol <- generate_section_summary(
-  stories = c(story_sol),
-  section_name = "Solutions",
-  provider = params$gp_provider,
-  model = params$gp_model
-)
+summary_sol <- if (params$include_ai) {
+  generate_section_summary(
+    stories = c(story_sol),
+    section_name = "Solutions",
+    provider = params$gp_provider,
+    model = params$gp_model
+  )
+} else {
+  ""
+}
 # summary_sol <- "AI text generation disabled."
 
 # 5. Report Summary
-summary_report <- generate_report_summary(
-  section_summaries = list(
-    "Population Overview" = summary_pop,
-    "Geography & Movements" = summary_geo,
-    "Asylum System" = summary_asylum,
-    "Solutions" = summary_sol
-  ),
-  country_name = params$region, # Reusing param for region name
-  year = params$year,
-  provider = params$gp_provider,
-  model = params$gp_model
-)
+summary_report <- if (params$include_ai) {
+  generate_report_summary(
+    section_summaries = list(
+      "Population Overview" = summary_pop,
+      "Geography & Movements" = summary_geo,
+      "Asylum System" = summary_asylum,
+      "Solutions" = summary_sol
+    ),
+    country_name = params$region, # Reusing param for region name
+    year = params$year,
+    provider = params$gp_provider,
+    model = params$gp_model
+  )
+} else {
+  ""
+}
 # summary_report <- "AI text generation disabled."
 ```
 

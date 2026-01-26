@@ -16,12 +16,12 @@ flat_ai_reporting.Rmd:
   - tests/testthat/test-slugify.R
   - tests/testthat/test-generate_section_summary.R
   - tests/testthat/test-generate_report_summary.R
-  vignettes: vignettes/get-started.Rmd
+  vignettes: vignettes/ai-analysis-architecture.Rmd
   inflate:
     flat_file: dev/flat_ai_reporting.Rmd
-    vignette_name: Get started
-    open_vignette: false
-    check: false
+    vignette_name: AI Analysis Architecture
+    open_vignette: true
+    check: true
     document: true
     overwrite: 'yes'
     clean: ask
