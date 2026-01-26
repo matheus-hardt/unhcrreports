@@ -6,7 +6,8 @@
 
 - **Edouard Legoupil**. Contributor.
 
-- **UNHCR**. Copyright holder.
+- **[![UNHCR](https://raw.githubusercontent.com/unhcr-dataviz/unhcrtemplate/master/man/figures/logo.svg)](https://www.unhcr.org/)**.
+  Copyright holder.
 
 ## Citation
 

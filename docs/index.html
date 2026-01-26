@@ -70,10 +70,22 @@
 </h1>
 </div>
 <blockquote>
-<p>[!IMPORTANT] <strong>Reporting Engine</strong>: This package functions as the “Reporting Engine” for UNHCR statistics. It focuses on <strong>orchestrating automated reports</strong> by combining data, visualization, and AI narratives.</p>
-<p><strong>Graphics Source</strong>: The standardized charts and maps used in these reports are built upon the <a href="https://github.com/Edouard-Legoupil/unhcrviz" class="external-link"><code>unhcrviz</code></a> package, which provides a high-level API over <code>unhcrthemes</code>.</p>
+<p><strong>Reporting Engine</strong>: This package functions as the “Reporting Engine” for UNHCR statistics. It focuses on <strong>orchestrating automated reports</strong> by combining data, visualization, and AI narratives.</p>
+<p><strong>Data Source</strong>: Fetching the latest official statistics via the <a href="https://populationstatistics.github.io/refugees/" class="external-link"><code>{refugees}</code></a> package.</p>
+<p><strong>Graphics Source</strong>: The standardized charts and maps used in these reports are built upon the <a href="https://edouard-legoupil.github.io/unhcrviz/" class="external-link"><code>{unhcrviz}</code></a> package, which provides a high-level chart library API over <a href="https://unhcr-dataviz.github.io/unhcrthemes/index.html" class="external-link"><code>{unhcrthemes}</code></a>.</p>
 </blockquote>
-<p><code>unhcrreports</code> automates the production of analytical reports (Country and Regional) by: 1. <strong>Retrieving Data</strong>: Fetching the latest official statistics via the <code>refugees</code> package. 2. <strong>Visualizing Trends</strong>: Generating standardized plots using <code>unhcrviz</code>. 3. <strong>Generating Narratives</strong>: Using Large Language Models (LLMs) to interpret data and write context-aware insights. 4. <strong>Publishing</strong>: Compiling everything into polished Quarto reports.</p>
+<p><a href="https://matheus-hardt.github.io/unhcrreports/"><code>{unhcrreports}</code></a> automates the production of <a href="https://matheus-hardt.github.io/unhcrreports/articles/ai-powered-reports.html">analytical reports</a> (Country and Regional) by:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Visualizing Trends</strong>: Generating standardized plots.</p></li>
+<li><p><strong>Generating Narratives</strong>: Using Large Language Models (LLMs) to interpret data and write context-aware insights.</p></li>
+<li><p><strong>Publishing</strong>: Compiling everything into polished Quarto reports.</p></li>
+</ol>
+<div class="section level2">
+<h2 id="rationale">Rationale<a class="anchor" aria-label="anchor" href="#rationale"></a>
+</h2>
+<p>While anyone can already ask a large language model to call the UNHCR API and assemble an ad‑hoc analysis, that approach remains fundamentally limited: every chat interaction produces a different framing, different emphases, and different analytical pathways. By contrast, using AI to generate narrative on top of a standardized set of charts and indicators introduces a level of methodological consistency that simple chat-based prompting cannot achieve. This framework ensures that every operation is analyzed through the same <strong>structured lens</strong>, enabling comparability across countries, time periods, and thematic areas. Instead of reinventing the analysis each time, the AI is anchored in a stable analytical model—reducing variance, improving coherence, and guaranteeing that key questions are always addressed.</p>
+<p>Just as importantly, this method produces narrative drafts that are <strong>“human‑in‑the‑loop ready”</strong>: analysts can immediately focus on refinement, nuance, and validation rather than on assembling first‑pass descriptive text. The result is a workflow where AI accelerates the routine narrative generation, while human experts retain control over interpretation, context, and judgment.</p>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -86,10 +98,38 @@
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"."</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
+<p>You can also use individual functions to generate analysis. For example, to analyse the <strong>Population Type per Year</strong> for <strong>Ukraine</strong> in 2024:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://matheus-hardt.github.io/unhcrreports">unhcrreports</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://edouard-legoupil.github.io/unhcrviz/docs/" class="external-link">unhcrviz</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 1. Generate the plot</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">unhcrviz</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/unhcrviz/man/plot_ctr_population_type_per_year.html" class="external-link">plot_ctr_population_type_per_year</a></span><span class="op">(</span></span>
+<span>  year <span class="op">=</span> <span class="fl">2024</span>,</span>
+<span>  country_asylum_iso3c <span class="op">=</span> <span class="st">"UKR"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2. Generate the story (using Gemini as an example)</span></span>
+<span><span class="va">story</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/generate_plot_story.html">generate_plot_story</a></span><span class="op">(</span><span class="va">p</span>, </span>
+<span>  provider <span class="op">=</span> <span class="st">"gemini"</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"gemini-3-pro-preview"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Pull the long text</span></span>
+<span><span class="va">story</span><span class="op">$</span><span class="va">long_text</span></span></code></pre></div>
+<p><img src="reference/figures/usage_pop_trend.svg" width="100%"></p>
+<blockquote>
+<p><strong>AI Narrative</strong>: The displacement landscape in Ukraine for 2024 continues to be dominated by the internal displacement crisis. Internally Displaced Persons (IDPs) represented the overwhelming majority of the affected population, maintaining the plateau reached after the sharp escalation in 2022. While the number of Asylum Seekers and Returnees remains statistically visible, they represent a minor fraction of the total displacement figures, emphasizing that the primary humanitarian challenge remains within the country’s borders.</p>
+</blockquote>
+</div>
+<div class="section level2">
 <h2 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
 <p>Generate a full report with a single command:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://matheus-hardt.github.io/unhcrreports">unhcrreports</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Generate a Country Report (e.g., Brazil)</span></span>
@@ -110,7 +150,7 @@
 <h3 id="environment-setup">Environment Setup<a class="anchor" aria-label="anchor" href="#environment-setup"></a>
 </h3>
 <p>Set your API key as an environment variable in your <code>.Renviron</code> file or session:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For Google Gemini</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>GEMINI_API_KEY <span class="op">=</span> <span class="st">"your_api_key_here"</span><span class="op">)</span></span>
 <span></span>

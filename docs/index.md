@@ -1,22 +1,52 @@
 # {unhcrreports}: AI-Powered Humanitarian Reporting
 
-> \[!IMPORTANT\] **Reporting Engine**: This package functions as the
-> “Reporting Engine” for UNHCR statistics. It focuses on **orchestrating
-> automated reports** by combining data, visualization, and AI
-> narratives.
+> **Reporting Engine**: This package functions as the “Reporting Engine”
+> for UNHCR statistics. It focuses on **orchestrating automated
+> reports** by combining data, visualization, and AI narratives.
+>
+> **Data Source**: Fetching the latest official statistics via the
+> [`{refugees}`](https://populationstatistics.github.io/refugees/)
+> package.
 >
 > **Graphics Source**: The standardized charts and maps used in these
 > reports are built upon the
-> [`unhcrviz`](https://github.com/Edouard-Legoupil/unhcrviz) package,
-> which provides a high-level API over `unhcrthemes`.
+> [`{unhcrviz}`](https://edouard-legoupil.github.io/unhcrviz/) package,
+> which provides a high-level chart library API over
+> [`{unhcrthemes}`](https://unhcr-dataviz.github.io/unhcrthemes/index.html).
 
-`unhcrreports` automates the production of analytical reports (Country
-and Regional) by: 1. **Retrieving Data**: Fetching the latest official
-statistics via the `refugees` package. 2. **Visualizing Trends**:
-Generating standardized plots using `unhcrviz`. 3. **Generating
-Narratives**: Using Large Language Models (LLMs) to interpret data and
-write context-aware insights. 4. **Publishing**: Compiling everything
-into polished Quarto reports.
+[`{unhcrreports}`](https://matheus-hardt.github.io/unhcrreports/)
+automates the production of [analytical
+reports](https://matheus-hardt.github.io/unhcrreports/articles/ai-powered-reports.html)
+(Country and Regional) by:
+
+1.  **Visualizing Trends**: Generating standardized plots.
+
+2.  **Generating Narratives**: Using Large Language Models (LLMs) to
+    interpret data and write context-aware insights.
+
+3.  **Publishing**: Compiling everything into polished Quarto reports.
+
+## Rationale
+
+While anyone can already ask a large language model to call the UNHCR
+API and assemble an ad‑hoc analysis, that approach remains fundamentally
+limited: every chat interaction produces a different framing, different
+emphases, and different analytical pathways. By contrast, using AI to
+generate narrative on top of a standardized set of charts and indicators
+introduces a level of methodological consistency that simple chat-based
+prompting cannot achieve. This framework ensures that every operation is
+analyzed through the same **structured lens**, enabling comparability
+across countries, time periods, and thematic areas. Instead of
+reinventing the analysis each time, the AI is anchored in a stable
+analytical model—reducing variance, improving coherence, and
+guaranteeing that key questions are always addressed.
+
+Just as importantly, this method produces narrative drafts that are
+**“human‑in‑the‑loop ready”**: analysts can immediately focus on
+refinement, nuance, and validation rather than on assembling first‑pass
+descriptive text. The result is a workflow where AI accelerates the
+routine narrative generation, while human experts retain control over
+interpretation, context, and judgment.
 
 ## Installation
 
@@ -31,6 +61,43 @@ devtools::install_github("matheus-hardt/unhcrreports")
 # Install from local source
 devtools::install(".")
 ```
+
+## Usage
+
+You can also use individual functions to generate analysis. For example,
+to analyse the **Population Type per Year** for **Ukraine** in 2024:
+
+``` r
+library(unhcrreports)
+library(unhcrviz)
+library(ggplot2)
+
+# 1. Generate the plot
+p <- unhcrviz::plot_ctr_population_type_per_year(
+  year = 2024,
+  country_asylum_iso3c = "UKR"
+)
+
+# 2. Generate the story (using Gemini as an example)
+story <- generate_plot_story(p, 
+  provider = "gemini",
+  model = "gemini-3-pro-preview"
+)
+
+# Pull the long text
+story$long_text
+```
+
+![](reference/figures/usage_pop_trend.svg)
+
+> **AI Narrative**: The displacement landscape in Ukraine for 2024
+> continues to be dominated by the internal displacement crisis.
+> Internally Displaced Persons (IDPs) represented the overwhelming
+> majority of the affected population, maintaining the plateau reached
+> after the sharp escalation in 2022. While the number of Asylum Seekers
+> and Returnees remains statistically visible, they represent a minor
+> fraction of the total displacement figures, emphasizing that the
+> primary humanitarian challenge remains within the country’s borders.
 
 ## Quick Start
 
