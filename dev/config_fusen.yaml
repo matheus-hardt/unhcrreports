@@ -2,6 +2,7 @@ flat_ai_reporting.Rmd:
   path: dev/flat_ai_reporting.Rmd
   state: active
   R:
+  - R/apply_sdc.R
   - R/clean_llm_response.R
   - R/extract_structure.R
   - R/generate_description.R
@@ -10,8 +11,10 @@ flat_ai_reporting.Rmd:
   - R/generate_section_summary.R
   - R/profile_data.R
   - R/slugify.R
+  - R/unhcr_ai_engine.R
   tests:
   - tests/testthat/test-clean_llm_response.R
+  - tests/testthat/test-apply_sdc.R
   - tests/testthat/test-generate_plot_story.R
   - tests/testthat/test-slugify.R
   - tests/testthat/test-generate_section_summary.R
@@ -19,7 +22,7 @@ flat_ai_reporting.Rmd:
   vignettes: vignettes/ai-analysis-architecture.Rmd
   inflate:
     flat_file: dev/flat_ai_reporting.Rmd
-    vignette_name: AI Analysis Architecture
+    vignette_name: ai-analysis-architecture
     open_vignette: true
     check: false
     document: true

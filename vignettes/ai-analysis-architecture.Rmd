@@ -1,8 +1,8 @@
 ---
-title: "AI Analysis Architecture"
+title: "ai-analysis-architecture"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{AI Analysis Architecture}
+  %\VignetteIndexEntry{ai-analysis-architecture}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -57,6 +57,14 @@ clean_llm_response(response)
 
 
 
+
+
+
+# AI Factory and SDC Utilities
+
+## unhcr_ai_engine
+
+## apply_sdc
 
 
 # Three-Tier Architecture for AI Reporting

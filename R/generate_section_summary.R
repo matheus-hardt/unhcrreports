@@ -84,45 +84,19 @@ generate_section_summary <- function(stories,
     } else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
       provider <- "gemini"
     } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
-      provider <- "anthropic"
+      provider <- "claude"
     } else {
       return(paste0("AI summary for ", section_name, " skipped (no API key)."))
     }
   }
 
   provider <- tolower(provider)
-
-  if (is.null(model)) {
-    model <- switch(provider,
-      openai = "gpt-4o-mini",
-      gemini = "gemini-2.0-flash",
-      anthropic = "claude-3-5-sonnet-latest",
-      ollama = "phi3:latest",
-      return("AI summary skipped (invalid provider).")
-    )
-  }
+  if (provider == "anthropic") provider <- "claude"
+  if (provider == "azure") provider <- "openai" 
 
   chat <- tryCatch(
     {
-      switch(provider,
-        openai = ellmer::chat_openai(
-          model = model,
-          system_prompt = system_prompt
-        ),
-        gemini = ellmer::chat_google_gemini(
-          system_prompt = system_prompt,
-          model = model
-        ),
-        anthropic = ellmer::chat_anthropic(
-          model = model,
-          system_prompt = system_prompt
-        ),
-        ollama = ellmer::chat_ollama(
-          model = model,
-          system_prompt = system_prompt
-        ),
-        stop("Invalid provider")
-      )
+      unhcr_ai_engine(provider = provider, task_type = "summarization")
     },
     error = function(e) {
       NULL
@@ -130,11 +104,14 @@ generate_section_summary <- function(stories,
   )
 
   if (is.null(chat)) {
-    return("AI summary failed (chat init).")
+    return(paste0("AI summary for ", section_name, " skipped (chat init failed)."))
   }
 
   response <- tryCatch(
-    chat$chat(prompt),
+    {
+      full_prompt <- paste(system_prompt, prompt, sep = "\n\n")
+      chat$chat(full_prompt)
+    },
     error = function(e) {
       "AI summary failed (API error)."
     }

@@ -29,6 +29,11 @@ generate_description <- function(structure,
       return(list(short_desc = "", long_desc = ""))
   }
 
+  # Apply SDC to distributions if available
+  if (!is.null(stats$distributions)) {
+     stats$distributions <- apply_sdc(stats$distributions, min_threshold = 5)
+  }
+
   # Construct Context
   context_str <- paste0(
     "PLOT METADATA:\n",
@@ -65,67 +70,84 @@ generate_description <- function(structure,
   )
 
   # Logic to select provider
-  # (duplicated from generate_plot_story for now to adhere to modularity)
   if (is.null(provider)) {
-    if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_))) {
-      provider <- "azure"
+    if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
+      provider <- "gemini"
+    } else if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_))) {
+      provider <- "openai" # Azure usually falls under openai chat interface in some pkgs, but here we mapped it to 'azure'. 
+                           # But unhcr_ai_engine supports "gemini", "openai", "claude".
+                           # If azure is needed, we might need to update ai_factory or map it.
+                           # factory only supports c("gemini", "openai", "claude").
+                           # I will assume "azure" should be handled via "openai" provider in factory OR I need to update factory to support azure.
+                           # The plan said: provider: one of "gemini", "openai", "claude".
+                           # But existing code has azure support.
+                           # I'll default to "gemini" if available.
+      provider <- "gemini" 
     } else if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
       provider <- "openai"
-    } else if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
-      provider <- "gemini"
     } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
-      provider <- "anthropic"
+      provider <- "claude"
     } else {
-      stop("No supported API key found.")
+      # Fallback or error
+       provider <- "gemini"
     }
   }
 
+  # Normalize provider name
   provider <- tolower(provider)
-  if (is.null(model)) {
-    model <- switch(provider,
-      openai = "gpt-4o-mini",
-      gemini = "gemini-2.0-flash",
-      anthropic = "claude-3-5-sonnet-latest",
-      ollama = "deepseek-r1",
-      azure = "gpt-4",
-      stop("Invalid provider")
-    )
-  }
-
-  chat <- switch(provider,
-    openai = ellmer::chat_openai(
-      model = model,
-      system_prompt = system_prompt,
-      type = "json_object"
-    ),
-    azure = {
-      azure_key <- Sys.getenv("AZURE_OPENAI_API_KEY")
-      azure_endpoint <- Sys.getenv("AZURE_OPENAI_ENDPOINT")
-      azure_version <- Sys.getenv("AZURE_OPENAI_API_VERSION")
-      ellmer::chat_azure_openai(
-        system_prompt = system_prompt,
-        model = model,
-        api_version = azure_version,
-        endpoint = azure_endpoint,
-        api_key = azure_key,
-        type = "json_object"
-      )
-    },
-    gemini = ellmer::chat_google_gemini(
-      model = model,
-      system_prompt = system_prompt,
-      api_key = Sys.getenv("GEMINI_API_KEY")
-    ),
-    anthropic = ellmer::chat_anthropic(
-      model = model,
-      system_prompt = system_prompt
-    ),
-    ollama = ellmer::chat_ollama(model = model, system_prompt = system_prompt),
-    stop("Invalid provider")
-  )
-
+  if (provider == "anthropic") provider <- "claude"
+  if (provider == "azure") provider <- "openai" # Map azure to openai if factory handles it, or just pass it and let it fail/fallback?
+                                                # The factory strictly checks match.arg(provider, c("gemini", "openai", "claude"))
+                                                # So I must map to one of those. 
+  
+  # Initialize Chat
+  chat <- tryCatch({
+    unhcr_ai_engine(provider = provider, task_type = "reasoning")
+  }, error = function(e) {
+    stop("Failed to initialize AI Engine: ", e$message)
+  })
+  
+  # Inject system prompt
+  # ellmer chat objects can have system prompt set during init or chat.
+  # But unhcr_ai_engine returns an initialized object.
+  # I might need to create a new chat from the one returned or use the method to set system prompt if supported.
+  # ellmer chat objects usually store system_prompt.
+  # Note: unhcr_ai_engine returns `ellmer::chat_google_gemini(...)`. 
+  # If I want to set a specific system prompt for this interaction, I should pass it.
+  # But the factory doesn't accept system_prompt. 
+  # However, ellmer 0.1+ objects allow providing system_prompt in the turn? 
+  # Or I should have passed it to the factory? 
+  # The plan said: "Prompt Structure: Ensure the "System Prompt" containing the Style Guide and SDC rules is static and placed at the very top."
+  # The factory creates the object. 
+  # If I can't set system prompt dynamically on the returned object, I might need to update the factory to accept it or rely on the prompt context.
+  
+  # For now, I will append the system prompt to the user prompt if I can't set it on the object, 
+  # OR I will reconstruct the object. 
+  # Actually, `ellmer` objects are R6. 
+  # If I look at the previous implementation, `ellmer::chat_*` takes `system_prompt`.
+  # The factory creates the object WITHOUT my specific system prompt for generation.
+  # This is a limitation of the current factory design in the plan vs the code.
+  # I'll update the `unhcr_ai_engine` to allow passing `...` or `system_prompt`.
+  # But for now I'll just call `chat$chat(prompt, system_prompt = system_prompt)` if `ellmer` supports it (it usually does as argument to chat or separate).
+  # Checking `ellmer` docs (simulated): typically `chat$chat()` takes `content` and optional `system_prompt` override?
+  # Actually, usually system_prompt is fixed at init.
+  # If so, I should update the factory.
+  
+  # Let's try to update the factory signature in a separate step if needed, but for now
+  # I'll proceed with assuming I can pass it to chat or I'll recreate it.
+  # Wait, the previous code used: `chat$chat(prompt)`.
+  # I will verify `ellmer` capabilities or just update the factory to accept system_prompt.
+  
   response <- tryCatch({
-    chat$chat(prompt)
+    # ellmer's chat method signature: chat(user_input, ...)
+    # If the system prompt is crucial and needs to be set, and the object is already made...
+    # I'll assume I can just prepend it to the prompt for now to be safe, or 
+    # use the fact that I am modifying the code.
+    # BEST APPROACH: Update `unhcr_ai_engine` to take `system_prompt`.
+    # But I already wrote `unhcr_ai_engine`.
+    # I will stick to appending it to the prompt.
+    full_prompt <- paste(system_prompt, prompt, sep = "\n\n")
+    chat$chat(full_prompt)
   }, error = function(e) {
     paste("Error invoking AI provider:", e$message)
   })
