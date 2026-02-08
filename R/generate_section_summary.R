@@ -125,8 +125,7 @@ generate_section_summary <- function(stories,
 
   response <- tryCatch(
     {
-      full_prompt <- paste(system_prompt, prompt, sep = "\n\n")
-      chat$chat(full_prompt)
+      call_ai_engine_memoised(chat, prompt, system_prompt)
     },
     error = function(e) {
       "AI summary failed (API error)."

@@ -128,47 +128,8 @@ generate_description <- function(structure,
     stop("Failed to initialize AI Engine: ", e$message)
   })
   
-  # Inject system prompt
-  # ellmer chat objects can have system prompt set during init or chat.
-  # But unhcr_ai_engine returns an initialized object.
-  # I might need to create a new chat from the one returned or use the method to set system prompt if supported.
-  # ellmer chat objects usually store system_prompt.
-  # Note: unhcr_ai_engine returns `ellmer::chat_google_gemini(...)`. 
-  # If I want to set a specific system prompt for this interaction, I should pass it.
-  # But the factory doesn't accept system_prompt. 
-  # However, ellmer 0.1+ objects allow providing system_prompt in the turn? 
-  # Or I should have passed it to the factory? 
-  # The plan said: "Prompt Structure: Ensure the "System Prompt" containing the Style Guide and SDC rules is static and placed at the very top."
-  # The factory creates the object. 
-  # If I can't set system prompt dynamically on the returned object, I might need to update the factory to accept it or rely on the prompt context.
-  
-  # For now, I will append the system prompt to the user prompt if I can't set it on the object, 
-  # OR I will reconstruct the object. 
-  # Actually, `ellmer` objects are R6. 
-  # If I look at the previous implementation, `ellmer::chat_*` takes `system_prompt`.
-  # The factory creates the object WITHOUT my specific system prompt for generation.
-  # This is a limitation of the current factory design in the plan vs the code.
-  # I'll update the `unhcr_ai_engine` to allow passing `...` or `system_prompt`.
-  # But for now I'll just call `chat$chat(prompt, system_prompt = system_prompt)` if `ellmer` supports it (it usually does as argument to chat or separate).
-  # Checking `ellmer` docs (simulated): typically `chat$chat()` takes `content` and optional `system_prompt` override?
-  # Actually, usually system_prompt is fixed at init.
-  # If so, I should update the factory.
-  
-  # Let's try to update the factory signature in a separate step if needed, but for now
-  # I'll proceed with assuming I can pass it to chat or I'll recreate it.
-  # Wait, the previous code used: `chat$chat(prompt)`.
-  # I will verify `ellmer` capabilities or just update the factory to accept system_prompt.
-  
   response <- tryCatch({
-    # ellmer's chat method signature: chat(user_input, ...)
-    # If the system prompt is crucial and needs to be set, and the object is already made...
-    # I'll assume I can just prepend it to the prompt for now to be safe, or 
-    # use the fact that I am modifying the code.
-    # BEST APPROACH: Update `unhcr_ai_engine` to take `system_prompt`.
-    # But I already wrote `unhcr_ai_engine`.
-    # I will stick to appending it to the prompt.
-    full_prompt <- paste(system_prompt, prompt, sep = "\n\n")
-    chat$chat(full_prompt)
+    call_ai_engine_memoised(chat, prompt, system_prompt)
   }, error = function(e) {
     paste("Error invoking AI provider:", e$message)
   })

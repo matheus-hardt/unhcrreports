@@ -13,12 +13,15 @@ URL: https://matheus-hardt.github.io/unhcrreports,
     https://github.com/matheus-hardt/unhcrreports
 BugReports: https://github.com/matheus-hardt/unhcrreports/issues
 Imports: 
+    cachem,
     countrycode,
+    digest,
     dplyr,
     ellmer,
     ggplot2,
     here,
     jsonlite,
+    memoise,
     purrr,
     quarto,
     refugees,
@@ -26,6 +29,7 @@ Imports:
     stats,
     stringi,
     stringr,
+    tools,
     unhcrviz,
     utils
 Suggests: 

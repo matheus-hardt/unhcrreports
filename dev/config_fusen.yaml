@@ -3,6 +3,8 @@ flat_ai_reporting.Rmd:
   state: active
   R:
   - R/apply_sdc.R
+  - R/batch_submit.R
+  - R/unhcr_cache_dir.R
   - R/clean_llm_response.R
   - R/extract_structure.R
   - R/generate_description.R
