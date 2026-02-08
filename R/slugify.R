@@ -20,21 +20,11 @@
 #' slugify(strings)
 slugify <- function(x) {
   x |>
-    stringi::stri_enc_toutf8() |>
+    stringi::stri_trans_general(id = "Latin-ASCII") |>
     # Remove extra whitespace first
     stringr::str_squish() |>
     # Convert to lowercase
     stringr::str_to_lower() |>
-    # Replace accented characters with their ASCII equivalents
-    stringr::str_replace_all("[àáâãäå]", "a") |>
-    stringr::str_replace_all("[èéêë]", "e") |>
-    stringr::str_replace_all("[ìíîï]", "i") |>
-    stringr::str_replace_all("[òóôõöø]", "o") |>
-    stringr::str_replace_all("[ùúûü]", "u") |>
-    stringr::str_replace_all("[ñ]", "n") |>
-    stringr::str_replace_all("[ç]", "c") |>
-    stringr::str_replace_all("[ýÿ]", "y") |>
-    stringr::str_replace_all("[ž]", "z") |>
     # Remove all non-alphanumeric characters except spaces, underscores, hyphens
     stringr::str_replace_all("[^a-z0-9\\s_-]", "") |>
     # Replace spaces and underscores with hyphens

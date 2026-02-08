@@ -21,7 +21,7 @@ flat_ai_reporting.Rmd:
     flat_file: dev/flat_ai_reporting.Rmd
     vignette_name: AI Analysis Architecture
     open_vignette: true
-    check: true
+    check: false
     document: true
     overwrite: 'yes'
     clean: ask

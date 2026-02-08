@@ -26,16 +26,18 @@
 #'     caption = "Source: mtcars dataset"
 #'   )
 #'
-#' generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
+#' if (interactive()) {
+#'   generate_plot_story(p, provider = "ollama", model = "deepseek-r1")
 #'
-#' story <- generate_plot_story(
-#'   p,
-#'   provider = "azure",
-#'   model = "gpt-4.1-mini",
-#'   max_tokens = 300
-#' )
-#' # To use as subtitle:
-#' p + ggplot2::labs(subtitle = story)
+#'   story <- generate_plot_story(
+#'     p,
+#'     provider = "azure",
+#'     model = "gpt-4.1-mini",
+#'     max_tokens = 300
+#'   )
+#'   # To use as subtitle:
+#'   p + ggplot2::labs(subtitle = story)
+#' }
 generate_plot_story <- function(plot,
                                 max_tokens = 300,
                                 provider = NULL,

@@ -37,7 +37,12 @@ This function renders the 'Country_Factsheet' Quarto template for a list of
 countries, generating a report file for each.
 }
 \examples{
-# unhcrreports::generate_report(type = "country", name = "BRA", gp_provider ="azure", gp_model = "gpt-4.1-mini" )
+# unhcrreports::generate_report(
+#   type = "country",
+#   name = "BRA",
+#   gp_provider ="azure",
+#   gp_model = "gpt-4.1-mini"
+# )
 # linkcountryreport <- generate_report(type = "country" )
 # dput(linkcountryreport )
 
@@ -152,12 +157,33 @@ linkcountryreport <- c(
 # linkregionalreport <- generate_report(type = "region")
 # dput(linkregionalreport)
 linkregionalreport <- c(
-  "[Profile Report for region: The Americas](../reports/Analysis-region-the-americas-2024-report.html)",
-  "[Profile Report for region: Asia and the Pacific](../reports/Analysis-region-asia-and-the-pacific-2024-report.html)",
-  "[Profile Report for region: Southern Africa](../reports/Analysis-region-southern-africa-2024-report.html)",
-  "[Profile Report for region: Europe](../reports/Analysis-region-europe-2024-report.html)",
-  "[Profile Report for region: Middle East and North Africa](../reports/Analysis-region-middle-east-and-north-africa-2024-report.html)",
-  "[Profile Report for region: East and Horn of Africa](../reports/Analysis-region-east-and-horn-of-africa-2024-report.html)",
-  "[Profile Report for region: West and Central Africa](../reports/Analysis-region-west-and-central-africa-2024-report.html)"
+  paste0(
+    "[Profile Report for region: The Americas]",
+    "(../reports/Analysis-region-the-americas-2024-report.html)"
+  ),
+  paste0(
+    "[Profile Report for region: Asia and the Pacific]",
+    "(../reports/Analysis-region-asia-and-the-pacific-2024-report.html)"
+  ),
+  paste0(
+    "[Profile Report for region: Southern Africa]",
+    "(../reports/Analysis-region-southern-africa-2024-report.html)"
+  ),
+  paste0(
+    "[Profile Report for region: Europe]",
+    "(../reports/Analysis-region-europe-2024-report.html)"
+  ),
+  paste0(
+    "[Profile Report for region: Middle East and North Africa]",
+    "(../reports/Analysis-region-middle-east-and-north-africa-2024-report.html)"
+  ),
+  paste0(
+    "[Profile Report for region: East and Horn of Africa]",
+    "(../reports/Analysis-region-east-and-horn-of-africa-2024-report.html)"
+  ),
+  paste0(
+    "[Profile Report for region: West and Central Africa]",
+    "(../reports/Analysis-region-west-and-central-africa-2024-report.html)"
+  )
 )
 }

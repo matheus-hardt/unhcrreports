@@ -15,3 +15,4 @@ usethis::use_data_raw()
 ^pkgdown$
 ^reports$
 ^Report
+^\.ag-mission-control\.md$
