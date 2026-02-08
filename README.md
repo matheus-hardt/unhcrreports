@@ -34,9 +34,52 @@ devtools::install_github("matheus-hardt/unhcrreports")
 devtools::install(".")
 ```
 
+## AI Configuration
+
+To enable AI-generated narratives, you need to set up an API key for a supported LLM provider. This package uses [`{ellmer}`](https://ellmer.tidyverse.org/) as the backend.
+
+### Environment Setup
+Set your API key as an environment variable in your `.Renviron` file or session:
+
+```r
+# For Google Gemini
+Sys.setenv(GEMINI_API_KEY = "your_api_key_here")
+
+# For OpenAI
+Sys.setenv(OPENAI_API_KEY = "your_api_key_here")
+
+# For Anthropic
+Sys.setenv(ANTHROPIC_API_KEY = "your_api_key_here")
+```
+
+### Initializing the Engine
+
+You can manually initialize the AI engine to customize behavior:
+
+```r
+# Default (Gemini Flash - Cheap & Fast)
+ai <- unhcr_ai_engine(provider = "gemini")
+
+# Reasoning (Claude Sonnet - Smart & Cached)
+# 'use_caching = TRUE' enables local disk caching to save costs on re-runs
+ai <- unhcr_ai_engine(provider = "claude", use_caching = TRUE)
+```
+
+## Data Protection & Compliance
+
+> [!WARNING]
+> **Compliance Note**: This package automatically applies **Statistical Disclosure Control (SDC)** to all data sent to AI providers.
+
+To protect beneficiary anonymity and comply with data protection regulations, the package enforces the following rules before prompting the AI:
+
+*   **Redaction**: All numeric counts between 1 and 4 are automatically redacted (replaced with `NA`) using `apply_sdc()`.
+*   **Aggregation**: Narratives are generated based on aggregated statistics, never individual records.
+
+This ensures that no identifiable small counts are transmitted to external LLM providers.
+
 ## Usage
 
-You can also use individual functions to generate analysis. For example, to analyse the **Population Type per Year** for **Ukraine** in 2024:
+You can use individual functions to generate analysis. For example, to analyse the **Population Type per Year** for **Ukraine** in 2024:
 
 ```r
 library(unhcrreports)
@@ -52,7 +95,7 @@ p <- unhcrviz::plot_ctr_population_type_per_year(
 # 2. Generate the story (using Gemini as an example)
 story <- generate_plot_story(p, 
   provider = "gemini",
-  model = "gemini-3-pro-preview"
+  model = "gemini-3-pro-preview" # or leave NULL for default
 )
 
 # Pull the long text
@@ -64,7 +107,7 @@ story$long_text
 > **AI Narrative**:
 > The displacement landscape in Ukraine for 2024 continues to be dominated by the internal displacement crisis. Internally Displaced Persons (IDPs) represented the overwhelming majority of the affected population, maintaining the plateau reached after the sharp escalation in 2022. While the number of Asylum Seekers and Returnees remains statistically visible, they represent a minor fraction of the total displacement figures, emphasizing that the primary humanitarian challenge remains within the country's borders.
 
-## Quick Start
+## Quick Start: Full Report
 
 Generate a full report with a single command:
 
@@ -76,40 +119,7 @@ generate_report(
   type = "country", 
   name = "BRA", 
   year = 2024,
-  gp_provider = "gemini", # or "openai", "ollama", "azure"
-  gp_model = "gemini-3-pro-preview",
-  include_ai = TRUE # Set to FALSE to skip AI generation
+  gp_provider = "gemini",
+  include_ai = TRUE 
 )
 ```
-
-## AI Configuration
-
-To enable AI-generated narratives, you need to set up an API key for a supported LLM provider.
-
-### Environment Setup
-Set your API key as an environment variable in your `.Renviron` file or session:
-
-```r
-# For Google Gemini
-Sys.setenv(GEMINI_API_KEY = "your_api_key_here")
-
-# For OpenAI
-Sys.setenv(OPENAI_API_KEY = "your_api_key_here")
-
-# For Anthropic
-Sys.setenv(ANTHROPIC_API_KEY = "your_api_key_here")
-
-# For Azure OpenAI
-# Sys.setenv(AZURE_OPENAI_ENDPOINT = "...")
-# Sys.setenv(AZURE_OPENAI_API_KEY = "...")
-```
-
-### Local LLM (Ollama)
-If you prefer to run a local model using Ollama:
-
-1.  **Install Ollama**: Download from [ollama.com](https://ollama.com).
-2.  **Pull a Model**: 
-    ```bash
-    ollama pull qwen2.5:32b
-    ```
-3.  **Run Report**: Passing `gp_provider = "ollama"` and `gp_model = "qwen2.5:32b"`.

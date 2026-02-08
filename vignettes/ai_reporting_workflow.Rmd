@@ -1,0 +1,115 @@
+---
+title: "AI-Powered Reporting Workflow"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AI-Powered Reporting Workflow}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+This vignette demonstrates how to generate an AI-augmented humanitarian report using `{unhcrreports}`, from data extraction to narrative generation.
+
+## 1. Setup
+
+Load the necessary libraries. We will use `{refugees}` for data and `{unhcrreports}` for analysis.
+
+```{r setup}
+library(unhcrreports)
+library(unhcrviz)
+library(refugees)
+library(dplyr)
+library(ggplot2)
+```
+
+## 2. Privacy First: SDC
+
+Before any data is sent to an AI provider, the package applies **Statistical Disclosure Control (SDC)**. This ensures that small counts (which could potentially identify individuals) are redacted.
+
+Let's simulate a dataset with small counts:
+
+```{r sdc-demo}
+# Simulated data for a small location
+small_data <- data.frame(
+    location = c("Camp A", "Camp A", "Camp B"),
+    origin = c("Country X", "Country Y", "Country X"),
+    pop = c(120, 3, 45) # Note the value '3'
+)
+
+# Apply SDC
+safe_data <- apply_sdc(small_data, min_threshold = 5)
+
+print(safe_data)
+```
+
+Notice that the population count of `3` has been replaced with `NA`. This `safe_data` is what the AI engine will "see".
+
+## 3. Generating a Plot Story
+
+The core workflow involves generating a standard chart and then asking the AI to interpret it.
+
+### Step A: Create the Plot
+
+We will visualize the displacement trend for a specific country (e.g., Ecuador).
+
+```{r plot-gen, fig.width=7, fig.height=5, warning=FALSE, message=FALSE}
+# Get data for Ecuador
+p <- unhcrviz::plot_ctr_population_type_per_year(
+    year = 2023,
+    country_asylum_iso3c = "ECU"
+)
+print(p)
+```
+
+### Step B: Generate the AI Narrative
+
+We use `generate_plot_story()` to extract the data from the plot, apply SDC, and prompt the LLM. 
+
+> **Note**: The code below is not evaluated in this vignette to prevent API calls during package building. In a real session, this would return a structured list.
+
+```{r ai-gen, eval=FALSE}
+# Initialize the engine (optional, can just pass provider string)
+# ai <- unhcr_ai_engine(provider = "gemini")
+
+# Generate the story
+story <- generate_plot_story(p, provider = "gemini")
+
+# The output contains:
+# story$short_desc -> WCAG compliant alt-text
+# story$long_desc -> Detailed analysis
+```
+
+### Simulated Output
+
+Here is what the AI would return for the plot above:
+
+> **Short Description**: 
+> *Stack Area Chart of Population by Type, where Refugees and Asylum Seekers show a steady increase since 2018.*
+
+> **Long Description**:
+> The data for Ecuador reveals a significant shift in displacement dynamics over the last five years. While the total displaced population has grown, the composition has changed. In 2018, the population was negligible. By 2023, there is a clear upward trend in Asylum Seekers (dark blue) and Recognized Refugees (light blue), reflecting the regional Venezuelan outflow. The absence of IDPs (Internally Displaced Persons) in this chart aligns with Ecuador's role primarily as a host country rather than a source of internal displacement in this dataset.
+
+## 4. Batch Generation
+
+For producing reports on multiple countries, use the batch processing features to save costs and time.
+
+```{r batch, eval=FALSE}
+# List of countries
+countries <- c("ECU", "COL", "PER")
+
+# Submit batch job
+batch_id <- generate_country_reports_batch(
+    data = refugees::population,
+    countries = countries,
+    provider = "openai"
+)
+
+# Check status later
+results <- batch_retrieve(batch_id)
+```
