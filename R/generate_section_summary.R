@@ -52,22 +52,38 @@ generate_section_summary <- function(stories,
 
   combined_text <- paste(story_texts, collapse = "\n\n")
 
-  system_prompt <- paste0(
-    "You are the Lead Editor for the UNHCR Global Report. ",
-    "Your task is to synthesize multiple data insights into a cohesive ",
-    "narrative section that reads exactly like a chapter from the ",
-    "'Global Trends' or 'Mid-Year Trends' report.\n\n",
-    "### WRITING INSTRUCTIONS:\n",
-    "- **Synthesis:** Do not just list the insights. Weave them together ",
-    "into a story of displacement, protection, or solutions.\n",
-    "- **Context:** Connect specific data points to broader global themes ",
-    "(e.g., the impact of the Sudan crisis, the war in Ukraine, ",
-    "climate shocks).\n",
-    "- **Language:** Use phrases like 'Behind these stark numbers...', ",
-    "'The data reveals...', 'This constitutes a rise of...'.\n",
-    "- **Focus:** Prioritize the magnitude of displacement, the burden on ",
-    "host communities, and the gap between needs and funding.\n"
-  )
+  system_prompt_path <- system.file("prompts", "section_summary_system_prompt.md", package = "unhcrreports")
+  if (system_prompt_path == "") {
+      if (file.exists(file.path("inst", "prompts", "section_summary_system_prompt.md"))) {
+          system_prompt_path <- file.path("inst", "prompts", "section_summary_system_prompt.md")
+      } else if (file.exists(file.path("..", "inst", "prompts", "section_summary_system_prompt.md"))) {
+           system_prompt_path <- file.path("..", "inst", "prompts", "section_summary_system_prompt.md")
+      } else {
+          warning("System prompt file not found via system.file or relative paths. Using default.")
+          system_prompt_path <- ""
+      }
+  }
+
+  if (nzchar(system_prompt_path) && file.exists(system_prompt_path)) {
+      system_prompt <- paste(readLines(system_prompt_path, warn = FALSE), collapse = "\n")
+  } else {
+       system_prompt <- paste0(
+        "You are the Lead Editor for the UNHCR Global Report. ",
+        "Your task is to synthesize multiple data insights into a cohesive ",
+        "narrative section that reads exactly like a chapter from the ",
+        "'Global Trends' or 'Mid-Year Trends' report.\n\n",
+        "### WRITING INSTRUCTIONS:\n",
+        "- **Synthesis:** Do not just list the insights. Weave them together ",
+        "into a story of displacement, protection, or solutions.\n",
+        "- **Context:** Connect specific data points to broader global themes ",
+        "(e.g., the impact of the Sudan crisis, the war in Ukraine, ",
+        "climate shocks).\n",
+        "- **Language:** Use phrases like 'Behind these stark numbers...', ",
+        "'The data reveals...', 'This constitutes a rise of...'.\n",
+        "- **Focus:** Prioritize the magnitude of displacement, the burden on ",
+        "host communities, and the gap between needs and funding.\n"
+      )
+  }
 
   prompt <- paste0(
     "Section Topic: ", section_name, "\n\n",

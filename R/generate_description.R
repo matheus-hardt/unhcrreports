@@ -52,16 +52,37 @@ generate_description <- function(structure,
     "\n"
   )
 
-  system_prompt <- paste0(
-    "You are an expert accessibility consultant and data analyst for UNHCR. ",
-    "Your task is to generate two outputs for a given data visualization:\n",
-    "1. 'short_desc': A WCAG-compliant alt text following the formula ",
-    "'* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
-    "2. 'long_desc': A detailed statistical analysis and context ",
-    "description.\n",
-    "Return the result as a strict JSON object with keys 'short_desc' ",
-    "and 'long_desc'."
-  )
+  system_prompt_path <- system.file("prompts", "description_system_prompt.md", package = "unhcrreports")
+  if (system_prompt_path == "") {
+      # Fallback for development/flat file mode if package not installed/loaded
+      # Assuming we are in project root or dev context
+      if (file.exists(file.path("inst", "prompts", "description_system_prompt.md"))) {
+          system_prompt_path <- file.path("inst", "prompts", "description_system_prompt.md")
+      } else if (file.exists(file.path("..", "inst", "prompts", "description_system_prompt.md"))) {
+           system_prompt_path <- file.path("..", "inst", "prompts", "description_system_prompt.md")
+      } else {
+          # Absolute fallback or error?
+          # Let's try to find it relative to current wd
+          warning("System prompt file not found via system.file or relative paths. Using default.")
+          system_prompt_path <- ""
+      }
+  }
+  
+  if (nzchar(system_prompt_path) && file.exists(system_prompt_path)) {
+      system_prompt <- paste(readLines(system_prompt_path, warn = FALSE), collapse = "\n")
+  } else {
+      # Hardcoded fallback to ensure function works even if file missing during dev
+       system_prompt <- paste0(
+        "You are an expert accessibility consultant and data analyst for UNHCR. ",
+        "Your task is to generate two outputs for a given data visualization:\n",
+        "1. 'short_desc': A WCAG-compliant alt text following the formula ",
+        "'* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
+        "2. 'long_desc': A detailed statistical analysis and context ",
+        "description.\n",
+        "Return the result as a strict JSON object with keys 'short_desc' ",
+        "and 'long_desc'."
+      )
+  }
 
   prompt <- paste0(
     "Context:\n", context_str, "\n\n",
