@@ -24,14 +24,13 @@ generate_description <- function(structure,
                                  provider = NULL,
                                  model = NULL,
                                  max_tokens = 500) {
-
   if (!is.null(provider) && provider == "none") {
-      return(list(short_desc = "", long_desc = ""))
+    return(list(short_desc = "", long_desc = ""))
   }
 
   # Apply SDC to distributions if available
   if (!is.null(stats$distributions)) {
-     stats$distributions <- apply_sdc(stats$distributions, min_threshold = 5)
+    stats$distributions <- apply_sdc(stats$distributions, min_threshold = 5)
   }
 
   # Construct Context
@@ -42,46 +41,47 @@ generate_description <- function(structure,
     "Geoms: ", paste(unique(structure$geoms), collapse = ", "), "\n",
     "X Label: ", structure$labels$x, "\n",
     "Y Label: ", structure$labels$y, "\n\n",
-
-    "STATISTICAL PROFILE:\n",
+    "VISUALIZED DATA (First 30 rows):\n",
+    structure$data_summary, "\n\n",
     "STATISTICAL PROFILE:\n",
     paste(capture.output(print(stats$distributions)), collapse = "\n"), "\n",
     "Correlations: ",
     paste(names(stats$correlations), unlist(stats$correlations),
-          sep = ": ", collapse = ", "),
+      sep = ": ", collapse = ", "
+    ),
     "\n"
   )
 
   system_prompt_path <- system.file("prompts", "description_system_prompt.md", package = "unhcrreports")
   if (system_prompt_path == "") {
-      # Fallback for development/flat file mode if package not installed/loaded
-      # Assuming we are in project root or dev context
-      if (file.exists(file.path("inst", "prompts", "description_system_prompt.md"))) {
-          system_prompt_path <- file.path("inst", "prompts", "description_system_prompt.md")
-      } else if (file.exists(file.path("..", "inst", "prompts", "description_system_prompt.md"))) {
-           system_prompt_path <- file.path("..", "inst", "prompts", "description_system_prompt.md")
-      } else {
-          # Absolute fallback or error?
-          # Let's try to find it relative to current wd
-          warning("System prompt file not found via system.file or relative paths. Using default.")
-          system_prompt_path <- ""
-      }
+    # Fallback for development/flat file mode if package not installed/loaded
+    # Assuming we are in project root or dev context
+    if (file.exists(file.path("inst", "prompts", "description_system_prompt.md"))) {
+      system_prompt_path <- file.path("inst", "prompts", "description_system_prompt.md")
+    } else if (file.exists(file.path("..", "inst", "prompts", "description_system_prompt.md"))) {
+      system_prompt_path <- file.path("..", "inst", "prompts", "description_system_prompt.md")
+    } else {
+      # Absolute fallback or error?
+      # Let's try to find it relative to current wd
+      warning("System prompt file not found via system.file or relative paths. Using default.")
+      system_prompt_path <- ""
+    }
   }
-  
+
   if (nzchar(system_prompt_path) && file.exists(system_prompt_path)) {
-      system_prompt <- paste(readLines(system_prompt_path, warn = FALSE), collapse = "\n")
+    system_prompt <- paste(readLines(system_prompt_path, warn = FALSE), collapse = "\n")
   } else {
-      # Hardcoded fallback to ensure function works even if file missing during dev
-       system_prompt <- paste0(
-        "You are an expert accessibility consultant and data analyst for UNHCR. ",
-        "Your task is to generate two outputs for a given data visualization:\n",
-        "1. 'short_desc': A WCAG-compliant alt text following the formula ",
-        "'* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
-        "2. 'long_desc': A detailed statistical analysis and context ",
-        "description.\n",
-        "Return the result as a strict JSON object with keys 'short_desc' ",
-        "and 'long_desc'."
-      )
+    # Hardcoded fallback to ensure function works even if file missing during dev
+    system_prompt <- paste0(
+      "You are an expert accessibility consultant and data analyst for UNHCR. ",
+      "Your task is to generate two outputs for a given data visualization:\n",
+      "1. 'short_desc': A WCAG-compliant alt text following the formula ",
+      "'* [Chart Type] of [Variables], where [Trend/Key Insight]*'.\n",
+      "2. 'long_desc': A detailed statistical analysis and context ",
+      "description.\n",
+      "Return the result as a strict JSON object with keys 'short_desc' ",
+      "and 'long_desc'."
+    )
   }
 
   prompt <- paste0(
@@ -95,22 +95,22 @@ generate_description <- function(structure,
     if (!is.na(Sys.getenv("GEMINI_API_KEY", unset = NA_character_))) {
       provider <- "gemini"
     } else if (!is.na(Sys.getenv("AZURE_OPENAI_ENDPOINT", unset = NA_character_))) {
-      provider <- "openai" # Azure usually falls under openai chat interface in some pkgs, but here we mapped it to 'azure'. 
-                           # But unhcr_ai_engine supports "gemini", "openai", "claude".
-                           # If azure is needed, we might need to update ai_factory or map it.
-                           # factory only supports c("gemini", "openai", "claude").
-                           # I will assume "azure" should be handled via "openai" provider in factory OR I need to update factory to support azure.
-                           # The plan said: provider: one of "gemini", "openai", "claude".
-                           # But existing code has azure support.
-                           # I'll default to "gemini" if available.
-      provider <- "gemini" 
+      provider <- "openai" # Azure usually falls under openai chat interface in some pkgs, but here we mapped it to 'azure'.
+      # But unhcr_ai_engine supports "gemini", "openai", "claude".
+      # If azure is needed, we might need to update ai_factory or map it.
+      # factory only supports c("gemini", "openai", "claude").
+      # I will assume "azure" should be handled via "openai" provider in factory OR I need to update factory to support azure.
+      # The plan said: provider: one of "gemini", "openai", "claude".
+      # But existing code has azure support.
+      # I'll default to "gemini" if available.
+      provider <- "gemini"
     } else if (!is.na(Sys.getenv("OPENAI_API_KEY", unset = NA_character_))) {
       provider <- "openai"
     } else if (!is.na(Sys.getenv("ANTHROPIC_API_KEY", unset = NA_character_))) {
       provider <- "claude"
     } else {
       # Fallback or error
-       provider <- "gemini"
+      provider <- "gemini"
     }
   }
 
@@ -118,29 +118,38 @@ generate_description <- function(structure,
   provider <- tolower(provider)
   if (provider == "anthropic") provider <- "claude"
   if (provider == "azure") provider <- "openai" # Map azure to openai if factory handles it, or just pass it and let it fail/fallback?
-                                                # The factory strictly checks match.arg(provider, c("gemini", "openai", "claude"))
-                                                # So I must map to one of those. 
-  
+  # The factory strictly checks match.arg(provider, c("gemini", "openai", "claude"))
+  # So I must map to one of those.
+
   # Initialize Chat
-  chat <- tryCatch({
-    unhcr_ai_engine(provider = provider, task_type = "reasoning")
-  }, error = function(e) {
-    stop("Failed to initialize AI Engine: ", e$message)
-  })
-  
-  response <- tryCatch({
-    call_ai_engine_memoised(chat, prompt, system_prompt)
-  }, error = function(e) {
-    paste("Error invoking AI provider:", e$message)
-  })
+  chat <- tryCatch(
+    {
+      unhcr_ai_engine(provider = provider, task_type = "reasoning")
+    },
+    error = function(e) {
+      stop("Failed to initialize AI Engine: ", e$message)
+    }
+  )
+
+  response <- tryCatch(
+    {
+      call_ai_engine_memoised(chat, prompt, system_prompt)
+    },
+    error = function(e) {
+      paste("Error invoking AI provider:", e$message)
+    }
+  )
 
   # Parse JSON
   # Clean potential markdown code blocks if the model insists on adding them
   cleaned_json <- gsub("^```json\\s*|\\s*```$", "", response)
 
-  tryCatch({
-    jsonlite::fromJSON(cleaned_json)
-  }, error = function(e) {
-    list(short_desc = "Error parsing JSON", long_desc = response)
-  })
+  tryCatch(
+    {
+      jsonlite::fromJSON(cleaned_json)
+    },
+    error = function(e) {
+      list(short_desc = "Error parsing JSON", long_desc = response)
+    }
+  )
 }

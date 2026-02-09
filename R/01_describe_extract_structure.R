@@ -13,16 +13,108 @@
 #'   \item{ranges}{Exact x and y ranges for each panel (trained).}
 #'   \item{guides}{Mapping of visuals (color/shape) to data values.}
 #'   \item{geoms}{List of geometric layers used.}
+#'   \item{data_summary}{A markdown table of the visualized data.}
 #' @importFrom ggplot2 ggplot_build get_guide_data
-#' @importFrom purrr map map_chr
+#' @importFrom purrr map map_chr set_names
+#' @importFrom knitr kable
+#' @importFrom dplyr left_join select any_of
 #' @export
 extract_structure <- function(p) {
-  if (is.null(p)) return(NULL)
+  if (is.null(p)) {
+    return(NULL)
+  }
 
-  # Force layout build to get trained ranges
+  # Force layout build to get trained ranges and actual data
   built <- ggplot2::ggplot_build(p)
 
-  # Extract trained axis ranges (handling facets)
+  # 1. Extract Visualized Data (Layer 1)
+  # We focus on the first layer as it's usually the primary data layer
+  layer_data <- built$data[[1]]
+
+  # 2. Handle Facets (Map PANEL to variables)
+  # layout$layout contains the mapping between PANEL (int) and facet variables
+  facet_layout <- built$layout$layout
+
+  if (!is.null(facet_layout) && "PANEL" %in% names(layer_data)) {
+    # Join to get facet variables (e.g., 'gear', 'year')
+    # We only keep keys that are NOT internal (PANEL, ROW, COL, SCALE_X, SCALE_Y)
+    internal_layout_cols <- c("PANEL", "ROW", "COL", "SCALE_X", "SCALE_Y", "COORD")
+    facet_vars <- setdiff(names(facet_layout), internal_layout_cols)
+
+    if (length(facet_vars) > 0) {
+      layer_data <- layer_data |>
+        dplyr::left_join(facet_layout, by = "PANEL")
+    }
+  }
+
+  # 3. Decode Legends (Map aesthetics to data values)
+  # Iterate over common aesthetics to find guides
+  common_aes <- c("colour", "fill", "shape", "size", "alpha", "linetype")
+
+  # We might have multiple guides. We'll process each valid aesthetic present in layer_data
+  # and attempt to retrieve its guide.
+  dataset_aes <- intersect(names(layer_data), common_aes)
+
+  for (aes in dataset_aes) {
+    # Try to get guide data for this aesthetic
+    guide_df <- tryCatch(
+      {
+        ggplot2::get_guide_data(p, aesthetic = aes)
+      },
+      error = function(e) NULL
+    )
+
+    if (!is.null(guide_df) && ".label" %in% names(guide_df) && aes %in% names(guide_df)) {
+      # We have a guide map!
+      # guide_df has columns: [aes], .value, .label (and others)
+      # Construct a mapping table
+
+      # Use match to map layer_data[[aes]] to guide_df[[aes]]
+      # We need to ensure types match (e.g. factor vs character)
+      # get_guide_data usually returns the scale values.
+
+      matches <- match(layer_data[[aes]], guide_df[[aes]])
+
+      # If we have matches, create the label column
+      if (any(!is.na(matches))) {
+        # Create new column name, e.g. colour_label
+        new_col <- paste0(aes, "_label")
+        layer_data[[new_col]] <- guide_df$.label[matches]
+      }
+    }
+  }
+
+  guides_df <- NULL
+
+  # 4. Clean Data for LLM
+  # Retain standard mapping aesthetics + facet vars + x/y
+  # Remove purely internal columns
+  internal_cols <- c(
+    "PANEL", "group", "colour", "fill", "size", "linetype", "alpha", "stroke", "shape",
+    "xmin", "xmax", "ymin", "ymax", "xintercept", "yintercept", "lower", "middle", "upper",
+    "notchlower", "notchupper", "weight"
+  )
+
+  # Keep x, y, label, and any decoded labels or facet vars
+  # Also keep ymin/ymax if they look main (e.g. for ribbons/bars if not just coords)
+  # But simple list is strictly better for token context.
+
+  keep_cols <- c("x", "y", "label", "ymin", "ymax")
+  if (exists("facet_vars")) keep_cols <- c(keep_cols, facet_vars)
+
+  # Add decoded columns (ending in _label)
+  decoded_cols <- grep("_label$", names(layer_data), value = TRUE)
+  keep_cols <- c(keep_cols, decoded_cols)
+
+  # Limit to 30 rows to save tokens, but capture enough structure
+  clean_data <- layer_data |>
+    dplyr::select(dplyr::any_of(keep_cols)) |>
+    head(30)
+
+  # Format as Markdown Table (pipe format for clarity and verifiability)
+  data_summary <- paste(knitr::kable(clean_data, format = "pipe", digits = 2), collapse = "\n")
+
+  # Legacy Extract Logic
   layout_ranges <- built$layout$panel_params |>
     purrr::map(function(panel) {
       list(
@@ -31,21 +123,14 @@ extract_structure <- function(p) {
       )
     })
 
-  # Decode legends using get_guide_data (available in ggplot2 >= 3.5.0)
-  guides_map <- tryCatch({
-    ggplot2::get_guide_data(p)
-  }, error = function(e) {
-    NULL
-  })
-
-  # Basic geoms
   geoms <- purrr::map_chr(p$layers, ~ class(.x$geom)[1])
 
   list(
     labels = p$labels,
     ranges = layout_ranges,
-    guides = guides_map,
+    guides = guides_df,
     geoms = geoms,
+    data_summary = data_summary,
     scales = p$scales$scales
   )
 }
