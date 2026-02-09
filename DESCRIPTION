@@ -1,6 +1,6 @@
 Package: unhcrreports
 Title: Automated Displacement Statistics Analysis
-Version: 0.0.0.9000
+Version: 0.2.0
 Authors@R: c(
     person("Matheus", "Hardt", , "mathardt@gmail.com", role = c("aut", "cre")),
     person("Edouard", "Legoupil", role = "ctb"),
