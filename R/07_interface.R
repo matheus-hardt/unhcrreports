@@ -170,124 +170,124 @@
 #'         "(../reports/Analysis-region-west-and-central-africa-2024-report.html)"
 #'     )
 #' )
-#' generate_report <- function(type = "country",
-#'                             year = 2024,
-#'                             lag = 5,
-#'                             name = NULL,
-#'                             gp_provider = "gemini",
-#'                             gp_model = "gemini-3-pro-preview",
-#'                             include_ai = TRUE) {
-#'     template_path <- system.file(paste0("templates/", type, "_report.qmd"),
-#'         package = "unhcrreports"
-#'     )
-#'     ## Create the outfolder if it does not exist
-#'     folder <- "docs/reports"
-#'     output_dir <- here::here(folder)
-#'     if (!dir.exists(output_dir)) {
-#'         dir.create(output_dir, recursive = TRUE)
-#'         message("Created output directory: ", output_dir)
-#'     }
-#'
-#'     # Ensure template exists
-#'     if (!file.exists(template_path)) {
-#'         stop(
-#'             "Quarto template not found at: ", template_path,
-#'             ". Please check the template_path argument."
-#'         )
-#'     }
-#'
-#'     # --- Loop through each country for batch rendering ---
-#'     if (is.null(name)) {
-#'         if (type == "country") {
-#'             name <- refugees::population |>
-#'                 dplyr::group_by(coa_iso) |>
-#'                 dplyr::filter(year == year) |>
-#'                 dplyr::summarise(total = sum(refugees, asylum_seekers, idps, oip, stateless, ooc, hst, na.rm = TRUE)) |>
-#'                 dplyr::filter(total > 1000000) |>
-#'                 dplyr::pull(coa_iso)
-#'         }
-#'
-#'         if (type == "region") {
-#'             name <- refugees::population |>
-#'                 dplyr::group_by(coa_iso) |>
-#'                 dplyr::summarise(total = sum(refugees, asylum_seekers, idps, oip, stateless, ooc, hst, na.rm = TRUE)) |>
-#'                 dplyr::filter(total > 100000) |>
-#'                 dplyr::mutate(unhcr_region = countrycode::countrycode(coa_iso, "iso3c", "unhcr.region")) |>
-#'                 dplyr::pull(unhcr_region) |>
-#'                 unique()
-#'         }
-#'     }
-#'     links <- c()
-#'     for (this in name) {
-#'         # this <- name[1]
-#'         # 2. Define Output Filename and Path
-#'         thisslug <- slugify(this)
-#'         output_filename <- paste0("Analysis-", type, "-", thisslug, "-", year, "-", "report.html")
-#'         output_filepath <- here::here(folder, output_filename)
-#'
-#'         # Define parameters based on report type
-#'         if (type == "country") {
-#'             # lookup country name
-#'             country_full_name <- countrycode::countrycode(this, "iso3c", "country.name")
-#'
-#'             params_list <- list(
-#'                 country_iso3 = this,
-#'                 name = country_full_name,
-#'                 year = year,
-#'                 lag = lag,
-#'                 gp_provider = gp_provider,
-#'                 gp_model = gp_model,
-#'                 include_ai = include_ai
-#'             )
-#'         } else if (type == "region") {
-#'             params_list <- list(
-#'                 region = this,
-#'                 year = year,
-#'                 gp_provider = gp_provider,
-#'                 gp_model = gp_model,
-#'                 include_ai = include_ai
-#'             )
-#'         } else {
-#'             params_list <- list(
-#'                 year = year,
-#'                 gp_provider = gp_provider,
-#'                 gp_model = gp_model,
-#'                 include_ai = include_ai
-#'             )
-#'         }
-#'
-#'         # 3. Render the Quarto document
-#'         link <- NULL
-#'         tryCatch(
-#'             {
-#'                 quarto::quarto_render(
-#'                     input = template_path,
-#'                     output_file = output_filename,
-#'                     quarto_args = c("--output-dir", output_dir),
-#'                     # Pass parameters to the YAML header and R code chunks
-#'                     execute_params = params_list
-#'                 )
-#'
-#'                 # Link
-#'                 link <- paste0(
-#'                     "[Profile Report for ",
-#'                     type, ": ",
-#'                     this, "](../reports/",
-#'                     output_filename, ")"
-#'                 )
-#'             },
-#'             error = function(e) {
-#'                 warning("Failed to render report for ", this, ": ", e$message)
-#'             }
-#'         )
-#'         # links
-#'         if (!is.null(link)) {
-#'             links <- c(links, link)
-#'         }
-#'     }
-#'
-#'     return(links)
-#' }
+generate_report <- function(type = "country",
+                            year = 2024,
+                            lag = 5,
+                            name = NULL,
+                            gp_provider = "gemini",
+                            gp_model = "gemini-3-pro-preview",
+                            include_ai = TRUE) {
+    template_path <- system.file(paste0("templates/", type, "_report.qmd"),
+        package = "unhcrreports"
+    )
+    ## Create the outfolder if it does not exist
+    folder <- "docs/reports"
+    output_dir <- here::here(folder)
+    if (!dir.exists(output_dir)) {
+        dir.create(output_dir, recursive = TRUE)
+        message("Created output directory: ", output_dir)
+    }
+
+    # Ensure template exists
+    if (!file.exists(template_path)) {
+        stop(
+            "Quarto template not found at: ", template_path,
+            ". Please check the template_path argument."
+        )
+    }
+
+    # --- Loop through each country for batch rendering ---
+    if (is.null(name)) {
+        if (type == "country") {
+            name <- refugees::population |>
+                dplyr::group_by(coa_iso) |>
+                dplyr::filter(year == year) |>
+                dplyr::summarise(total = sum(refugees, asylum_seekers, idps, oip, stateless, ooc, hst, na.rm = TRUE)) |>
+                dplyr::filter(total > 1000000) |>
+                dplyr::pull(coa_iso)
+        }
+
+        if (type == "region") {
+            name <- refugees::population |>
+                dplyr::group_by(coa_iso) |>
+                dplyr::summarise(total = sum(refugees, asylum_seekers, idps, oip, stateless, ooc, hst, na.rm = TRUE)) |>
+                dplyr::filter(total > 100000) |>
+                dplyr::mutate(unhcr_region = countrycode::countrycode(coa_iso, "iso3c", "unhcr.region")) |>
+                dplyr::pull(unhcr_region) |>
+                unique()
+        }
+    }
+    links <- c()
+    for (this in name) {
+        # this <- name[1]
+        # 2. Define Output Filename and Path
+        thisslug <- slugify(this)
+        output_filename <- paste0("Analysis-", type, "-", thisslug, "-", year, "-", "report.html")
+        output_filepath <- here::here(folder, output_filename)
+
+        # Define parameters based on report type
+        if (type == "country") {
+            # lookup country name
+            country_full_name <- countrycode::countrycode(this, "iso3c", "country.name")
+
+            params_list <- list(
+                country_iso3 = this,
+                name = country_full_name,
+                year = year,
+                lag = lag,
+                gp_provider = gp_provider,
+                gp_model = gp_model,
+                include_ai = include_ai
+            )
+        } else if (type == "region") {
+            params_list <- list(
+                region = this,
+                year = year,
+                gp_provider = gp_provider,
+                gp_model = gp_model,
+                include_ai = include_ai
+            )
+        } else {
+            params_list <- list(
+                year = year,
+                gp_provider = gp_provider,
+                gp_model = gp_model,
+                include_ai = include_ai
+            )
+        }
+
+        # 3. Render the Quarto document
+        link <- NULL
+        tryCatch(
+            {
+                quarto::quarto_render(
+                    input = template_path,
+                    output_file = output_filename,
+                    quarto_args = c("--output-dir", output_dir),
+                    # Pass parameters to the YAML header and R code chunks
+                    execute_params = params_list
+                )
+
+                # Link
+                link <- paste0(
+                    "[Profile Report for ",
+                    type, ": ",
+                    this, "](../reports/",
+                    output_filename, ")"
+                )
+            },
+            error = function(e) {
+                warning("Failed to render report for ", this, ": ", e$message)
+            }
+        )
+        # links
+        if (!is.null(link)) {
+            links <- c(links, link)
+        }
+    }
+
+    return(links)
+}
 #'
 #' #' Retrieve Batch Job Results
 #' #'
@@ -297,59 +297,59 @@
 #' #'
 #' #' @return A list of results or status string.
 #' #' @export
-#' batch_retrieve <- function(batch_id) {
-#'     # Placeholder
-#'     if (batch_id == "batch_mock_12345") {
-#'         return(list(status = "completed", results = list("Mock Result 1", "Mock Result 2")))
-#'     }
-#'     return(list(status = "pending"))
-#' }
+batch_retrieve <- function(batch_id) {
+    # Placeholder
+    if (batch_id == "batch_mock_12345") {
+        return(list(status = "completed", results = list("Mock Result 1", "Mock Result 2")))
+    }
+    return(list(status = "pending"))
+}
+
+#' Submit Batch Job for Country Reports
 #'
-#' #' Submit Batch Job for Country Reports
-#' #'
-#' #' Generates prompts for multiple countries and submits a batch request.
-#' #'
-#' #' @param data Full dataset containing all countries.
-#' #' @param countries Vector of ISO3 country codes to process.
-#' #' @param provider AI provider (currently supports "openai" batch API).
-#' #' @param mock Boolean to simulate submission for testing.
-#' #'
-#' #' @return A batch ID or status object.
-#' #' @export
-#' batch_submit <- function(data, countries, provider = "openai", mock = FALSE) {
-#'     # valid_countries <- unique(countries)
-#'     # prompts <- list()
+#' Generates prompts for multiple countries and submits a batch request.
 #'
-#'     # For each country, generate the prompt content
-#'     # This requires refactoring existing generation logic to distinct "prepare prompt" vs "call chat" phases.
-#'     # Currently generate_report does both.
-#'     # We will assume for this implementation we want to generate SECTION SUMMARIES or FULL REPORTS.
-#'     # The requirement says: "Construct a list of prompts (one per country). Call ellmer::batch_chat".
+#' @param data Full dataset containing all countries.
+#' @param countries Vector of ISO3 country codes to process.
+#' @param provider AI provider (currently supports "openai" batch API).
+#' @param mock Boolean to simulate submission for testing.
 #'
-#'     if (mock) {
-#'         return("batch_mock_12345")
-#'     }
+#' @return A batch ID or status object.
+#' @export
+batch_submit <- function(data, countries, provider = "openai", mock = FALSE) {
+    # valid_countries <- unique(countries)
+    # prompts <- list()
+
+    # For each country, generate the prompt content
+    # This requires refactoring existing generation logic to distinct "prepare prompt" vs "call chat" phases.
+    # Currently generate_report does both.
+    # We will assume for this implementation we want to generate SECTION SUMMARIES or FULL REPORTS.
+    # The requirement says: "Construct a list of prompts (one per country). Call ellmer::batch_chat".
+
+    if (mock) {
+        return("batch_mock_12345")
+    }
+
+    # Placeholder for actual batch submission logic
+    # Real implementation would loop over countries, subset data, prepare context, and build JSONL.
+    # Since we are optimizing for cost, we assume this targets the 'generate_description' or 'section_summary'
+    # which are the token-heavy parts.
+
+    message("Batch submission not fully implemented in this phase. Returning mock ID.")
+    return("batch_pending_001")
+}
+
+#' Generate Country Reports (Batch Mode)
 #'
-#'     # Placeholder for actual batch submission logic
-#'     # Real implementation would loop over countries, subset data, prepare context, and build JSONL.
-#'     # Since we are optimizing for cost, we assume this targets the 'generate_description' or 'section_summary'
-#'     # which are the token-heavy parts.
+#' Orchestrates the batch generation process.
 #'
-#'     message("Batch submission not fully implemented in this phase. Returning mock ID.")
-#'     return("batch_pending_001")
-#' }
+#' @param data Full dataset.
+#' @param countries List of countries.
+#' @param provider AI provider.
 #'
-#' #' Generate Country Reports (Batch Mode)
-#' #'
-#' #' Orchestrates the batch generation process.
-#' #'
-#' #' @param data Full dataset.
-#' #' @param countries List of countries.
-#' #' @param provider AI provider.
-#' #'
-#' #' @return Status text.
-#' #' @export
-#' generate_country_reports_batch <- function(data, countries, provider = "openai") {
-#'     batch_id <- batch_submit(data, countries, provider)
-#'     paste("Batch initiated:", batch_id, "- Use batch_retrieve() to check status.")
-#' }
+#' @return Status text.
+#' @export
+generate_country_reports_batch <- function(data, countries, provider = "openai") {
+    batch_id <- batch_submit(data, countries, provider)
+    paste("Batch initiated:", batch_id, "- Use batch_retrieve() to check status.")
+}

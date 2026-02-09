@@ -89,11 +89,7 @@ extract_structure <- function(p) {
   # 4. Clean Data for LLM
   # Retain standard mapping aesthetics + facet vars + x/y
   # Remove purely internal columns
-  internal_cols <- c(
-    "PANEL", "group", "colour", "fill", "size", "linetype", "alpha", "stroke", "shape",
-    "xmin", "xmax", "ymin", "ymax", "xintercept", "yintercept", "lower", "middle", "upper",
-    "notchlower", "notchupper", "weight"
-  )
+
 
   # Keep x, y, label, and any decoded labels or facet vars
   # Also keep ymin/ymax if they look main (e.g. for ribbons/bars if not just coords)

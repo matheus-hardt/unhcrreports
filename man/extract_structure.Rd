@@ -15,6 +15,7 @@ A list containing:
 \item{ranges}{Exact x and y ranges for each panel (trained).}
 \item{guides}{Mapping of visuals (color/shape) to data values.}
 \item{geoms}{List of geometric layers used.}
+\item{data_summary}{A markdown table of the visualized data.}
 }
 \description{
 This function implements Phase 1 of the AI reporting architecture.
